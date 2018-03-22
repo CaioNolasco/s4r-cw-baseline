@@ -1,0 +1,230 @@
+// Global
+
+ion-icon {
+  &[class*="custom-"] {
+    mask-size: contain;
+    mask-position: 50% 50%;
+    mask-repeat: no-repeat;
+    background: currentColor;
+    width: 1em;
+    height: 1em; 
+  }
+
+  &[class*="custom-qrcode"] {
+    mask-image: url(../assets/imgs/qr-code.svg);
+  }
+}
+
+//Movimentação
+.item-movimentacao{
+  padding-left: 0px;
+}
+
+//Materiais
+.item-lista-material{
+  padding-left: 5px;
+  border-left: 5px solid map-get($colors, cushman-2);
+}
+
+.icone-material, .item-valor-total{
+  float: right;
+}
+
+//Anexos
+.item-lista-anexo{
+  padding-left: 5px;
+  border-left: 5px solid map-get($colors, cushman-2);
+}
+
+.thumb-fotos{
+  min-height: 200px;
+  background-size: cover;
+}
+
+//Mapa
+#mapa{
+  height: 100%;
+}
+
+//Chamado
+.card-header-chamado{
+  background-color:  map-get($colors, cushman-2);
+  color: #fff;
+  font-weight: bold;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+.card-icone{
+  font-size: 25px;
+  margin-right: 10px;
+}
+
+.card-note{
+  float: right;
+}
+
+.card-icone-texto{
+  position: absolute;
+  bottom: 0;
+}
+
+.card-icone-h1{
+  text-align: right;
+  margin-right: 10px !important;
+}
+//Lista Chamados
+.item-lista-chamado{
+  padding-left: 0px;
+  border-left: 5px solid map-get($colors, cushman-2);
+}
+
+//Alertas
+.toast-danger > .toast-wrapper{
+  background-color: #F2DEDE;
+  border: 1px solid #EACBCF;
+}
+
+.toast-danger > .toast-wrapper > .toast-container > .toast-message,
+.toast-danger > .toast-wrapper > .toast-container > .toast-button {
+  color: #AD4F5F !important;
+}
+
+.toast-success > .toast-wrapper{
+  background-color: #DFF0D8;
+  border: 1px solid #D8EACA;
+}
+
+.toast-success > .toast-wrapper > .toast-container > .toast-message,
+.toast-success > .toast-wrapper > .toast-container > .toast-button {
+  color: #517830 !important;
+}
+
+.toast-warning > .toast-wrapper{
+  background-color: #F8F3D6;
+  border: 1px solid #FAEBCF;
+}
+
+.toast-warning > .toast-wrapper > .toast-container > .toast-message,
+.toast-warning > .toast-wrapper > .toast-container > .toast-button {
+  color: #A67443 !important;
+}
+
+.toast-wrapper{
+  font-weight: bold;
+}
+
+// Página Autenticação
+.auth-page {
+    background-color: #fff;
+    &::after {
+      content: "";
+      background: url("../assets/imgs/bg.jpg") no-repeat;
+      background-size: cover;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      position: absolute;
+      z-index: 0;
+    }
+  
+    .scroll-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      //background: rgba(50, 10, 92, .4);
+  
+      .login-content {
+        width: 86%;
+  
+        .logo {
+          width: 197px;
+          height: 208px;
+          margin: 0px auto 0;
+          border-radius: 10%;
+          background: url("../assets/imgs/logo-login.png") no-repeat;
+          background-size: 100%;
+        }
+  
+        .list-form {
+          padding: 0;
+          margin-bottom: 0;
+  
+          ion-item {
+            background: none;
+            padding: 0;
+  
+            &:first-child {
+              border-top: none;
+            }
+  
+            &:after {
+              display: none;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .btn-login{
+      margin-top: 7%;
+  }
+
+// Animate CSS
+.animated {
+    animation-duration: 1s;
+    animation-fill-mode: both;
+  }
+  
+  .animated.infinite {
+    animation-iteration-count: infinite;
+  }
+  
+  .animated.hinge {
+    animation-duration: 2s;
+  }
+  
+  .animated.flipOutX,
+  .animated.flipOutY,
+  .animated.bounceIn,
+  .animated.bounceOut {
+    animation-duration: .75s;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+  
+    to {
+      opacity: 1;
+    }
+  }
+  
+  .fadeIn {
+    animation-name: fadeIn;
+  }
+  
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -100%, 0);
+    }
+  
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  
+  .fadeInDown {
+    animation-name: fadeInDown;
+  }
+
+
+
+
+
+  

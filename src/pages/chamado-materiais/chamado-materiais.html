@@ -1,0 +1,107 @@
+<ion-header>
+
+  <ion-navbar color="cushman-1">
+    <ion-title>Materiais {{ chamadoId }}</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-fab bottom right>
+    <button ion-fab color="cushman-2">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-item *ngIf="exibirMsg">
+      <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+      {{ msgNenhumItem }}
+      <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+    </ion-item>
+
+  <ion-list *ngIf="materiais">
+    <ion-item-sliding *ngFor="let material of materiais">
+      <ion-item class="item-lista-material">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-10>
+              <p ion-text>
+                <b>
+                  Aplicação
+                </b>
+              </p>
+              <p ion-text>
+                {{ material.TipoServico }}
+              </p>
+            </ion-col>
+            <ion-col col-2>
+             <h1><ion-icon (click)="excluirClick(material)" name="trash" color="cushman-1" class="icone-material"></ion-icon></h1>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col-3>
+              <p ion-text>
+                <b>
+                  Marca
+                </b>
+              </p>
+              <p ion-text>
+                {{ material.Marca }}
+              </p>
+            </ion-col>
+            <ion-col col-3>
+              <p ion-text>
+                <b>
+                  Modelo
+                </b>
+              </p>
+              <p ion-text>
+                {{ material.Modelo }}
+              </p>
+            </ion-col>
+            <ion-col col-3>
+              <p ion-text>
+                <b>
+                  Potência
+                </b>
+              </p>
+              <p ion-text>
+                {{ material.Potencia }}
+              </p>
+            </ion-col>
+            <ion-col col-3>
+              <p ion-text>
+                <b>
+                  Capac.
+                </b>
+              </p>
+              <p ion-text>
+                {{ material.Capacidade }}
+              </p>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col col>
+              <span>{{ material.Quantidade }} x R$ {{ material.ValorUnitario }}</span>
+            </ion-col>
+            <ion-col col>
+              <span class="item-valor-total">R$ {{ material.ValorTotal }}</span>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-item>
+
+      <ion-item-options side="left">
+        <button (click)="excluirClick(material)" ion-button color="cushman-1">
+          <ion-icon name="trash"></ion-icon>
+          Excluir
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+</ion-content>

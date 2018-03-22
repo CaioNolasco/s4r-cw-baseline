@@ -1,0 +1,106 @@
+<ion-header>
+  <ion-navbar color="cushman-1">
+    <ion-buttons start>
+      <button (click)="searchClick()" ion-button icon-only>
+        <ion-icon name="search"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>{{nomePortal}}</ion-title>
+    <ion-buttons end>
+      <button (click)="qrCodeClick()" ion-button icon-only>
+        <ion-icon name="custom-qrcode"></ion-icon>
+      </button>
+      <button (click)="logoutClick()" ion-button icon-only>
+        <ion-icon name="log-out"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-header>
+  <ion-toolbar *ngIf="exibirSearch" color="cushman-1">
+    <ion-buttons start>
+      <button (click)="searchClick()" ion-button icon-only>
+        <ion-icon name="arrow-back"></ion-icon>
+      </button>
+    </ion-buttons>
+    <!-- (input)="getItems($event)" -->
+    <ion-searchbar [(ngModel)]="search" (search)="buscarChamados($event)" placeholder="Nº Chamado"></ion-searchbar>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-fab bottom right>
+    <button ion-fab color="cushman-2">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-item *ngIf="exibirMsg">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+  </ion-item>
+
+  <ion-list *ngIf="chamados">
+    <ion-item-sliding *ngFor="let chamado of chamados">
+      <button ion-item (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado">
+        <ion-grid>
+          <ion-row>
+            <ion-col col-8>
+              <div start class="item-lista-dados">
+                <h1 ion-text>
+                  <b>{{ chamado.ChamadoID}}</b>
+                </h1>
+                <p ion-text>{{ chamado.Area }} / {{ chamado.Nome }} / {{ chamado.NomeCompleto }}</p>
+              </div>
+            </ion-col>
+
+            <ion-col col-4>
+              <p ion-text>
+                <ion-icon ios="ios-alarm-outline" name="alarm"></ion-icon> {{ chamado.Nivel }}
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+
+        <ion-grid>
+          <ion-row>
+            <ion-col col-6>
+              <p ion-text>
+                <ion-icon ios="ios-calendar-outline" name="calendar"></ion-icon>
+                {{ chamado.DataAbertura | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </ion-col>
+            <ion-col col-6>
+              <p ion-text>
+                <ion-icon ios="ios-calendar-outline" name="calendar"></ion-icon>
+                {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </button>
+
+      <ion-item-options side="left">
+        <button ion-button color="cushman-1">
+          <ion-icon name="wifi"></ion-icon>
+          Offline
+        </button>
+        <button (click)="historicoClick(chamado)" ion-button color="cushman-2">
+          <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
+          Hist.
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+    <ion-infinite-scroll-content></ion-infinite-scroll-content>
+  </ion-infinite-scroll>
+
+</ion-content>

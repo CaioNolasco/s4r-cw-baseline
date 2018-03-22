@@ -1,0 +1,129 @@
+<ion-header>
+
+  <ion-navbar color="cushman-1">
+    <ion-title>Movimentação {{ chamadoId }}</ion-title>
+    <ion-buttons end>
+        <button ion-button icon-only>
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </button>
+      </ion-buttons>
+  </ion-navbar>
+
+</ion-header>
+
+<ion-content>
+  <ion-grid>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-calendar-outline" name="calendar" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Data do Atendimento</ion-label>
+          <ion-datetime [(ngModel)]="dataAtendimento" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-time-outline" name="time" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Hora Inicial</ion-label>
+          <ion-datetime [(ngModel)]="inicioAtendimento" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+        </ion-item>
+      </ion-col>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-time-outline" name="time" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Hora Final</ion-label>
+          <ion-datetime [(ngModel)]="finalAtendimento" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-paper-outline" name="paper" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Descrição do Atendimento</ion-label>
+          <ion-textarea [(ngModel)]="descricaoAtendimento" placeholder="Preencha a descrição"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-calendar-outline" name="calendar" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Data da Solução</ion-label>
+          <ion-datetime [(ngModel)]="dataSolucao" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-time-outline" name="time" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Início Solução</ion-label>
+          <ion-datetime [(ngModel)]="inicioSolucao" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+        </ion-item>
+      </ion-col>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-time-outline" name="time" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Final Solução</ion-label>
+          <ion-datetime [(ngModel)]="finalSolucao" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-calendar-outline" name="calendar" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Programação Atendimento</ion-label>
+          <ion-datetime [(ngModel)]="dataProgramacao" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <!-- <ion-icon ios="ios-paper-outline" name="paper" item-start></ion-icon> -->
+          <ion-label stacked color="cushman-3">Justificativa</ion-label>
+          <ion-textarea [(ngModel)]="justificativa" placeholder="Preencha a justificativa"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+
+    <ion-row>
+        <ion-col col>
+          <ion-item class="item-movimentacao">
+            <!-- <ion-icon ios="ios-arrow-dropdown-outline" name="arrow-dropdown" item-start></ion-icon> -->
+            <ion-label stacked color="cushman-3">Ação</ion-label>
+            <ion-select [(ngModel)]="acoes" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesAcoes" interface="action-sheet" cancelText="Cancelar">
+                <ion-option value="{{acao.AcaoID}}" *ngFor="let acao of opcoesAcoes">{{acao.Descricao}}</ion-option> 
+             </ion-select> 
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+          <ion-col col>
+            <ion-item class="item-movimentacao">
+              <!-- <ion-icon ios="ios-arrow-dropdown-outline" name="arrow-dropdown" item-start></ion-icon> -->
+              <ion-label stacked color="cushman-3">Status</ion-label>
+              <ion-select [(ngModel)]="status" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesStatus" interface="action-sheet" cancelText="Cancelar">
+                  <ion-option value="{{status.StatusChamadoID}}" *ngFor="let status of opcoesStatus">{{status.NomeStatus}}</ion-option> 
+               </ion-select> 
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+            <ion-col col>
+                <button ion-button full color="cushman-2">Salvar</button>
+            </ion-col>
+        </ion-row>
+  </ion-grid>
+
+</ion-content>
