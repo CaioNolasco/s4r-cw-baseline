@@ -8,11 +8,11 @@
   "proxies": [
     {
       "path": "/usuariosapi",
-      "proxyUrl": "http://cw-portalfacilities-mobile.azurewebsites.net/api/usuarios/"
+      "proxyUrl": "https://cw-portalfacilities-mobile.azurewebsites.net/api/usuarios/"
     },
     {
       "path": "/chamadosapi",
-      "proxyUrl": "http://cw-portalfacilities-mobile.azurewebsites.net/api/chamados/"
+      "proxyUrl": "https://cw-portalfacilities-mobile.azurewebsites.net/api/chamados/"
     }
   ]
 }
