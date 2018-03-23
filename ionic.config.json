@@ -8,11 +8,11 @@
   "proxies": [
     {
       "path": "/usuariosapi",
-      "proxyUrl": "http://desenvicushman:49608/api/usuarios/"
+      "proxyUrl": "http://cw-portalfacilities-mobile.azurewebsites.net/api/usuarios/"
     },
     {
       "path": "/chamadosapi",
-      "proxyUrl": "http://desenvicushman:49608/api/chamados/"
+      "proxyUrl": "http://cw-portalfacilities-mobile.azurewebsites.net/api/chamados/"
     }
   ]
 }
