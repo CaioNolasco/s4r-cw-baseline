@@ -77,12 +77,7 @@ export class LoginPage {
     this.usuariosProvider.retornarUsuarioAutenticado(this.username.value, this.password.value, this.portais).subscribe(
       data => {
         let _resposta = (data as any);
-
-        this.alertsProvider.exibirAlerta("Erro", _resposta, "OK");
-
         let _objetoRetorno = JSON.parse(_resposta._body);
-
-        this.alertsProvider.exibirAlerta("Erro", _objetoRetorno, "OK");
 
         if (_objetoRetorno.autenticacao) {
           let _valorPortal = this.portais;
@@ -98,7 +93,6 @@ export class LoginPage {
         this.alertsProvider.fecharCarregando();
 
       }, error => {
-        this.alertsProvider.exibirAlerta("Erro", error, "OK");
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
       }

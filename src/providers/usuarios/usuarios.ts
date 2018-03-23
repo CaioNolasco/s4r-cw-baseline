@@ -7,15 +7,13 @@ import { InjectionToken } from '@angular/core';
 
 import { ConstantesProvider } from '../constantes/constantes';
 import { ConfigLoginProvider } from '../config-login/config-login';
-import { AlertsProvider } from './../../providers/alerts/alerts';
 
 import { LoginPage } from './../../pages/login/login';
 
 @Injectable()
 @Component({ providers: [
   ConstantesProvider,
-  ConfigLoginProvider,
-  AlertsProvider
+  ConfigLoginProvider
 ] })
 
 export class UsuariosProvider {
@@ -23,7 +21,7 @@ export class UsuariosProvider {
   private urlApiUsuarios = "/api/usuarios";
 
   constructor(public http: Http, public platform: Platform, public constantes: ConstantesProvider,
-    public configLoginProvider: ConfigLoginProvider, public app: App, public alertsProvider: AlertsProvider,) {
+    public configLoginProvider: ConfigLoginProvider, public app: App) {
     if(!this.platform.is("cordova")){
       this.urlApiUsuarios = "/usuariosapi";
     }
@@ -41,8 +39,6 @@ export class UsuariosProvider {
 
   //Retornos
   retornarUsuarioAutenticado(usuario: string, senha: string, portal: string){
-    this.alertsProvider.exibirAlerta("Erro", this.urlApiUsuarios, "OK");
-
     return this.http.get(this.urlApiUsuarios + `/RetornarUsuarioAutenticado/${usuario}/${senha}/${portal}`);
   }
 }
