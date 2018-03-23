@@ -75,8 +75,6 @@ export class ChamadoMovimentacaoPage {
         this.opcoesAcoes = _objetoRetorno;
       }, error => {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        
-        console.log(error);
       }
     )
   }
@@ -90,8 +88,6 @@ export class ChamadoMovimentacaoPage {
         this.opcoesStatus = _objetoRetorno;
       }, error => {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        
-        console.log(error);
       }
     )
   }
@@ -130,8 +126,6 @@ export class ChamadoMovimentacaoPage {
       }, error => {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
-
-        console.log(error);
       }
     )
   }

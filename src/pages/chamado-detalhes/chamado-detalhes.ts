@@ -83,8 +83,6 @@ export class ChamadoDetalhesPage {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.exibirMsg = true;
         this.alertsProvider.fecharCarregando();
-
-        console.log(error);
       }
     )
   }

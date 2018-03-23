@@ -96,8 +96,6 @@ export class ChamadosEquipamentoPage {
           this.exibirMsg = true;
           this.chamados = null;
           this.alertsProvider.fecharCarregando();
-
-          console.log(error);
         }
       )
   }

@@ -108,8 +108,6 @@ export class HomePage {
           this.exibirMsg = true;
           this.chamados = null;
           this.alertsProvider.fecharCarregando();
-
-          console.log(error);
         }
       )
   }
@@ -136,8 +134,6 @@ export class HomePage {
         else {
           this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
-
-        console.log(error);
       }
     )
   }
@@ -187,7 +183,6 @@ export class HomePage {
   //     }
   //   }
   //   catch (e) {
-  //     console.log(e);
   //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
   //   }
   // }
@@ -217,7 +212,6 @@ export class HomePage {
       }
     }).catch(err => {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      console.log('Error', err);
     });
   }
 

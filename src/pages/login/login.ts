@@ -95,7 +95,6 @@ export class LoginPage {
       }, error => {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
-        console.log(error);
       }
     )
 
@@ -126,29 +125,31 @@ export class LoginPage {
   // }
 
   qrCodeClick() {
-    this.barcodeScanner.scan().then(barcodeData => {
+    try{
+      this.barcodeScanner.scan().then(barcodeData => {
 
-      let _valor = barcodeData.text;
-
-      if (_valor) {
-        let _portaisQrCode = JSON.parse(_valor);
-
-        if(_portaisQrCode.valor && _portaisQrCode.texto){
-          this.configLoginProvider.salvarConfigLoginPortais(_portaisQrCode.valor, _portaisQrCode.texto);
+        let _valor = barcodeData.text;
+  
+        if (_valor) {
+          let _portaisQrCode = JSON.parse(_valor);
+  
+          if(_portaisQrCode.valor && _portaisQrCode.texto){
+            this.configLoginProvider.salvarConfigLoginPortais(_portaisQrCode.valor, _portaisQrCode.texto);
+          }
+          else{
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
         }
         else{
           this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
-      }
-      else{
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      }
-
-      this.carregarOpcoesPortais();
-    }).catch(err => {
+  
+        this.carregarOpcoesPortais();
+      });
+    }
+    catch(e) {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      console.log('Error', err);
-    });
+    }
   }
 
   limparClick() {
@@ -160,6 +161,8 @@ export class LoginPage {
 
   confirmarClick = () => {
     localStorage.removeItem("configLoginPortais");
+
+    this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
 
     this.carregarOpcoesPortais();
   }

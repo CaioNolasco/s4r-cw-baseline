@@ -1,6 +1,6 @@
 {
   "name": "s4r-cw-baseline",
-  "app_id": "e76a36e9",
+  "app_id": "ce2aaf8a",
   "type": "ionic-angular",
   "integrations": {
     "cordova": {}

@@ -19,7 +19,6 @@ export class RelatoriosPage {
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad RelatoriosPage');
   }
 
 }
