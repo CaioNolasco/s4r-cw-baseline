@@ -20,12 +20,12 @@ export class UsuariosProvider {
 
   constructor(public http: Http, public platform: Platform, public constantes: ConstantesProvider,
     public configLoginProvider: ConfigLoginProvider, public app: App) {
-    if(!this.platform.is("cordova")){
-      this.urlApiUsuarios = "/usuariosapi";
-    }
-    else{
+    //if(!this.platform.is("cordova")){
+      //this.urlApiUsuarios = "/usuariosapi";
+    //}
+    //else{
       this.urlApiUsuarios = this.constantes.urlApiBaseline + this.urlApiUsuarios;
-    }
+    //}
   }
 
   //Ações
@@ -37,6 +37,7 @@ export class UsuariosProvider {
 
   //Retornos
   retornarUsuarioAutenticado(usuario: string, senha: string, portal: string){
+    alert(this.urlApiUsuarios);
     return this.http.get(this.urlApiUsuarios + `/RetornarUsuarioAutenticado/${usuario}/${senha}/${portal}`);
   }
 }
