@@ -78,11 +78,11 @@ export class LoginPage {
       data => {
         let _resposta = (data as any);
 
-        alert("Erro: " +  _resposta);
+        this.alertsProvider.exibirAlerta("Erro", _resposta, "OK");
 
         let _objetoRetorno = JSON.parse(_resposta._body);
 
-        alert("Erro: " + _objetoRetorno);
+        this.alertsProvider.exibirAlerta("Erro", _objetoRetorno, "OK");
 
         if (_objetoRetorno.autenticacao) {
           let _valorPortal = this.portais;
@@ -98,7 +98,7 @@ export class LoginPage {
         this.alertsProvider.fecharCarregando();
 
       }, error => {
-        alert("Erro: " +  error);
+        this.alertsProvider.exibirAlerta("Erro", error, "OK");
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
       }
