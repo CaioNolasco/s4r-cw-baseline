@@ -82,7 +82,10 @@ export class HomePage {
 
   carregarChamados(novaPagina: boolean = false) {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
 
       this.exibirMsg = false;
 
@@ -105,7 +108,13 @@ export class HomePage {
               this.chamados = null;
             }
 
-            this.alertsProvider.fecharCarregando();
+            if (this.isRefreshing) {
+              this.refresher.complete();
+              this.isRefreshing = false;
+            }
+            else {
+              this.alertsProvider.fecharCarregando();
+            }
           }
         )
     }
@@ -114,7 +123,14 @@ export class HomePage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.chamados = null;
-      this.alertsProvider.fecharCarregando();
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -169,7 +185,7 @@ export class HomePage {
           { text: "Cancelar" }]
 
           this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
-        } 
+        }
       });
     }
     catch (e) {
@@ -205,7 +221,7 @@ export class HomePage {
       console.log(e);
     }
   }
-  
+
   //Eventos
   logoutClick() {
     this.usuariosProvider.logoutUsuario();
@@ -252,11 +268,6 @@ export class HomePage {
     this.isRefreshing = true;
 
     this.carregarChamados();
-
-    if (this.isRefreshing) {
-      this.refresher.complete();
-      this.isRefreshing = false;
-    }
   }
 
   doInfinite(infiniteScroll) {
@@ -265,28 +276,26 @@ export class HomePage {
 
     this.carregarChamados(true);
   }
-}
 
-
-// qrCodeClick() {
-  //   let qrCode = 'https://cushwake1.sharepoint.com/:f:/r/sites/SAGE-AGUABRANCA/Shared%20Documents/SAGE%20-%20%C3%81GUA%20BRANCA/El%C3%A9trica/002QDF0203ELEAGB?v=3&v1=Ar Condicionado';
+  // qrCodeClick() {
+  //   let qrCode = 'https://cushwake1.sharepoint.com/:f:/r/sites/SAGE-AGUABRANCA/Shared%20Documents/SAGE%20-%20%C3%81GUA%20BRANCA/El%C3%A9trica/002QDF0203ELEAGB?v=2&v1=Ar Condicionado';
   //   this.filtroEquipamento = null;
   //   this.filtroNomeEquipamento = null;
   //   this.qrCodeUrl = null;
 
-  //   try { 
+  //   try {
   //     if (qrCode) {
   //       this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", qrCode);
   //       this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", qrCode);
   //       this.qrCodeUrl = qrCode;
 
   //       let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
-  //                           { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick  },  
-  //                           { text: "Cancelar"  }] 
+  //       { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick },
+  //       { text: "Cancelar" }]
 
   //       this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
   //     }
-  //     else{
+  //     else {
   //       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
   //     }
   //   }
@@ -294,3 +303,7 @@ export class HomePage {
   //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
   //   }
   // }
+
+}
+
+

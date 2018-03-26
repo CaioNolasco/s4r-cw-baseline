@@ -61,7 +61,9 @@ export class ChamadoHistoricoPage {
 
   carregarHistorico() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
 
       this.exibirMsg = false;
 
@@ -77,7 +79,13 @@ export class ChamadoHistoricoPage {
             this.historicos = null;
           }
 
-          this.alertsProvider.fecharCarregando();
+          if (this.isRefreshing) {
+            this.refresher.complete();
+            this.isRefreshing = false;
+          }
+          else {
+            this.alertsProvider.fecharCarregando();
+          }
         }
       )
     }
@@ -86,7 +94,15 @@ export class ChamadoHistoricoPage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.historicos = null;
-      this.alertsProvider.fecharCarregando();
+
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -100,10 +116,5 @@ export class ChamadoHistoricoPage {
     this.isRefreshing = true;
 
     this.carregarHistorico();
-
-    if (this.isRefreshing) {
-      this.refresher.complete();
-      this.isRefreshing = false;
-    }
   }
 }

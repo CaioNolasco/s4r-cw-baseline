@@ -72,7 +72,10 @@ export class ChamadosEquipamentoPage {
 
   carregarChamados(novaPagina: boolean = false) {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
 
       this.exibirMsg = false;
 
@@ -95,7 +98,13 @@ export class ChamadosEquipamentoPage {
               this.chamados = null;
             }
 
-            this.alertsProvider.fecharCarregando();
+            if (this.isRefreshing) {
+              this.refresher.complete();
+              this.isRefreshing = false;
+            }
+            else{
+              this.alertsProvider.fecharCarregando();
+            }
           }
         )
     }
@@ -104,7 +113,14 @@ export class ChamadosEquipamentoPage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.chamados = null;
-      this.alertsProvider.fecharCarregando();
+      
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else{
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -127,11 +143,6 @@ export class ChamadosEquipamentoPage {
     this.isRefreshing = true;
 
     this.carregarChamados();
-
-    if (this.isRefreshing) {
-      this.refresher.complete();
-      this.isRefreshing = false;
-    }
   }
 
   doInfinite(infiniteScroll) {

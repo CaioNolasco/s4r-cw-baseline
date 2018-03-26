@@ -74,7 +74,10 @@ export class ChamadoAnexosPage {
 
   carregarAnexos() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
 
       this.exibirMsgAnexos = false;
 
@@ -90,7 +93,13 @@ export class ChamadoAnexosPage {
             this.anexos = null;
           }
 
-          this.alertsProvider.fecharCarregando();
+          if (this.isRefreshing) {
+            this.refresher.complete();
+            this.isRefreshing = false;
+          }
+          else {
+            this.alertsProvider.fecharCarregando();
+          }
         }
       )
     }
@@ -99,7 +108,14 @@ export class ChamadoAnexosPage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgAnexos = true;
       this.anexos = null;
-      this.alertsProvider.fecharCarregando();
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -192,10 +208,5 @@ export class ChamadoAnexosPage {
     this.isRefreshing = true;
 
     this.carregarAnexos();
-
-    if (this.isRefreshing) {
-      this.refresher.complete();
-      this.isRefreshing = false;
-    }
   }
 }

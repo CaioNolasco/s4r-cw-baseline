@@ -63,7 +63,9 @@ export class ChamadoMateriaisPage {
 
   carregarMateriais() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
 
       this.exibirMsg = false;
 
@@ -79,7 +81,13 @@ export class ChamadoMateriaisPage {
             this.materiais = null;
           }
 
-          this.alertsProvider.fecharCarregando();
+          if (this.isRefreshing) {
+            this.refresher.complete();
+            this.isRefreshing = false;
+          }
+          else {
+            this.alertsProvider.fecharCarregando();
+          }
         }
       )
     }
@@ -88,7 +96,14 @@ export class ChamadoMateriaisPage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.materiais = null;
-      this.alertsProvider.fecharCarregando();
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -118,10 +133,5 @@ export class ChamadoMateriaisPage {
     this.isRefreshing = true;
 
     this.carregarMateriais();
-
-    if (this.isRefreshing) {
-      this.refresher.complete();
-      this.isRefreshing = false;
-    }
   }
 }
