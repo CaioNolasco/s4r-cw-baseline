@@ -4,11 +4,11 @@ import { ModalController } from 'ionic-angular';
 import { GalleryModal } from 'ionic-gallery-modal';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
-import { LoginPage } from '../login/login';
-
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
+
+import { LoginPage } from '../login/login';
 
 @IonicPage()
 @Component({
@@ -36,7 +36,7 @@ export class ChamadoAnexosPage {
   fotos: any[] = [];
 
   //Load
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
     public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser) {
     this.carregarDados();
@@ -50,47 +50,64 @@ export class ChamadoAnexosPage {
   }
 
   //Açoes
-  carregarDados(){
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+  carregarDados() {
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.username = _configLoginProvider.username;
-      this.portal = _configLoginProvider.portal;
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.chamadoId = this.navParams.get("ChamadoID");
-      this.tipoAnexos = "anexos";
-      this.exibirMsgAnexos = false;
-      this.exibirMsgFotos = false;
+      if (_configLoginProvider) {
+        this.username = _configLoginProvider.username;
+        this.portal = _configLoginProvider.portal;
+        this.chamadoId = this.navParams.get("ChamadoID");
+        this.tipoAnexos = "anexos";
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsgAnexos = false;
+        this.exibirMsgFotos = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
-  carregarAnexos(){
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+  carregarAnexos() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.chamadosProvider.retornarAnexosChamado(this.username, this.portal, this.chamadoId).subscribe(
+      this.exibirMsgAnexos = false;
+
+      this.chamadosProvider.retornarAnexosChamado(this.username, this.portal, this.chamadoId).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
 
           this.anexos = _objetoRetorno;
 
-          if(!this.anexos[0]){
+          if (!this.anexos[0]) {
             this.exibirMsgAnexos = true;
+            this.anexos = null;
           }
 
           this.alertsProvider.fecharCarregando();
-        }, error => {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-          this.exibirMsgAnexos = true;
-          this.alertsProvider.fecharCarregando();
         }
       )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsgAnexos = true;
+      this.anexos = null;
+      this.alertsProvider.fecharCarregando();
+    }
   }
 
   carregarFotos() {
+    try {
+
+      this.exibirMsgFotos = false;
+
       this.fotos.push({
         url: `https://i.ytimg.com/vi/peOP8Gs8NFY/maxresdefault.jpg`,
         sequencia: 0
@@ -111,36 +128,61 @@ export class ChamadoAnexosPage {
         sequencia: 3
       });
 
-      if(!this.fotos){
+      if (!this.fotos) {
         this.exibirMsgFotos = true;
+        this.fotos = null;
       }
-  }
-  
-  //Eventos
-  abrirFotoClick(sequencia: number){
-    let _modal = this.modalCtrl.create(GalleryModal, {
-      photos: this.fotos,
-      initialSlide: sequencia
-    });
-    _modal.present();
+    }
+    catch (e) {
+      console.log(e);
+      this.exibirMsgFotos = true;
+      this.fotos = null;
+    }
   }
 
-  acessarClick(anexo: any){
+  carregarAbrirFoto(sequencia: number) {
+    try {
+      let _modal = this.modalCtrl.create(GalleryModal, {
+        photos: this.fotos,
+        initialSlide: sequencia
+      });
+      _modal.present();
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  excluirAnexo(anexo: any) {
+    try {
+      let _titulo = `Excluir ${anexo.NomeAnexo}?`;
+
+      this.alertsProvider.exibirAlertaConfirmacao(_titulo, this.alertsProvider.msgConfirmacao,
+        this.alertsProvider.msgBotaoCancelar, this.alertsProvider.msgBotaoConfirmar);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  //Eventos
+  abrirFotoClick(sequencia: number) {
+    this.carregarAbrirFoto(sequencia);
+  }
+
+  acessarClick(anexo: any) {
     this.inAppBrowser.create(anexo.CaminhoAnexo, '_system')
   }
 
-  excluirClick(anexo: any){
-    let _titulo = `Excluir ${anexo.NomeAnexo}?`;
-
-    this.alertsProvider.exibirAlertaConfirmacao(_titulo, this.alertsProvider.msgConfirmacao, 
-      this.alertsProvider.msgBotaoCancelar, this.alertsProvider.msgBotaoConfirmar);
+  excluirClick(anexo: any) {
+    this.excluirAnexo(anexo);
   }
 
   atualizarClick() {
-    if(this.tipoAnexos == "anexos"){
+    if (this.tipoAnexos == "anexos") {
       this.carregarAnexos();
     }
-    else if (this.tipoAnexos == "fotos"){
+    else if (this.tipoAnexos == "fotos") {
       this.carregarFotos();
     }
   }

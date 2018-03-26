@@ -39,9 +39,9 @@ export class ChamadoMovimentacaoPage {
   status: any;
 
   //Load
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, 
-  public configLoginProvider: ConfigLoginProvider, public chamadosProvider: ChamadosProvider, 
-  public alertsProvider: AlertsProvider, public uteisProvider: UteisProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
+    public configLoginProvider: ConfigLoginProvider, public chamadosProvider: ChamadosProvider,
+    public alertsProvider: AlertsProvider, public uteisProvider: UteisProvider) {
     this.carregarDados();
   }
 
@@ -52,81 +52,96 @@ export class ChamadoMovimentacaoPage {
   }
 
   //Ações
-  carregarDados(){
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+  carregarDados() {
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.portal = _configLoginProvider.portal;
-      this.chamadoId = this.navParams.get("ChamadoID");
-      this.carregarAcoes();
-      this.carregarStatus();
-    }
-    else {
-      this.navCtrl.push(LoginPage);
-    }
-  }
-
-  carregarAcoes(){
-    this.chamadosProvider.retornarAcoes(this.portal).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
-
-        this.opcoesAcoes = _objetoRetorno;
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      if (_configLoginProvider) {
+        this.portal = _configLoginProvider.portal;
+        this.chamadoId = this.navParams.get("ChamadoID");
+        this.carregarAcoes();
+        this.carregarStatus();
       }
-    )
-  }
-
-  carregarStatus(){
-    this.chamadosProvider.retornarStatus(this.portal).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
-
-        this.opcoesStatus = _objetoRetorno;
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      else {
+        this.navCtrl.push(LoginPage);
       }
-    )
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
-  carregarDadosForm(){
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+  carregarAcoes() {
+    try {
+      this.chamadosProvider.retornarAcoes(this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-    this.chamadosProvider.retornarChamadoPorNumero(this.portal, this.chamadoId).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
-
-        this.chamado = _objetoRetorno;
-
-        if(this.chamado){
-          let _dataAtendimentoInicial = this.uteisProvider.retornarIonicDateTime(this.chamado.DataInicialEfetivaAtendimento);
-          let _dataAtendimentoFinal = this.uteisProvider.retornarIonicDateTime(this.chamado.DataFinalEfetivaAtendimento);
-          let _dataSolucaoInicial = this.uteisProvider.retornarIonicDateTime(this.chamado.DataInicialEfetivaSolucao);
-          let _dataSolucaoFinal = this.uteisProvider.retornarIonicDateTime(this.chamado.DataFinalEfetivaSolucao);
-          let _dataProgramacao = this.uteisProvider.retornarIonicDateTime(this.chamado.DataProgramacaoAtendimento);
-
-          this.dataAtendimento = _dataAtendimentoInicial;
-          this.inicioAtendimento = _dataAtendimentoInicial;
-          this.finalAtendimento = _dataAtendimentoFinal;
-          this.descricaoAtendimento = this.chamado.DescricaoAtendimento;
-          this.dataSolucao =_dataSolucaoInicial;
-          this.inicioSolucao =_dataSolucaoInicial;
-          this.finalSolucao = _dataSolucaoFinal;
-          this.dataProgramacao = _dataProgramacao;
-          this.justificativa = this.chamado.TextoJustificativa;
-          this.acoes = this.chamado.Acao;
-          this.status = this.chamado.StatusChamadoID;
+          this.opcoesAcoes = _objetoRetorno;
         }
+      )
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
 
-        this.alertsProvider.fecharCarregando();
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        this.alertsProvider.fecharCarregando();
-      }
-    )
+  carregarStatus() {
+    try {
+      this.chamadosProvider.retornarStatus(this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.opcoesStatus = _objetoRetorno;
+        }
+      )
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarDadosForm() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      this.chamadosProvider.retornarChamadoPorNumero(this.portal, this.chamadoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.chamado = _objetoRetorno;
+
+          if (this.chamado) {
+            let _dataAtendimentoInicial = this.uteisProvider.retornarIonicDateTime(this.chamado.DataInicialEfetivaAtendimento);
+            let _dataAtendimentoFinal = this.uteisProvider.retornarIonicDateTime(this.chamado.DataFinalEfetivaAtendimento);
+            let _dataSolucaoInicial = this.uteisProvider.retornarIonicDateTime(this.chamado.DataInicialEfetivaSolucao);
+            let _dataSolucaoFinal = this.uteisProvider.retornarIonicDateTime(this.chamado.DataFinalEfetivaSolucao);
+            let _dataProgramacao = this.uteisProvider.retornarIonicDateTime(this.chamado.DataProgramacaoAtendimento);
+
+            this.dataAtendimento = _dataAtendimentoInicial;
+            this.inicioAtendimento = _dataAtendimentoInicial;
+            this.finalAtendimento = _dataAtendimentoFinal;
+            this.descricaoAtendimento = this.chamado.DescricaoAtendimento;
+            this.dataSolucao = _dataSolucaoInicial;
+            this.inicioSolucao = _dataSolucaoInicial;
+            this.finalSolucao = _dataSolucaoFinal;
+            this.dataProgramacao = _dataProgramacao;
+            this.justificativa = this.chamado.TextoJustificativa;
+            this.acoes = this.chamado.Acao;
+            this.status = this.chamado.StatusChamadoID;
+          }
+
+          this.alertsProvider.fecharCarregando();
+        }
+      )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
   }
 }

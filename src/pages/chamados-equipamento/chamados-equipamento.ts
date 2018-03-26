@@ -38,7 +38,7 @@ export class ChamadosEquipamentoPage {
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public configLoginProvider: ConfigLoginProvider,
-  public alertsProvider: AlertsProvider, public viewCtrl: ViewController,  public chamadosProvider: ChamadosProvider) {
+    public alertsProvider: AlertsProvider, public viewCtrl: ViewController, public chamadosProvider: ChamadosProvider) {
     this.carregarDados();
   }
 
@@ -50,54 +50,62 @@ export class ChamadosEquipamentoPage {
 
   //Ações
   carregarDados() {
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.username = _configLoginProvider.username;
-      this.portal = _configLoginProvider.portal;
-      this.equipamentoId = this.navParams.get("EquipamentoID");
-      this.nomeEquipamento = this.navParams.get("NomeEquipamento");
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.exibirMsg = false;
+      if (_configLoginProvider) {
+        this.username = _configLoginProvider.username;
+        this.portal = _configLoginProvider.portal;
+        this.equipamentoId = this.navParams.get("EquipamentoID");
+        this.nomeEquipamento = this.navParams.get("NomeEquipamento");
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsg = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
   carregarChamados(novaPagina: boolean = false) {
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
-    
-    this.exibirMsg = false;
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.chamadosProvider.retornarChamadosEquipamento(this.username, this.portal, this.equipamentoId,
-      this.pagina, this.tamanhoPagina).subscribe(
-        data => {
-          let _resposta = (data as any);
-          let _objetoRetorno = JSON.parse(_resposta._body);
+      this.exibirMsg = false;
 
-          if (novaPagina) {
-            this.chamados = this.chamados.concat(_objetoRetorno);
-            this.infiniteScroll.complete();
+      this.chamadosProvider.retornarChamadosEquipamento(this.username, this.portal, this.equipamentoId,
+        this.pagina, this.tamanhoPagina).subscribe(
+          data => {
+            let _resposta = (data as any);
+            let _objetoRetorno = JSON.parse(_resposta._body);
+
+            if (novaPagina) {
+              this.chamados = this.chamados.concat(_objetoRetorno);
+              this.infiniteScroll.complete();
+            }
+            else {
+              this.chamados = _objetoRetorno;
+            }
+
+            if (!this.chamados[0]) {
+              this.exibirMsg = true;
+              this.chamados = null;
+            }
+
+            this.alertsProvider.fecharCarregando();
           }
-          else {
-            this.chamados = _objetoRetorno;
-          }
-
-          if(!this.chamados[0]){
-            this.exibirMsg = true;
-            this.chamados = null;
-          }
-
-          this.alertsProvider.fecharCarregando();
-
-        }, error => {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-          this.exibirMsg = true;
-          this.chamados = null;
-          this.alertsProvider.fecharCarregando();
-        }
-      )
+        )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsg = true;
+      this.chamados = null;
+      this.alertsProvider.fecharCarregando();
+    }
   }
 
   //Eventos
@@ -106,11 +114,11 @@ export class ChamadosEquipamentoPage {
   }
 
   abrirDetalhesClick(chamado) {
-    this.navCtrl.push(ChamadoDetalhesPage, {ChamadoID: chamado.ChamadoID});
+    this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: chamado.ChamadoID });
   }
 
-  historicoClick(chamado){
-    this.navCtrl.push(ChamadoHistoricoPage, {ChamadoID: chamado.ChamadoID});
+  historicoClick(chamado) {
+    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: chamado.ChamadoID });
   }
 
   doRefresh(refresher) {
@@ -132,5 +140,4 @@ export class ChamadosEquipamentoPage {
 
     this.carregarChamados(true);
   }
-
 }

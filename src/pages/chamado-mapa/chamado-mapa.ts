@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+
 import { AlertsProvider } from '../../providers/alerts/alerts';
 
 declare var google;
@@ -22,51 +23,56 @@ export class ChamadoMapaPage {
     this.carregarDados();
   }
 
-  ionViewDidLoad() { 
+  ionViewDidLoad() {
     this.carregarMapa();
   }
 
   //Ações
-  carregarDados(){
+  carregarDados() {
     this.endereco = this.navParams.get("Endereco");
     this.cidade = this.navParams.get("Cidade");
     this.estado = this.navParams.get("Estado");
   }
-  
-  carregarMapa(){
-    let _endereco = `${this.endereco}, ${this.cidade} - ${this.estado}`;
-    
-    if(_endereco){
-      let _posicao: any;
-      let _geocoder = new google.maps.Geocoder();
-  
-      _geocoder.geocode({
-        'address': _endereco
-      },
-        function (_resultado, _status) {
-          if (_status == google.maps.GeocoderStatus.OK) {
-            _posicao = _resultado[0].geometry.location;
-  
-            let _opcoesMapa = {
-              zoom: 15,
-              center: _posicao
+
+  carregarMapa() {
+    try {
+      let _endereco = `${this.endereco}, ${this.cidade} - ${this.estado}`;
+
+      if (_endereco) {
+        let _posicao: any;
+        let _geocoder = new google.maps.Geocoder();
+
+        _geocoder.geocode({
+          'address': _endereco
+        },
+          function (_resultado, _status) {
+            if (_status == google.maps.GeocoderStatus.OK) {
+              _posicao = _resultado[0].geometry.location;
+
+              let _opcoesMapa = {
+                zoom: 15,
+                center: _posicao
+              }
+
+              this.mapa = new google.maps.Map(document.getElementById('mapa'), _opcoesMapa);
+
+              new google.maps.Marker({
+                position: _posicao,
+                map: this.mapa,
+                animation: google.maps.Animation.DROP
+              });
             }
-      
-            this.mapa = new google.maps.Map(document.getElementById('mapa'), _opcoesMapa);
-      
-            new google.maps.Marker({
-              position: _posicao,
-              map: this.mapa,
-              animation: google.maps.Animation.DROP
-            });
-          }
-          else{
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-          }
-        });
+            else {
+              this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            }
+          });
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+      }
     }
-    else{
-      this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+    catch (e) {
+      console.log(e);
     }
   }
 

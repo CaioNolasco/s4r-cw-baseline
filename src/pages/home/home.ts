@@ -1,14 +1,13 @@
 import { NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from './../../providers/config-login/config-login';
 import { UsuariosProvider } from './../../providers/usuarios/usuarios';
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { UteisProvider } from './../../providers/uteis/uteis';
-
-import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { LoginPage } from './../login/login';
 import { ChamadoHistoricoPage } from './../chamado-historico/chamado-historico';
@@ -29,7 +28,6 @@ import { ChamadosEquipamentoPage } from './../chamados-equipamento/chamados-equi
   ]
 })
 export class HomePage {
-
   //Propriedades
   username: string;
   portal: string;
@@ -63,81 +61,151 @@ export class HomePage {
 
   //Ações
   carregarDados() {
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.username = _configLoginProvider.username;
-      this.nomePortal = _configLoginProvider.nomePortal;
-      this.portal = _configLoginProvider.portal;
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.exibirMsg = false;
+      if (_configLoginProvider) {
+        this.username = _configLoginProvider.username;
+        this.nomePortal = _configLoginProvider.nomePortal;
+        this.portal = _configLoginProvider.portal;
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsg = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
   carregarChamados(novaPagina: boolean = false) {
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.exibirMsg = false;
+      this.exibirMsg = false;
 
-    this.chamadosProvider.retornarChamadosAbertos(this.username, this.portal,
-      this.pagina, this.tamanhoPagina).subscribe(
-        data => {
-          let _resposta = (data as any);
-          let _objetoRetorno = JSON.parse(_resposta._body);
+      this.chamadosProvider.retornarChamadosAbertos(this.username, this.portal,
+        this.pagina, this.tamanhoPagina).subscribe(
+          data => {
+            let _resposta = (data as any);
+            let _objetoRetorno = JSON.parse(_resposta._body);
 
-          if (novaPagina) {
-            this.chamados = this.chamados.concat(_objetoRetorno);
-            this.infiniteScroll.complete();
+            if (novaPagina) {
+              this.chamados = this.chamados.concat(_objetoRetorno);
+              this.infiniteScroll.complete();
+            }
+            else {
+              this.chamados = _objetoRetorno;
+            }
+
+            if (!this.chamados[0]) {
+              this.exibirMsg = true;
+              this.chamados = null;
+            }
+
+            this.alertsProvider.fecharCarregando();
           }
-          else {
-            this.chamados = _objetoRetorno;
-          }
-
-          if (!this.chamados[0]) {
-            this.exibirMsg = true;
-            this.chamados = null;
-          }
-
-          this.alertsProvider.fecharCarregando();
-
-        }, error => {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-          this.exibirMsg = true;
-          this.chamados = null;
-          this.alertsProvider.fecharCarregando();
-        }
-      )
+        )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsg = true;
+      this.chamados = null;
+      this.alertsProvider.fecharCarregando();
+    }
   }
 
   carregarDetalhesChamado(valor: string) {
-    this.chamadosProvider.retornarChamadoPorNumeroUsuario(this.username, this.portal, valor).subscribe(
-      data => {
-        let _resposta = (data as any);
+    try {
+      this.chamadosProvider.retornarChamadoPorNumeroUsuario(this.username, this.portal, valor).subscribe(
+        data => {
+          let _resposta = (data as any);
 
-        let _objetoRetorno = JSON.parse(_resposta._body);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-        this.chamado = _objetoRetorno;
+          this.chamado = _objetoRetorno;
 
-        if (this.chamado) {
-          this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: this.chamado.ChamadoID });
+          if (this.chamado) {
+            this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: this.chamado.ChamadoID });
+          }
+          else {
+            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+          }
+        }, error => {
+          if (error.status == 404) {
+            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+          }
+          else {
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
         }
-        else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
-        }
-      }, error => {
-        if (error.status == 404) {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
-        }
-        else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        }
-      }
-    )
+      )
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
+  carregarQrCode() {
+    try {
+      this.filtroEquipamento = null;
+      this.filtroNomeEquipamento = null;
+      this.qrCodeUrl = null;
+
+      this.barcodeScanner.scan().then(barcodeData => {
+
+        let _valor = barcodeData.text;
+
+        if (_valor) {
+          this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", _valor);
+          this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
+          this.qrCodeUrl = _valor;
+
+          let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
+          { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick },
+          { text: "Cancelar" }]
+
+          this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
+        } 
+      });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  navegarQrCode() {
+    try {
+      if (this.uteisProvider.validarUrl(this.qrCodeUrl)) {
+        this.inAppBrowser.create(this.qrCodeUrl, '_system')
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  filtrarQrCode() {
+    try {
+      if (this.filtroEquipamento) {
+        this.navCtrl.push(ChamadosEquipamentoPage, { EquipamentoID: this.filtroEquipamento, NomeEquipamento: this.filtroNomeEquipamento });
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+  
   //Eventos
   logoutClick() {
     this.usuariosProvider.logoutUsuario();
@@ -160,78 +228,16 @@ export class HomePage {
     this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: chamado.ChamadoID });
   }
 
-  // qrCodeClick() {
-  //   let qrCode = 'https://cushwake1.sharepoint.com/:f:/r/sites/SAGE-AGUABRANCA/Shared%20Documents/SAGE%20-%20%C3%81GUA%20BRANCA/El%C3%A9trica/002QDF0203ELEAGB?v=3&v1=Ar Condicionado';
-  //   this.filtroEquipamento = null;
-  //   this.filtroNomeEquipamento = null;
-  //   this.qrCodeUrl = null;
-
-  //   try { 
-  //     if (qrCode) {
-  //       this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", qrCode);
-  //       this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", qrCode);
-  //       this.qrCodeUrl = qrCode;
-
-  //       let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
-  //                           { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick  },  
-  //                           { text: "Cancelar"  }] 
-
-  //       this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
-  //     }
-  //     else{
-  //       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //     }
-  //   }
-  //   catch (e) {
-  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //   }
-  // }
-
   qrCodeClick() {
-    this.filtroEquipamento = null;
-    this.filtroNomeEquipamento = null;
-    this.qrCodeUrl = null;
-
-    this.barcodeScanner.scan().then(barcodeData => {
-
-      let _valor = barcodeData.text;
-
-      if (_valor) {
-        this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", _valor);
-        this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
-        this.qrCodeUrl = _valor;
-
-        let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
-        { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick },
-        { text: "Cancelar" }]
-
-        this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
-      }
-      else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      }
-    }).catch(err => {
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-    });
+    this.carregarQrCode();
   }
 
   navegarClick = () => {
-    if (this.uteisProvider.validarUrl(this.qrCodeUrl)) {
-      this.inAppBrowser.create(this.qrCodeUrl, '_system')
-    }
-    else {
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-    }
-
+    this.navegarQrCode();
   }
 
   filtrarClick = () => {
-    if (this.filtroEquipamento) {
-      this.navCtrl.push(ChamadosEquipamentoPage, { EquipamentoID: this.filtroEquipamento, NomeEquipamento: this.filtroNomeEquipamento });
-    }
-    else {
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-    }
+    this.filtrarQrCode();
   }
 
   buscarChamados(evento: any) {
@@ -260,3 +266,31 @@ export class HomePage {
     this.carregarChamados(true);
   }
 }
+
+
+// qrCodeClick() {
+  //   let qrCode = 'https://cushwake1.sharepoint.com/:f:/r/sites/SAGE-AGUABRANCA/Shared%20Documents/SAGE%20-%20%C3%81GUA%20BRANCA/El%C3%A9trica/002QDF0203ELEAGB?v=3&v1=Ar Condicionado';
+  //   this.filtroEquipamento = null;
+  //   this.filtroNomeEquipamento = null;
+  //   this.qrCodeUrl = null;
+
+  //   try { 
+  //     if (qrCode) {
+  //       this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", qrCode);
+  //       this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", qrCode);
+  //       this.qrCodeUrl = qrCode;
+
+  //       let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
+  //                           { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick  },  
+  //                           { text: "Cancelar"  }] 
+
+  //       this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
+  //     }
+  //     else{
+  //       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //     }
+  //   }
+  //   catch (e) {
+  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //   }
+  // }

@@ -6,6 +6,13 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from "@angular/http"
 
+import { ConfigLoginProvider } from '../providers/config-login/config-login';
+import { AlertsProvider } from '../providers/alerts/alerts';
+import { ChamadosProvider } from '../providers/chamados/chamados';
+import { UsuariosProvider } from '../providers/usuarios/usuarios';
+import { ConstantesProvider } from '../providers/constantes/constantes';
+import { UteisProvider } from '../providers/uteis/uteis';
+
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 import { RelatoriosPage } from './../pages/relatorios/relatorios';
@@ -18,14 +25,7 @@ import { ChamadoHistoricoPage } from './../pages/chamado-historico/chamado-histo
 import { ChamadoMovimentacaoPage } from './../pages/chamado-movimentacao/chamado-movimentacao';
 import { ChamadosEquipamentoPage } from './../pages/chamados-equipamento/chamados-equipamento';
 
-import { ConfigLoginProvider } from '../providers/config-login/config-login';
-import { AlertsProvider } from '../providers/alerts/alerts';
-import { ChamadosProvider } from '../providers/chamados/chamados';
-import { UsuariosProvider } from '../providers/usuarios/usuarios';
-import { ConstantesProvider } from '../providers/constantes/constantes';
-
 import * as GalleryModal from 'ionic-gallery-modal';
-import { UteisProvider } from '../providers/uteis/uteis';
 
 @NgModule({
   declarations: [

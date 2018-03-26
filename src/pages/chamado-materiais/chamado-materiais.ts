@@ -43,48 +43,70 @@ export class ChamadoMateriaisPage {
 
   //Ações
   carregarDados() {
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.portal = _configLoginProvider.portal;
-      this.chamadoId = this.navParams.get("ChamadoID");
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.exibirMsg = false;
+      if (_configLoginProvider) {
+        this.portal = _configLoginProvider.portal;
+        this.chamadoId = this.navParams.get("ChamadoID");
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsg = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
   carregarMateriais() {
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.chamadosProvider.retornarMateriaisChamado(this.portal, this.chamadoId).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
+      this.exibirMsg = false;
 
-        this.materiais = _objetoRetorno;
+      this.chamadosProvider.retornarMateriaisChamado(this.portal, this.chamadoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-        if(!this.materiais[0]){
-          this.exibirMsg = true;
+          this.materiais = _objetoRetorno;
+
+          if (!this.materiais[0]) {
+            this.exibirMsg = true;
+            this.materiais = null;
+          }
+
+          this.alertsProvider.fecharCarregando();
         }
+      )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsg = true;
+      this.materiais = null;
+      this.alertsProvider.fecharCarregando();
+    }
+  }
 
-        this.alertsProvider.fecharCarregando();
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        this.exibirMsg = true;
-        this.alertsProvider.fecharCarregando();
-      }
-    )
+  excluirMaterial(material: any) {
+    try {
+      let _titulo = `Excluir ${material.TipoServico} - ${material.Marca} - ${material.Modelo}?`;
+
+      this.alertsProvider.exibirAlertaConfirmacao(_titulo, this.alertsProvider.msgConfirmacao,
+        this.alertsProvider.msgBotaoCancelar, this.alertsProvider.msgBotaoConfirmar);
+    }
+    catch (e) {
+      console.log(e);
+    }
   }
 
   //Eventos
-  excluirClick(material: any){
-    let _titulo = `Excluir ${material.TipoServico} - ${material.Marca} - ${material.Modelo}?`;
-
-    this.alertsProvider.exibirAlertaConfirmacao(_titulo, this.alertsProvider.msgConfirmacao, 
-      this.alertsProvider.msgBotaoCancelar, this.alertsProvider.msgBotaoConfirmar);
+  excluirClick(material: any) {
+    this.excluirMaterial(material);
   }
 
   atualizarClick() {

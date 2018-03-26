@@ -26,22 +26,27 @@
 
             <div text-center margin-top>
                 <span ion-text tappable (click)="qrCodeClick()">
-                    <strong><u>Ler QR Code</u></strong>
-                </span> 
+                    <strong>
+                        <u>Ler QR Code</u>
+                    </strong>
+                </span>
                 <span> ou </span>
                 <span ion-text tappable (click)="limparClick()">
-                    <strong><u>Limpar Portais</u></strong>
-                </span> 
+                    <strong>
+                        <u>Limpar Portais</u>
+                    </strong>
+                </span>
             </div>
 
-            <ion-item >
+            <ion-item>
                 <ion-label>
                     <ion-icon name="key" item-start></ion-icon>
                     Portais
                 </ion-label>
-                <ion-select [(ngModel)]="portais" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesPortais" interface="action-sheet" cancelText="Cancelar">
-                    <ion-option value="{{portal.valor}}" *ngFor="let portal of opcoesPortais">{{portal.texto}}</ion-option> 
-                </ion-select> 
+                <ion-select [(ngModel)]="portais" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesPortais" interface="action-sheet"
+                    cancelText="Cancelar">
+                    <ion-option value="{{portal.valor}}" *ngFor="let portal of opcoesPortais">{{portal.texto}}</ion-option>
+                </ion-select>
             </ion-item>
         </form>
 

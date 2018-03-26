@@ -3,16 +3,16 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ViewController } from 'ionic-angular';
 import { ModalController } from 'ionic-angular';
 
+import { ChamadosProvider } from './../../providers/chamados/chamados';
+import { AlertsProvider } from '../../providers/alerts/alerts';
+import { ConfigLoginProvider } from '../../providers/config-login/config-login';
+
 import { ChamadoAnexosPage } from './../chamado-anexos/chamado-anexos';
 import { ChamadoMapaPage } from './../chamado-mapa/chamado-mapa';
 import { LoginPage } from '../login/login';
 import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoMateriaisPage } from './../chamado-materiais/chamado-materiais';
 import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movimentacao';
-
-import { ChamadosProvider } from './../../providers/chamados/chamados';
-import { AlertsProvider } from '../../providers/alerts/alerts';
-import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 
 @IonicPage()
 @Component({
@@ -27,7 +27,7 @@ export class ChamadoDetalhesPage {
   //Propriedades
   username: string;
   portal: string;
-  nomePortal: string; 
+  nomePortal: string;
   msgNenhumItem: string;
   chamadoId: string;
   chamado: any;
@@ -37,10 +37,10 @@ export class ChamadoDetalhesPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public configLoginProvider: ConfigLoginProvider,
     public chamadosProvider: ChamadosProvider) {
-      this.carregarDados();
+    this.carregarDados();
   }
 
-  ionViewDidLoad(){
+  ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
     this.carregarDetalhesChamado();
@@ -48,68 +48,90 @@ export class ChamadoDetalhesPage {
 
   //Ações
   carregarDados() {
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.username = _configLoginProvider.username;
-      this.portal = _configLoginProvider.portal;
-      this.nomePortal = _configLoginProvider.nomePortal;
-      this.chamadoId = this.navParams.get("ChamadoID");
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.exibirMsg = false;
+      if (_configLoginProvider) {
+        this.username = _configLoginProvider.username;
+        this.portal = _configLoginProvider.portal;
+        this.nomePortal = _configLoginProvider.nomePortal;
+        this.chamadoId = this.navParams.get("ChamadoID");
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsg = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
-  carregarDetalhesChamado(){
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+  carregarDetalhesChamado() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.chamadosProvider.retornarChamadoPorNumero(this.portal, this.chamadoId).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
+      this.exibirMsg = false;
 
-        this.chamado = _objetoRetorno;
+      this.chamadosProvider.retornarChamadoPorNumero(this.portal, this.chamadoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-        if(!this.chamado){
+          this.chamado = _objetoRetorno;
+
+          if (!this.chamado) {
             this.exibirMsg = true;
+            this.chamado = null;
+          }
+
+          this.alertsProvider.fecharCarregando();
+
         }
+      )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsg = true;
+      this.chamado = null;
+      this.alertsProvider.fecharCarregando();
+    }
+  }
 
-        this.alertsProvider.fecharCarregando();
-
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        this.exibirMsg = true;
-        this.alertsProvider.fecharCarregando();
-      }
-    )
+  carregarMapa(chamado: any){
+    try{
+      let modal = this.modalCtrl.create(ChamadoMapaPage,
+        { Endereco: chamado.Endereco, Cidade: chamado.Cidade, Estado: chamado.Estado });
+      modal.present();
+    }
+    catch(e){
+      console.log(e);
+    }
   }
 
   //Eventos
-  mapaClick(chamado: any){
-    let modal = this.modalCtrl.create(ChamadoMapaPage, 
-      { Endereco: chamado.Endereco, Cidade: chamado.Cidade, Estado: chamado.Estado });
-    modal.present();
+  mapaClick(chamado: any) {
+    this.carregarMapa(chamado);
   }
 
-  anexosClick(){
+  anexosClick() {
     this.navCtrl.push(ChamadoAnexosPage, { ChamadoID: this.chamadoId });
   }
 
-  movimentacaoClick(){
-    this.navCtrl.push(ChamadoMovimentacaoPage, {ChamadoID: this.chamadoId });
+  movimentacaoClick() {
+    this.navCtrl.push(ChamadoMovimentacaoPage, { ChamadoID: this.chamadoId });
   }
 
-  materiaisClick(){
-    this.navCtrl.push(ChamadoMateriaisPage, {ChamadoID: this.chamadoId });
+  materiaisClick() {
+    this.navCtrl.push(ChamadoMateriaisPage, { ChamadoID: this.chamadoId });
   }
 
-  historicoClick(){
-    this.navCtrl.push(ChamadoHistoricoPage, {ChamadoID: this.chamadoId });
+  historicoClick() {
+    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId });
   }
- 
+
   atualizarClick() {
     this.carregarDetalhesChamado();
   }

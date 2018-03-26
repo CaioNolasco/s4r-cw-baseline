@@ -1,4 +1,4 @@
-import { Component  } from '@angular/core';
+import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ViewController } from 'ionic-angular';
 
@@ -28,9 +28,9 @@ export class ChamadoHistoricoPage {
   exibirMsg: boolean = false;
 
   //Load
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, 
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider) {
-      this.carregarDados();
+    this.carregarDados();
   }
 
   ionViewDidLoad() {
@@ -41,40 +41,53 @@ export class ChamadoHistoricoPage {
 
   //Ações
   carregarDados() {
-    let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+    try {
+      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
-    if (_configLoginProvider) {
-      this.chamadoId = this.navParams.get("ChamadoID");
-      this.portal = _configLoginProvider.portal;
-      this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-      this.exibirMsg = false;
+      if (_configLoginProvider) {
+        this.chamadoId = this.navParams.get("ChamadoID");
+        this.portal = _configLoginProvider.portal;
+        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+        this.exibirMsg = false;
+      }
+      else {
+        this.navCtrl.push(LoginPage);
+      }
     }
-    else {
-      this.navCtrl.push(LoginPage);
+    catch (e) {
+      console.log(e);
     }
   }
 
-  carregarHistorico(){
-    this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+  carregarHistorico() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-    this.chamadosProvider.retornarHistoricoChamado(this.portal, this.chamadoId).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
+      this.exibirMsg = false;
 
-        this.historicos = _objetoRetorno;
+      this.chamadosProvider.retornarHistoricoChamado(this.portal, this.chamadoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-        if(!this.historicos[0]){
-          this.exibirMsg = true;
+          this.historicos = _objetoRetorno;
+
+          if (!this.historicos[0]) {
+            this.exibirMsg = true;
+            this.historicos = null;
+          }
+
+          this.alertsProvider.fecharCarregando();
         }
-
-        this.alertsProvider.fecharCarregando();     
-      }, error => {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        this.exibirMsg = true;
-        this.alertsProvider.fecharCarregando();
-      }
-    )
+      )
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsg = true;
+      this.historicos = null;
+      this.alertsProvider.fecharCarregando();
+    }
   }
 
   //Eventos

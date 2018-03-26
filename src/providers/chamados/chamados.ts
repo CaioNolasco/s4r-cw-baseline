@@ -4,7 +4,6 @@ import { Injectable } from '@angular/core';
 import { Component } from '@angular/core';
 import { ConstantesProvider } from '../constantes/constantes';
 import { ConfigLoginProvider } from '../config-login/config-login';
-import { OverlayPortal } from 'ionic-angular/components/app/overlay-portal';
 
 @Injectable()
 @Component({
