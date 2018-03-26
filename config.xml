@@ -80,6 +80,7 @@
     <allow-navigation href="http://192.168.1.149:8100" />
     <allow-navigation href="http://192.168.1.148:8100" />
     <allow-navigation href="http://192.168.1.16:8100" />
+    <allow-navigation href="http://192.168.1.102:8100" />
     <engine name="android" spec="6.3.0" />
     <engine name="ios" spec="4.5.4" />
     <plugin name="cordova-plugin-qrscanner" spec="^2.5.0" />
@@ -93,4 +94,6 @@
     <plugin name="phonegap-plugin-barcodescanner" spec="^7.1.0">
         <variable name="ANDROID_SUPPORT_V4_VERSION" value="27.+" />
     </plugin>
+    <plugin name="cordova-plugin-file" spec="^6.0.1" />
+    <plugin name="cordova-plugin-file-opener2" spec="^2.0.19" />
 </widget>

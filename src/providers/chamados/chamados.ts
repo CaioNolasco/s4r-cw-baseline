@@ -64,4 +64,8 @@ export class ChamadosProvider {
   retornarStatus(portal: string){
     return this.http.get(this.urlApiChamados + `/RetornarStatus/${portal}`);
   }
+
+  retornarBytesAnexo(caminho: string, portal: string, numero: string){
+    return this.http.get(this.urlApiChamados + `/RetornarBytesAnexo/${caminho}/${portal}/${numero}`);
+  }
 }
