@@ -8,7 +8,7 @@
     <ion-title>{{nomePortal}}</ion-title>
     <ion-buttons end>
       <button (click)="qrCodeClick()" ion-button icon-only>
-        <ion-icon name="custom-qrcode"></ion-icon>
+        <ion-icon name="custom-qrcode" ></ion-icon>
       </button>
       <button (click)="logoutClick()" ion-button icon-only>
         <ion-icon name="log-out"></ion-icon>
@@ -24,8 +24,12 @@
         <ion-icon name="arrow-back"></ion-icon>
       </button>
     </ion-buttons>
-    <!-- (input)="getItems($event)" -->
     <ion-searchbar [(ngModel)]="search" (search)="buscarChamados($event)" placeholder="Nº Chamado"></ion-searchbar>
+    <ion-buttons end>
+        <button (click)="buscarChamadosClick()" ion-button icon-only>
+          <ion-icon name="eye"></ion-icon>
+        </button>
+      </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -35,7 +39,7 @@
   </ion-refresher>
 
   <ion-fab bottom right>
-    <button ion-fab color="cushman-2">
+    <button (click)="novoChamadoClick()" ion-fab color="cushman-2">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>

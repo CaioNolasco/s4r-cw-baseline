@@ -1,6 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild  } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Content } from 'ionic-angular';
+import { Renderer } from '@angular/core';
 
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 
@@ -23,6 +25,7 @@ import { ConfigLoginProvider } from './../../providers/config-login/config-login
 })
 export class LoginPage {
   //Propriedades
+  @ViewChild(Content) content: Content;
   portais: any;
   opcoesPortais: any;
 
@@ -33,7 +36,7 @@ export class LoginPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder,
     public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider,
-    public usuariosProvider: UsuariosProvider, public barcodeScanner: BarcodeScanner) {
+    public usuariosProvider: UsuariosProvider, public barcodeScanner: BarcodeScanner, public renderer: Renderer) {
     this.navCtrl = navCtrl;
     this.carregarDados();
   }
@@ -182,6 +185,11 @@ export class LoginPage {
 
   confirmarClick = () => {
     this.confirmarLimparPortais();
+  }
+
+  redimencionarPagina(){
+    this.renderer.invokeElementMethod(event.target, 'blur');
+    //this.content.resize();
   }
 
   // qrCodeClick() {

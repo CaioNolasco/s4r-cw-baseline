@@ -120,60 +120,6 @@ export class ChamadoAnexosPage {
     }
   }
 
-  // carregarAnexo(anexo: any) {
-  //   try {
-
-  //     this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
-
-  //     this.chamadosProvider.retornarBytesAnexo(anexo.NomeAnexo, this.portal, this.chamadoId).subscribe(
-  //       data => {
-  //         let _resposta = (data as any);
-  //         let _objetoRetorno = JSON.parse(_resposta._body);
-
-  //         this.anexo = _objetoRetorno;
-
-  //         if (this.anexo) {
-  //           fetch('data:' + this.anexo.FileMimeType + ';base64,' + this.anexo.Base64,
-  //             {
-  //               method: "GET"
-  //             }).then(res => res.blob()).then(blob => {
-  //               this.file.writeFile(this.file.externalApplicationStorageDirectory, this.anexo.NomeAnexo, blob, { replace: true }).then(res => {
-  //                 this.fileOpener.open(
-  //                   res.toInternalURL(),
-  //                   this.anexo.FileMimeType
-  //                 ).then((res) => {
-  //                   this.alertsProvider.fecharCarregando();
-  //                 }).catch(e => {
-  //                   console.log(e);
-  //                   this.alertsProvider.fecharCarregando();
-  //                   this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Abrir', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //                 });
-  //               }).catch(e => {
-  //                 console.log(e);
-  //                 this.alertsProvider.fecharCarregando();
-  //                 this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Salvar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //               });
-  //             }).catch(e => {
-  //               console.log(e);
-  //               this.alertsProvider.fecharCarregando();
-  //               this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Carregar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //             });
-  //         }
-  //         else {
-  //           this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
-  //         }
-  //       }
-  //     )
-  //   }
-  //   catch (e) {
-  //     console.log(e);
-  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //     this.alertsProvider.fecharCarregando();
-  //   }
-
-
-  // }
-
   carregarFotos() {
     try {
 
@@ -266,3 +212,55 @@ export class ChamadoAnexosPage {
     this.carregarAnexos();
   }
 }
+
+  // carregarAnexo(anexo: any) {
+  //   try {
+
+  //     this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+  //     this.chamadosProvider.retornarBytesAnexo(anexo.NomeAnexo, this.portal, this.chamadoId).subscribe(
+  //       data => {
+  //         let _resposta = (data as any);
+  //         let _objetoRetorno = JSON.parse(_resposta._body);
+
+  //         this.anexo = _objetoRetorno;
+
+  //         if (this.anexo) {
+  //           fetch('data:' + this.anexo.FileMimeType + ';base64,' + this.anexo.Base64,
+  //             {
+  //               method: "GET"
+  //             }).then(res => res.blob()).then(blob => {
+  //               this.file.writeFile(this.file.externalApplicationStorageDirectory, this.anexo.NomeAnexo, blob, { replace: true }).then(res => {
+  //                 this.fileOpener.open(
+  //                   res.toInternalURL(),
+  //                   this.anexo.FileMimeType
+  //                 ).then((res) => {
+  //                   this.alertsProvider.fecharCarregando();
+  //                 }).catch(e => {
+  //                   console.log(e);
+  //                   this.alertsProvider.fecharCarregando();
+  //                   this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Abrir', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //                 });
+  //               }).catch(e => {
+  //                 console.log(e);
+  //                 this.alertsProvider.fecharCarregando();
+  //                 this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Salvar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //               });
+  //             }).catch(e => {
+  //               console.log(e);
+  //               this.alertsProvider.fecharCarregando();
+  //               this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Carregar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //             });
+  //         }
+  //         else {
+  //           this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+  //         }
+  //       }
+  //     )
+  //   }
+  //   catch (e) {
+  //     console.log(e);
+  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+  //     this.alertsProvider.fecharCarregando();
+  //   }
+  // }

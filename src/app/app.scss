@@ -140,6 +140,11 @@ ion-icon {
   font-size: 1.4em;
 }
 
+//Home
+.icone-home{
+  padding-right: 5px !important;
+}
+
 //Lista Chamados
 .item-lista-chamado{
   padding-left: 0px;
@@ -149,17 +154,18 @@ ion-icon {
 // Login
 .auth-page {
   background-color: #fff;
-  &::after {
-    content: "";
-    background: url("../assets/imgs/bg.jpg") no-repeat;
-    background-size: cover;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: 0;
-  }
+  background: url("../assets/imgs/bg.jpg") no-repeat;
+  // &::after {
+  //   content: "";
+  //   background: url("../assets/imgs/bg.jpg") no-repeat;
+  //   background-size: cover;
+  //   top: 0;
+  //   left: 0;
+  //   bottom: 0;
+  //   right: 0;
+  //   //position: absolute;
+  //   //z-index: 0;
+  // }
 
   .scroll-content {
     display: flex;
@@ -223,4 +229,9 @@ ion-icon {
 //Mapa
 #mapa{
   height: 100%;
+}
+
+//Novo Chamado
+.item-novo-chamado{
+  padding-left: 0px;
 }

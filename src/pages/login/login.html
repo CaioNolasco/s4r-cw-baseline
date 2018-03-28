@@ -13,7 +13,7 @@
                     <ion-icon name="person" item-start></ion-icon>
                     Usuário
                 </ion-label>
-                <ion-input formControlName="username" type="text"></ion-input>
+                <ion-input formControlName="username" (keyup.enter)="redimencionarPagina()" type="text"></ion-input>
             </ion-item>
 
             <ion-item [ngClass]="{'error-border':!loginForm.controls.password.valid && loginForm.controls.password.touched}">
@@ -21,7 +21,7 @@
                     <ion-icon name="lock" item-start></ion-icon>
                     Senha
                 </ion-label>
-                <ion-input formControlName="password" type="password"></ion-input>
+                <ion-input formControlName="password" (keyup.enter)="redimencionarPagina()" type="password"></ion-input>
             </ion-item>
 
             <div text-center margin-top>

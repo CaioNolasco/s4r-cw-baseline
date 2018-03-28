@@ -2,6 +2,7 @@ import { NavController } from 'ionic-angular';
 import { Component } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { Renderer } from '@angular/core';
 
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from './../../providers/config-login/config-login';
@@ -13,6 +14,7 @@ import { LoginPage } from './../login/login';
 import { ChamadoHistoricoPage } from './../chamado-historico/chamado-historico';
 import { ChamadoDetalhesPage } from './../chamado-detalhes/chamado-detalhes';
 import { ChamadosEquipamentoPage } from './../chamados-equipamento/chamados-equipamento';
+import { ChamadoNovoPage } from './../chamado-novo/chamado-novo';
 
 @Component({
   selector: 'page-home',
@@ -50,7 +52,7 @@ export class HomePage {
   //Load
   constructor(public navCtrl: NavController, public configLoginProvider: ConfigLoginProvider, public chamadosProvider: ChamadosProvider,
     public usuariosProvider: UsuariosProvider, public alertsProvider: AlertsProvider, public barcodeScanner: BarcodeScanner,
-    public uteisProvider: UteisProvider, public inAppBrowser: InAppBrowser) {
+    public uteisProvider: UteisProvider, public inAppBrowser: InAppBrowser, public renderer: Renderer) {
     this.navCtrl = navCtrl;
     this.carregarDados();
   }
@@ -244,6 +246,10 @@ export class HomePage {
     this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: chamado.ChamadoID });
   }
 
+  novoChamadoClick(){
+    this.navCtrl.push(ChamadoNovoPage);
+  }
+
   qrCodeClick() {
     this.carregarQrCode();
   }
@@ -257,9 +263,17 @@ export class HomePage {
   }
 
   buscarChamados(evento: any) {
+    this.renderer.invokeElementMethod(event.target, 'blur');
+
     let _valor = evento.target.value;
 
     this.carregarDetalhesChamado(_valor);
+  }
+
+  buscarChamadosClick(){
+    this.renderer.invokeElementMethod(event.target, 'blur');
+    
+    this.carregarDetalhesChamado(this.search);
   }
 
   doRefresh(refresher) {

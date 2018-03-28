@@ -24,6 +24,7 @@ import { ChamadoMateriaisPage } from './../pages/chamado-materiais/chamado-mater
 import { ChamadoHistoricoPage } from './../pages/chamado-historico/chamado-historico';
 import { ChamadoMovimentacaoPage } from './../pages/chamado-movimentacao/chamado-movimentacao';
 import { ChamadosEquipamentoPage } from './../pages/chamados-equipamento/chamados-equipamento';
+import { ChamadoNovoPage } from './../pages/chamado-novo/chamado-novo';
 
 import * as GalleryModal from 'ionic-gallery-modal';
 
@@ -40,7 +41,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     ChamadoHistoricoPage,
     ChamadoMateriaisPage,
     ChamadoMovimentacaoPage,
-    ChamadosEquipamentoPage
+    ChamadosEquipamentoPage,
+    ChamadoNovoPage
   ],
   imports: [
     BrowserModule,
@@ -61,7 +63,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     ChamadoHistoricoPage,
     ChamadoMateriaisPage,
     ChamadoMovimentacaoPage,
-    ChamadosEquipamentoPage
+    ChamadosEquipamentoPage,
+    ChamadoNovoPage
   ],
   providers: [
     StatusBar,
