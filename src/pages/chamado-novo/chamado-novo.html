@@ -1,0 +1,199 @@
+<ion-header>
+
+  <ion-navbar color="cushman-1">
+    <ion-title>{{ tipoChamado }}</ion-title>
+    <!-- <ion-buttons end>
+      <button ion-button icon-only>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>
+    </ion-buttons> -->
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+  <ion-grid *ngIf="tipoChamado == 'Dados Básicos'">
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Centro de Custo</ion-label>
+          <ion-input type="number" placeholder="Código"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Posto de Atendimento</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1234">1234 - HQ S4R</ion-option>
+            <ion-option value="12345">12345 - HQ S4R</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col class="item-novo-chamado">
+        <ion-card>
+          <ion-card-header class="card-header-chamado">
+            <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon> Localização
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col col-12>
+                  <h1 ion-text>
+                    Portal Banco Pan
+                  </h1>
+                </ion-col>
+
+                <ion-col col-10>
+                  <p ion-text>
+                    Nome do Ponto de Venda
+                  </p>
+                  <p ion-text>
+                    Endereço Ponto de Venda
+                  </p>
+                  <p ion-text>
+                    Cidade / Estado
+                  </p>
+                  <p ion-text>
+                    CEP
+                  </p>
+                </ion-col>
+                <ion-col col-2>
+                  <h1 ion-text class="card-icone-h1">
+                    <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
+                  </h1>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Nome do Solicitante</ion-label>
+          <ion-input placeholder="Solicitante"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">E-mail do Solicitante</ion-label>
+          <ion-input placeholder="E-mail"></ion-input>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <!-- <ion-col col-6>
+          <ion-buttons start>
+            <button ion-button icon-only color="cushman-2">
+              <ion-icon name="arrow-back"></ion-icon>
+            </button>
+          </ion-buttons>
+        </ion-col> -->
+      <ion-col col>
+        <ion-buttons end>
+          <button (click)="navegarClick('Problema')" ion-button icon-only color="cushman-2">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="tipoChamado == 'Problema'">
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">Descrição do Problema</ion-label>
+          <ion-textarea placeholder="Preencha a descrição"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Tipo de Serviço</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1">AC / Ar Condicionado / Outros</ion-option>
+            <ion-option value="2">Cleaning / Limpeza</ion-option>
+            <ion-option value="3">Elevator / Elevador</ion-option>
+            <ion-option value="2">Plumbing / Hidráulica</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col-6>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Causa</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1">Falha Motor</ion-option>
+            <ion-option value="2">Falha Painel</ion-option>
+            <ion-option value="3">Inoperante</ion-option>
+            <ion-option value="2">Cabo de Aço</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+      <ion-col col-6>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">SLA</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1">Alta</ion-option>
+            <ion-option value="2">Média</ion-option>
+            <ion-option value="3">Baixa</ion-option>
+            <ion-option value="2">Urgente</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Localização</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1">Ambulatório</ion-option>
+            <ion-option value="2">Bloco 2 - Mezanino</ion-option>
+            <ion-option value="3">Bloco 2 - Warehouse</ion-option>
+            <ion-option value="4">Bloco 3 - Mezanino</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Equipamento</ion-label>
+            <ion-select interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="1">Elevador A</ion-option>
+              <ion-option value="2">Elevador B</ion-option>
+              <ion-option value="3">Elevador C</ion-option>
+              <ion-option value="4">Elevador D</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    <ion-row>
+      <ion-col col-6>
+            <ion-buttons start>
+              <button (click)="navegarClick('Dados Básicos')" ion-button icon-only color="cushman-2">
+                <ion-icon name="arrow-back"></ion-icon>
+              </button>
+            </ion-buttons>
+          </ion-col>
+      <ion-col col>
+        <ion-buttons end>
+          <button (click)="navegarClick('Problema')" ion-button icon-only color="cushman-2">
+            <ion-icon name="arrow-forward"></ion-icon>
+          </button>
+        </ion-buttons>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>
