@@ -66,7 +66,7 @@
           <ion-row>
             <ion-col>
               <ion-note class="card-note">
-                Aguardando Material {{ chamado.StatusChamado }}
+                {{ chamado.StatusChamado }}
               </ion-note>
             </ion-col>
           </ion-row>
@@ -103,7 +103,7 @@
 
             </ion-col>
             <ion-col col-2>
-              <h1 ion-text class="card-icone-h1">
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                 <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
               </h1>
             </ion-col>
@@ -146,7 +146,7 @@
               </p>
             </ion-col>
             <ion-col col-2>
-              <h1 ion-text class="card-icone-h1">
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                 <a href="mailto:{{ chamado.EmailSolicitante }}">
                   <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
                 </a>
@@ -167,7 +167,7 @@
               </p>
             </ion-col>
             <ion-col col-2>
-              <h1 ion-text class="card-icone-h1">
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                 <a href="tel:{{ chamado.TelefoneSolicitante }}">
                   <ion-icon name="call" color="cushman-2" class="card-icone-texto"></ion-icon>
                 </a>

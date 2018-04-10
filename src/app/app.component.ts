@@ -4,14 +4,17 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { ConfigLoginProvider } from './../providers/config-login/config-login';
+import { OfflineProvider } from './../providers/offline/offline';
 
 import { LoginPage } from './../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
+import { HomeOfflinePage } from './../pages/home-offline/home-offline';
 
 @Component({
   templateUrl: 'app.html',
   providers: [
-    ConfigLoginProvider
+    ConfigLoginProvider,
+    OfflineProvider
   ]
 })
 export class MyApp {
@@ -19,11 +22,13 @@ export class MyApp {
   rootPage: any;
 
   //Load
-  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public configLoginProvider: ConfigLoginProvider) {
+  constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public configLoginProvider: ConfigLoginProvider,
+  public offlineProvider: OfflineProvider) {
     platform.ready().then(() => {
       splashScreen.show();
 
-      this.validarAutenticacao();
+      this.carregarDados();
+
       statusBar.styleDefault();
 
       splashScreen.hide();
@@ -31,6 +36,25 @@ export class MyApp {
   }
 
   //Ações
+  carregarDados(){
+    try{
+      this.offlineProvider.removerConfigEstruturaSQLite();
+      //Desenvolvimento
+      //localStorage.removeItem("database");
+           
+      if(this.offlineProvider.validarInternetOffline()){
+        this.rootPage = HomeOfflinePage;
+      }
+      else{
+      this.validarAutenticacao();
+      }
+    }
+    catch(e){
+      console.log(e);
+      this.rootPage = LoginPage;
+    }
+  }
+
   validarAutenticacao() {
     try {
       let _configLoginProvider = this.configLoginProvider.retornarConfigLogin();

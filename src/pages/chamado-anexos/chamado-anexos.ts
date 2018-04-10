@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, App, ModalController } from 'ionic-angular';
 import { GalleryModal } from 'ionic-gallery-modal';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
 
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
+import { OfflineProvider } from './../../providers/offline/offline';
 
 import { LoginPage } from '../login/login';
+import { HomeOfflinePage } from '../home-offline/home-offline';
 
 @IonicPage()
 @Component({
@@ -18,7 +19,8 @@ import { LoginPage } from '../login/login';
     ConfigLoginProvider,
     AlertsProvider,
     ChamadosProvider,
-    InAppBrowser]
+    InAppBrowser, 
+    OfflineProvider]
 })
 export class ChamadoAnexosPage {
   //Propriedades
@@ -33,13 +35,17 @@ export class ChamadoAnexosPage {
   isRefreshing: boolean = false;
   exibirMsgAnexos: boolean = false;
   exibirMsgFotos: boolean = false;
+  alterarChamado: boolean = false;
+  habilitarChamado: boolean;
+  origemOffline = false;
 
   fotos: any[] = [];
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
-    public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser) {
+    public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser, public offlineProvider: OfflineProvider,
+    public app: App) {
     this.carregarDados();
     this.carregarFotos();
   }
@@ -47,25 +53,43 @@ export class ChamadoAnexosPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarAnexos();
+    if(!this.origemOffline){
+        this.carregarAnexos();
+    }
   }
 
   //Açoes
   carregarDados() {
     try {
-      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+      this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if (_configLoginProvider) {
-        this.username = _configLoginProvider.username;
-        this.portal = _configLoginProvider.portal;
-        this.chamadoId = this.navParams.get("ChamadoID");
-        this.tipoAnexos = "anexos";
-        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-        this.exibirMsgAnexos = false;
-        this.exibirMsgFotos = false;
+      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+        this.app.getRootNav().setRoot(HomeOfflinePage);
       }
-      else {
-        this.navCtrl.push(LoginPage);
+      else{
+        if(!this.origemOffline){
+          this.tipoAnexos = "anexos";
+          this.alterarChamado = this.navParams.get("AlterarChamado");
+        }
+        else{
+          this.tipoAnexos = "fotos";
+          this.alterarChamado = true;
+        }
+  
+        let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+  
+        if (_configLoginProvider) {
+          this.username = _configLoginProvider.username;
+          this.portal = _configLoginProvider.portal;
+          this.chamadoId = this.navParams.get("ChamadoID");
+          this.habilitarChamado =  this.navParams.get("HabilitarChamado");
+          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.exibirMsgAnexos = false;
+          this.exibirMsgFotos = false;
+        }
+        else {
+          this.app.getRootNav().setRoot(LoginPage);
+        }
       }
     }
     catch (e) {
@@ -82,27 +106,27 @@ export class ChamadoAnexosPage {
 
       this.exibirMsgAnexos = false;
 
-      this.chamadosProvider.retornarAnexosChamado(this.username, this.portal, this.chamadoId).subscribe(
-        data => {
-          let _resposta = (data as any);
-          let _objetoRetorno = JSON.parse(_resposta._body);
-
-          this.anexos = _objetoRetorno;
-
-          if (!this.anexos[0]) {
-            this.exibirMsgAnexos = true;
-            this.anexos = null;
+        this.chamadosProvider.retornarAnexosChamado(this.username, this.portal, this.chamadoId).subscribe(
+          data => {
+            let _resposta = (data as any);
+            let _objetoRetorno = JSON.parse(_resposta._body);
+  
+            this.anexos = _objetoRetorno;
+  
+            if (!this.anexos[0]) {
+              this.exibirMsgAnexos = true;
+              this.anexos = null;
+            }
+  
+            if (this.isRefreshing) {
+              this.refresher.complete();
+              this.isRefreshing = false;
+            }
+            else {
+              this.alertsProvider.fecharCarregando();
+            }
           }
-
-          if (this.isRefreshing) {
-            this.refresher.complete();
-            this.isRefreshing = false;
-          }
-          else {
-            this.alertsProvider.fecharCarregando();
-          }
-        }
-      )
+        )
     }
     catch (e) {
       console.log(e);

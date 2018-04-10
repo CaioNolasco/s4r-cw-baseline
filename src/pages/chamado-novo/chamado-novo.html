@@ -13,6 +13,23 @@
 
 
 <ion-content>
+
+  <ion-fab *ngIf="tipoChamado == 'Dados Básicos'" bottom right>
+    <button (click)="navegarClick('Problema')" ion-fab color="cushman-2">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab *ngIf="tipoChamado == 'Problema'" bottom left>
+    <button (click)="navegarClick('Dados Básicos')" ion-fab color="cushman-2">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab *ngIf="tipoChamado == 'Problema'" bottom right>
+    <button (click)="navegarClick('Resumo')" ion-fab color="cushman-2">
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button>
+  </ion-fab>
+
   <ion-grid *ngIf="tipoChamado == 'Dados Básicos'">
     <ion-row>
       <ion-col col>
@@ -89,22 +106,6 @@
         </ion-item>
       </ion-col>
     </ion-row>
-    <ion-row>
-      <!-- <ion-col col-6>
-          <ion-buttons start>
-            <button ion-button icon-only color="cushman-2">
-              <ion-icon name="arrow-back"></ion-icon>
-            </button>
-          </ion-buttons>
-        </ion-col> -->
-      <ion-col col>
-        <ion-buttons end>
-          <button (click)="navegarClick('Problema')" ion-button icon-only color="cushman-2">
-            <ion-icon name="arrow-forward"></ion-icon>
-          </button>
-        </ion-buttons>
-      </ion-col>
-    </ion-row>
   </ion-grid>
 
   <ion-grid *ngIf="tipoChamado == 'Problema'">
@@ -167,32 +168,16 @@
       </ion-col>
     </ion-row>
     <ion-row>
-        <ion-col col>
-          <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Equipamento</ion-label>
-            <ion-select interface="action-sheet" cancelText="Cancelar">
-              <ion-option value="1">Elevador A</ion-option>
-              <ion-option value="2">Elevador B</ion-option>
-              <ion-option value="3">Elevador C</ion-option>
-              <ion-option value="4">Elevador D</ion-option>
-            </ion-select>
-          </ion-item>
-        </ion-col>
-      </ion-row>
-    <ion-row>
-      <ion-col col-6>
-            <ion-buttons start>
-              <button (click)="navegarClick('Dados Básicos')" ion-button icon-only color="cushman-2">
-                <ion-icon name="arrow-back"></ion-icon>
-              </button>
-            </ion-buttons>
-          </ion-col>
       <ion-col col>
-        <ion-buttons end>
-          <button (click)="navegarClick('Problema')" ion-button icon-only color="cushman-2">
-            <ion-icon name="arrow-forward"></ion-icon>
-          </button>
-        </ion-buttons>
+        <ion-item class="item-novo-chamado">
+          <ion-label stacked color="cushman-3">Equipamento</ion-label>
+          <ion-select interface="action-sheet" cancelText="Cancelar">
+            <ion-option value="1">Elevador A</ion-option>
+            <ion-option value="2">Elevador B</ion-option>
+            <ion-option value="3">Elevador C</ion-option>
+            <ion-option value="4">Elevador D</ion-option>
+          </ion-select>
+        </ion-item>
       </ion-col>
     </ion-row>
   </ion-grid>

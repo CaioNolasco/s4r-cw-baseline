@@ -1,14 +1,15 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ViewController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, ViewController } from 'ionic-angular';
 
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ChamadosProvider } from '../../providers/chamados/chamados';
+import { OfflineProvider } from './../../providers/offline/offline';
 
 import { LoginPage } from '../login/login';
 import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoDetalhesPage } from '../chamado-detalhes/chamado-detalhes';
+import { HomeOfflinePage } from '../home-offline/home-offline';
 
 @IonicPage()
 @Component({
@@ -17,7 +18,8 @@ import { ChamadoDetalhesPage } from '../chamado-detalhes/chamado-detalhes';
   providers: [
     AlertsProvider,
     ConfigLoginProvider,
-    ChamadosProvider
+    ChamadosProvider,
+    OfflineProvider
   ]
 })
 
@@ -38,7 +40,8 @@ export class ChamadosEquipamentoPage {
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public configLoginProvider: ConfigLoginProvider,
-    public alertsProvider: AlertsProvider, public viewCtrl: ViewController, public chamadosProvider: ChamadosProvider) {
+    public alertsProvider: AlertsProvider, public viewCtrl: ViewController, public chamadosProvider: ChamadosProvider,
+    public offlineProvider: OfflineProvider, public app: App) {
     this.carregarDados();
   }
 
@@ -51,18 +54,23 @@ export class ChamadosEquipamentoPage {
   //Ações
   carregarDados() {
     try {
-      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
-
-      if (_configLoginProvider) {
-        this.username = _configLoginProvider.username;
-        this.portal = _configLoginProvider.portal;
-        this.equipamentoId = this.navParams.get("EquipamentoID");
-        this.nomeEquipamento = this.navParams.get("NomeEquipamento");
-        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-        this.exibirMsg = false;
+      if(this.offlineProvider.validarInternetOffline()){
+        this.app.getRootNav().setRoot(HomeOfflinePage);
       }
-      else {
-        this.navCtrl.push(LoginPage);
+      else{
+        let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+
+        if (_configLoginProvider) {
+          this.username = _configLoginProvider.username;
+          this.portal = _configLoginProvider.portal;
+          this.equipamentoId = this.navParams.get("EquipamentoID");
+          this.nomeEquipamento = this.navParams.get("NomeEquipamento");
+          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.exibirMsg = false;
+        }
+        else {
+          this.app.getRootNav().setRoot(LoginPage);
+        }
       }
     }
     catch (e) {

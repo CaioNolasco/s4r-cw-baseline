@@ -1,16 +1,15 @@
-import { Component, ViewChild  } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { Component, Renderer  } from '@angular/core';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
-import { Content } from 'ionic-angular';
-import { Renderer } from '@angular/core';
-
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
-
-import { TabsPage } from './../tabs/tabs';
 
 import { UsuariosProvider } from './../../providers/usuarios/usuarios';
 import { AlertsProvider } from './../../providers/alerts/alerts';
 import { ConfigLoginProvider } from './../../providers/config-login/config-login';
+import { OfflineProvider } from './../../providers/offline/offline';
+
+import { HomeOfflinePage } from '../home-offline/home-offline';
+import { TabsPage } from './../tabs/tabs';
 
 @IonicPage()
 @Component({
@@ -20,12 +19,12 @@ import { ConfigLoginProvider } from './../../providers/config-login/config-login
     BarcodeScanner,
     ConfigLoginProvider,
     AlertsProvider,
-    UsuariosProvider
+    UsuariosProvider,
+    OfflineProvider
   ]
 })
 export class LoginPage {
   //Propriedades
-  @ViewChild(Content) content: Content;
   portais: any;
   opcoesPortais: any;
 
@@ -36,7 +35,8 @@ export class LoginPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public formBuilder: FormBuilder,
     public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider,
-    public usuariosProvider: UsuariosProvider, public barcodeScanner: BarcodeScanner, public renderer: Renderer) {
+    public usuariosProvider: UsuariosProvider, public barcodeScanner: BarcodeScanner, public renderer: Renderer,
+    public offlineProvider: OfflineProvider, public app: App) {
     this.navCtrl = navCtrl;
     this.carregarDados();
   }
@@ -47,15 +47,26 @@ export class LoginPage {
   //Ações
   carregarDados() {
     try {
-      this.loginForm = this.formBuilder.group({
-        username: ['', Validators.compose([Validators.required])],
-        password: ['', Validators.compose([Validators.required])]
-      });
+      if(this.offlineProvider.validarInternetOffline()){
+        this.app.getRootNav().setRoot(HomeOfflinePage);
+      }
+      else{
+        let _configLoginProvider = this.configLoginProvider.retornarConfigLogin();
 
-      this.username = this.loginForm.controls['username'];
-      this.password = this.loginForm.controls['password'];
-
-      this.carregarOpcoesPortais();
+        if (_configLoginProvider) {
+          this.navCtrl.setRoot(TabsPage);
+        }
+        
+          this.loginForm = this.formBuilder.group({
+            username: ['', Validators.compose([Validators.required])],
+            password: ['', Validators.compose([Validators.required])]
+          });
+    
+          this.username = this.loginForm.controls['username'];
+          this.password = this.loginForm.controls['password'];
+    
+          this.carregarOpcoesPortais();
+      }
     }
     catch (e) {
       console.log(e);
@@ -91,7 +102,7 @@ export class LoginPage {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
 
-          if (_objetoRetorno.autenticacao) {
+          if (_objetoRetorno.sucesso) {
             let _valorPortal = this.portais;
             let _nomePortal = this.opcoesPortais.find(function (item) { return item.valor == _valorPortal });
 
@@ -103,7 +114,6 @@ export class LoginPage {
           }
 
           this.alertsProvider.fecharCarregando();
-
         }
       )
     }
@@ -146,7 +156,7 @@ export class LoginPage {
   limparPortais() {
     try {
       let _botoes = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarClick }]
+      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarLimparPortaisClick }]
 
       this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgConfirmacao, _botoes);
     }
@@ -183,13 +193,12 @@ export class LoginPage {
     this.limparPortais();
   }
 
-  confirmarClick = () => {
+  confirmarLimparPortaisClick = () => {
     this.confirmarLimparPortais();
   }
 
   redimencionarPagina(){
     this.renderer.invokeElementMethod(event.target, 'blur');
-    //this.content.resize();
   }
 
   // qrCodeClick() {

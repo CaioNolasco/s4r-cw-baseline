@@ -1,11 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import { ViewController } from 'ionic-angular';
-import { ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, ViewController, ModalController } from 'ionic-angular';
 
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
+import { OfflineProvider } from '../../providers/offline/offline';
 
 import { ChamadoAnexosPage } from './../chamado-anexos/chamado-anexos';
 import { ChamadoMapaPage } from './../chamado-mapa/chamado-mapa';
@@ -13,6 +12,8 @@ import { LoginPage } from '../login/login';
 import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoMateriaisPage } from './../chamado-materiais/chamado-materiais';
 import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movimentacao';
+import { HomeOfflinePage } from '../home-offline/home-offline';
+
 
 @IonicPage()
 @Component({
@@ -21,7 +22,8 @@ import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movim
   providers: [
     AlertsProvider,
     ConfigLoginProvider,
-    ChamadosProvider]
+    ChamadosProvider,
+    OfflineProvider]
 })
 export class ChamadoDetalhesPage {
   //Propriedades
@@ -31,12 +33,16 @@ export class ChamadoDetalhesPage {
   msgNenhumItem: string;
   chamadoId: string;
   chamado: any;
+  tipoServicoId: any;
   exibirMsg: boolean = false;
+  habilitarChamado: boolean;
+  origemOffline = false;
+  alterarChamado: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public configLoginProvider: ConfigLoginProvider,
-    public chamadosProvider: ChamadosProvider) {
+    public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App) {
     this.carregarDados();
   }
 
@@ -49,18 +55,33 @@ export class ChamadoDetalhesPage {
   //Ações
   carregarDados() {
     try {
-      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+      this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if (_configLoginProvider) {
-        this.username = _configLoginProvider.username;
-        this.portal = _configLoginProvider.portal;
-        this.nomePortal = _configLoginProvider.nomePortal;
-        this.chamadoId = this.navParams.get("ChamadoID");
-        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-        this.exibirMsg = false;
+      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+        this.app.getRootNav().setRoot(HomeOfflinePage);
       }
-      else {
-        this.navCtrl.push(LoginPage);
+      else{
+        if(!this.origemOffline){
+          this.alterarChamado = this.navParams.get("AlterarChamado");
+        }
+        else{
+          this.alterarChamado = true;
+        }
+
+        let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+
+        if (_configLoginProvider) {
+          this.username = _configLoginProvider.username;
+          this.portal = _configLoginProvider.portal;
+          this.nomePortal = _configLoginProvider.nomePortal;
+          this.chamadoId = this.navParams.get("ChamadoID");
+          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.exibirMsg = false;
+          this.habilitarChamado = false;
+        }
+        else {
+          this.app.getRootNav().setRoot(LoginPage);
+        }
       }
     }
     catch (e) {
@@ -74,22 +95,12 @@ export class ChamadoDetalhesPage {
 
       this.exibirMsg = false;
 
-      this.chamadosProvider.retornarChamadoPorNumero(this.portal, this.chamadoId).subscribe(
-        data => {
-          let _resposta = (data as any);
-          let _objetoRetorno = JSON.parse(_resposta._body);
-
-          this.chamado = _objetoRetorno;
-
-          if (!this.chamado) {
-            this.exibirMsg = true;
-            this.chamado = null;
-          }
-
-          this.alertsProvider.fecharCarregando();
-
-        }
-      )
+      if(!this.origemOffline){
+        this.carregarDetalhesChamadoOnline();
+      }
+      else{
+        this.carregarDetalhesChamadoOffline();
+      }
     }
     catch (e) {
       console.log(e);
@@ -98,6 +109,39 @@ export class ChamadoDetalhesPage {
       this.chamado = null;
       this.alertsProvider.fecharCarregando();
     }
+  }
+
+  carregarDetalhesChamadoOnline(){
+    this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
+
+        this.chamado = _objetoRetorno;
+        this.tipoServicoId = this.chamado.TipoServicoID;
+        this.habilitarChamado = this.chamado.HabilitarChamado;
+
+        if (!this.chamado) {
+          this.exibirMsg = true;
+          this.chamado = null;
+        }
+
+        this.alertsProvider.fecharCarregando();
+      }
+    )
+  }
+
+  carregarDetalhesChamadoOffline(){
+    this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, this.chamadoId).then( data => {
+      this.chamado = data;
+
+      if (!this.chamado) {
+        this.exibirMsg = true;
+        this.chamado = null;
+      }
+
+      this.alertsProvider.fecharCarregando();
+    });
   }
 
   carregarMapa(chamado: any){
@@ -117,19 +161,29 @@ export class ChamadoDetalhesPage {
   }
 
   anexosClick() {
-    this.navCtrl.push(ChamadoAnexosPage, { ChamadoID: this.chamadoId });
+    this.navCtrl.push(ChamadoAnexosPage, { ChamadoID: this.chamadoId, 
+      HabilitarChamado: this.habilitarChamado, 
+      OrigemOffline: this.origemOffline,
+      AlterarChamado: this.alterarChamado });
   }
 
   movimentacaoClick() {
-    this.navCtrl.push(ChamadoMovimentacaoPage, { ChamadoID: this.chamadoId });
+    this.navCtrl.push(ChamadoMovimentacaoPage, { ChamadoID: this.chamadoId, 
+      TipoServicoID: this.tipoServicoId,
+      "ChamadoDetalhesPage": this,
+      OrigemOffline: this.origemOffline,
+      AlterarChamado: this.alterarChamado });
   }
 
   materiaisClick() {
-    this.navCtrl.push(ChamadoMateriaisPage, { ChamadoID: this.chamadoId });
+    this.navCtrl.push(ChamadoMateriaisPage, { ChamadoID: this.chamadoId, 
+      HabilitarChamado: this.habilitarChamado,  
+      OrigemOffline: this.origemOffline,
+      AlterarChamado:  this.alterarChamado});
   }
 
   historicoClick() {
-    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId });
+    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId,  OrigemOffline: this.origemOffline });
   }
 
   atualizarClick() {

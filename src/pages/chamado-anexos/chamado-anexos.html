@@ -1,8 +1,13 @@
 <ion-header>
   <ion-navbar color="cushman-1">
     <ion-title>Anexos {{ chamadoId }}</ion-title>
+    <ion-buttons end>
+      <button *ngIf="tipoAnexos == 'fotos' && origemOffline" ion-button icon-only>
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
-  <ion-toolbar color="cushman-1">
+  <ion-toolbar *ngIf="!origemOffline" color="cushman-1">
     <ion-segment [(ngModel)]="tipoAnexos" color="cushman-4">
       <ion-segment-button value="anexos">
         Anexos
@@ -12,10 +17,10 @@
       </ion-segment-button>
     </ion-segment>
     <ion-buttons end>
-      <button *ngIf="tipoAnexos == 'anexos'" ion-button icon-only>
+      <button *ngIf="tipoAnexos == 'anexos' && habilitarChamado && alterarChamado" ion-button icon-only>
         <ion-icon name="add"></ion-icon>
       </button>
-      <button *ngIf="tipoAnexos == 'fotos'" ion-button icon-only>
+      <button *ngIf="tipoAnexos == 'fotos' && habilitarChamado && alterarChamado" ion-button icon-only>
         <ion-icon name="camera"></ion-icon>
       </button>
     </ion-buttons>
@@ -39,11 +44,11 @@
         <h2>{{ anexo.NomeAnexo }}</h2>
         <p>{{ anexo.Comentarios}}</p>
         <ion-icon (click)="acessarClick(anexo)" name="link" color="cushman-2" item-end></ion-icon>
-        <ion-icon (click)="excluirClick(anexo)" name="trash" color="cushman-1" item-end></ion-icon>
+        <ion-icon (click)="excluirClick(anexo)" *ngIf="habilitarChamado && alterarChamado" name="trash" color="cushman-1" item-end></ion-icon>
       </ion-item>
 
       <ion-item-options side="left">
-        <button (click)="excluirClick(anexo)" ion-button color="cushman-1">
+        <button (click)="excluirClick(anexo)" *ngIf="habilitarChamado && alterarChamado" ion-button color="cushman-1">
           <ion-icon name="trash"></ion-icon>
           Excluir
         </button>

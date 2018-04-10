@@ -1,7 +1,5 @@
 import { Injectable } from '@angular/core';
-import { AlertController } from 'ionic-angular';
-import { ToastController } from 'ionic-angular';
-import { LoadingController } from 'ionic-angular';
+import { AlertController, ToastController, LoadingController } from 'ionic-angular';
 
 @Injectable()
 export class AlertsProvider {
@@ -10,6 +8,7 @@ export class AlertsProvider {
   public alertaClasses = ["toast-danger", "toast-success", "toast-warning"];
 
   public msgTituloPadrao = "Alerta";
+  public msgTituloAtualizar = "Atualizar";
   public msgBotaoPadrao = "OK";
   public msgBotaoConfirmar = "Confirmar";
   public msgBotaoCancelar = "Cancelar";
@@ -17,14 +16,19 @@ export class AlertsProvider {
   public msgBotaoFiltrar = "Filtrar";
   public msgValorExistente = "O valor preenchido está em uso!";
   public msgSucesso = "Ação executada com sucesso!";
-  public msgErro = "Não foi possível executar está ação!";
+  public msgErro = "Não foi possível executar a ação!";
   public msgErroAcesso = "Acesso negado!";
   public msgErroAcessoConfig = "Acesso negado, ";
+  public msgErroCampos = "Campos preenchidos incorretamente!";
+  public msgErroPortal = "Você não está vínculado a nenhum contexto de portal!";
   public msgAguarde = "Por favor aguarde...";
   public msgNenhumItem = "Nenhum item localizado!";
   public msgConfirmacao = "Deseja realmente executar essa ação?";
+  public msgConfirmacaoEstrutura = "Download de estrutura necessária, caso confirme marque offline novamente!";
   public msgEscolhaAcao = "Escolha a ação que deseja executar:";
-
+  public msgOffline = "Você está offline!";
+  public msgPortal = "Você está no contexto do portal: ";
+  
 
   public loader;
   //Load
@@ -81,7 +85,7 @@ export class AlertsProvider {
       closeButtonText: botao,
       cssClass: cssClass,
       duration: 6000,
-      position: "top"
+      position: "top",
     });
     toast.present();
   }

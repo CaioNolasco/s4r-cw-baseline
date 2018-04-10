@@ -1,28 +1,57 @@
 import { Injectable } from '@angular/core';
+import { Platform } from 'ionic-angular';
 
 @Injectable()
+
 export class UteisProvider {
 
-  constructor() {
+  constructor(public platform: Platform) {
   }
+
   //Ações
-  validarUrl(url: string): boolean{
+  validarUrl(url: string): boolean {
     if (url.indexOf("http://") == 0 || url.indexOf("https://") == 0) {
       return true;
     }
-    else{
+    else {
       return false;
     }
   }
 
   //Retornos
-  retornarIonicDateTime(valor: Date): string {
-    if (valor) {
-      let _data: Date = new Date(valor);
+  retornarIonicDateTime(data: Date): string {
+    if (data && data != null) {
+      let _data: Date = new Date(data);
       let _ionicData = new Date(Date.UTC(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds()));
       return _ionicData.toISOString();
     }
     return null;
+  }
+
+  retornarDataApi(data: string, offline?: boolean): string{
+    if(data && data != 'null' && (data.indexOf("T") >= 0 || offline)){
+      let _data: Date = new Date(data);
+
+      let _apiData = `${_data.getUTCFullYear()}-${this.retornarMes(_data.getUTCMonth())}-${_data.getUTCDate()}`;
+      return _apiData;
+    }
+    return data;
+  }
+
+  retornarHoraApi(data: string, offline?: boolean): string{
+    if(data && data != 'null' && (data.indexOf("T") >= 0 || offline)){
+      let _data: Date = new Date(data);
+      let _apiHora = `${_data.getUTCHours()}:${_data.getUTCMinutes()}:${_data.getUTCSeconds()}`;
+      return _apiHora;
+    }
+    return data;
+  }
+
+  retornarMes(mes: number): number{
+    if(mes < 12){
+      return mes + 1;
+    }
+    return 1;
   }
 
   retornarQueryString(nome: string, url: string): string {

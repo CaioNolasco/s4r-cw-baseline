@@ -12,8 +12,8 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-fab bottom right>
-    <button ion-fab color="cushman-2">
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && !origemOffline" bottom right>
+    <button (click)="novoMaterialClick()" ion-fab color="cushman-2">
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
@@ -40,7 +40,7 @@
               </p>
             </ion-col>
             <ion-col col-2>
-             <h1><ion-icon (click)="excluirClick(material)" name="trash" color="cushman-1" class="icone-material"></ion-icon></h1>
+             <h1><ion-icon (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" name="trash" color="cushman-1" class="icone-material"></ion-icon></h1>
             </ion-col>
           </ion-row>
           <ion-row>
@@ -97,7 +97,7 @@
       </ion-item>
 
       <ion-item-options side="left">
-        <button (click)="excluirClick(material)" ion-button color="cushman-1">
+        <button (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" [disabled]="" ion-button color="cushman-1">
           <ion-icon name="trash"></ion-icon>
           Excluir
         </button>
