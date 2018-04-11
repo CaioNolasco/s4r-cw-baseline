@@ -39,8 +39,8 @@ export class MyApp {
   carregarDados(){
     try{
       //Desenvolvimento
-      this.offlineProvider.removerConfigEstruturaSQLite();
-      this.offlineProvider.excluirBancoSQLite();
+      //this.offlineProvider.removerConfigEstruturaSQLite();
+      //this.offlineProvider.excluirBancoSQLite();
       //localStorage.removeItem("database");s
            
       if(this.offlineProvider.validarInternetOffline()){
