@@ -16,7 +16,7 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
   providers: [
     AlertsProvider,
     ConfigLoginProvider,
-    ChamadosProvider, 
+    ChamadosProvider,
     OfflineProvider]
 })
 export class ChamadoHistoricoPage {
@@ -29,6 +29,7 @@ export class ChamadoHistoricoPage {
   isRefreshing: boolean = false;
   exibirMsg: boolean = false;
   origemOffline = false;
+  homeOffline: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
@@ -40,7 +41,9 @@ export class ChamadoHistoricoPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarHistorico();
+    if (!this.homeOffline) {
+      this.carregarHistorico();
+    }
   }
 
   //Ações
@@ -48,10 +51,11 @@ export class ChamadoHistoricoPage {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
+      else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
         if (_configLoginProvider) {
@@ -78,10 +82,10 @@ export class ChamadoHistoricoPage {
 
       this.exibirMsg = false;
 
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.carregarHistoricoOnline();
       }
-      else{
+      else {
         this.carregarHistoricoOffline();
       }
     }
@@ -126,11 +130,11 @@ export class ChamadoHistoricoPage {
   }
 
   carregarHistoricoOffline() {
-    this.offlineProvider.retornarHistoricoOffline(this.portal, this.chamadoId).then( data => {
-    
+    this.offlineProvider.retornarHistoricoOffline(this.portal, this.chamadoId).then(data => {
+
       this.historicos = data;
-     
-      if (!this.historicos[0]) { 
+
+      if (!this.historicos[0]) {
         this.exibirMsg = true;
         this.historicos = null;
       }

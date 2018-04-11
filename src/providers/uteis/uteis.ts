@@ -19,39 +19,56 @@ export class UteisProvider {
   }
 
   //Retornos
-  retornarIonicDateTime(data: Date): string {
+  retornarIonicDateTime(data: string): string {
     if (data && data != null) {
       let _data: Date = new Date(data);
-      let _ionicData = new Date(Date.UTC(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds()));
+      let _ionicData = new Date(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds());
+      //let _ionicData = new Date(Date.UTC(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds()));
       return _ionicData.toISOString();
     }
     return null;
   }
 
-  retornarDataApi(data: string, offline?: boolean): string{
-    if(data && data != 'null' && (data.indexOf("T") >= 0 || offline)){
+  retornarDataApi(data: string, offline?: boolean): string {
+    if (data && data != 'null' && (data.indexOf("T") >= 0 || offline)) {
       let _data: Date = new Date(data);
 
-      let _apiData = `${_data.getUTCFullYear()}-${this.retornarMes(_data.getUTCMonth())}-${_data.getUTCDate()}`;
+      let _apiData = `${_data.getUTCFullYear()}-${this.retornarZerosData(this.retornarMes(_data.getUTCMonth()))}-${this.retornarZerosData(_data.getUTCDate())}`;
       return _apiData;
     }
     return data;
   }
 
-  retornarHoraApi(data: string, offline?: boolean): string{
-    if(data && data != 'null' && (data.indexOf("T") >= 0 || offline)){
+  retornarHoraApi(data: string, offline?: boolean): string {
+    if (data && data != 'null' && (data.indexOf("T") >= 0 || offline)) {
       let _data: Date = new Date(data);
-      let _apiHora = `${_data.getUTCHours()}:${_data.getUTCMinutes()}:${_data.getUTCSeconds()}`;
+      let _apiHora = `${this.retornarZerosData(_data.getUTCHours())}:${this.retornarZerosData(_data.getUTCMinutes())}:${this.retornarZerosData(_data.getUTCSeconds())}`;
       return _apiHora;
     }
     return data;
   }
 
-  retornarMes(mes: number): number{
-    if(mes < 12){
+  retornarDataSqlite(data: string, hora: string){
+    return data && hora ? `${data}T${hora}` : data ? `${data}T00:00:00` : '';
+
+    // if (data && data != 'null'){
+    //   let _re = /\-/gi;
+    //   let _resultado = data.replace(_re, "/");
+
+    //   return _resultado;
+    // }
+    // return data;
+  }
+
+  retornarMes(mes: number): number {
+    if (mes < 12) {
       return mes + 1;
     }
     return 1;
+  }
+
+  retornarZerosData(valor: any){
+    return ("0" + valor).slice(-2)
   }
 
   retornarQueryString(nome: string, url: string): string {

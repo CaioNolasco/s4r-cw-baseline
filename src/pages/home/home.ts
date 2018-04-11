@@ -54,6 +54,7 @@ export class HomePage {
   isRefreshing: boolean = false;
   adicionarChamado: boolean = false;
   alterarChamado: boolean = false;
+  homeOffline: boolean = false;
   pagina = 1;
   tamanhoPagina = 20;
 
@@ -67,38 +68,41 @@ export class HomePage {
   }
 
   ionViewDidLoad() {
-    this.carregarChamados();
+    if (!this.homeOffline) {
+      this.carregarChamados();
+    }
   }
 
   //Ações
   carregarDados() {
     try {
-      if(this.offlineProvider.validarInternetOffline()){
+      if (this.offlineProvider.validarInternetOffline()) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
-      }
-      else{
-      let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
-
-      if (_configLoginProvider) {
-        this.username = _configLoginProvider.username;
-        this.nomePortal = _configLoginProvider.nomePortal;
-        this.portal = _configLoginProvider.portal;
-        this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
-        this.exibirMsg = false;
-        this.carregarPermissoesChamado();
+        this.homeOffline = true;
       }
       else {
-        this.navCtrl.setRoot(LoginPage);
+        let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+
+        if (_configLoginProvider) {
+          this.username = _configLoginProvider.username;
+          this.nomePortal = _configLoginProvider.nomePortal;
+          this.portal = _configLoginProvider.portal;
+          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.exibirMsg = false;
+          this.carregarPermissoesChamado();
+        }
+        else {
+          this.navCtrl.setRoot(LoginPage);
+        }
       }
-     }
     }
     catch (e) {
       console.log(e);
     }
   }
 
-  carregarPermissoesChamado(){
-    try{
+  carregarPermissoesChamado() {
+    try {
       this.usuariosProvider.retornarPermissoesFuncionalidade(this.username, this.portal, this.constantesProvider.funcCadastroChamadoCorretivo).subscribe(
         data => {
           let _resposta = (data as any);
@@ -106,8 +110,8 @@ export class HomePage {
 
           this.permissoesChamado = _objetoRetorno;
 
-         this.adicionarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoCadastrar);
-         this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);      
+          this.adicionarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoCadastrar);
+          this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);
         }
       )
     }
@@ -258,21 +262,21 @@ export class HomePage {
     }
   }
 
-  salvarOffline(chamado: any){
+  salvarOffline(chamado: any) {
     try {
-      if(this.offlineProvider.retornarConfigEstruturaSQLite()){
+      if (this.offlineProvider.retornarConfigEstruturaSQLite()) {
 
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-        this.offlineProvider.salvarChamadoOffline(this.portal, this.nomePortal, this.username, chamado).then( data => {
-          if(data){
+        this.offlineProvider.salvarChamadoOffline(this.portal, this.nomePortal, this.username, chamado).then(data => {
+          if (data) {
             this.chamadosProvider.salvarOffline(this.username, this.portal, chamado.ChamadoID, true).subscribe(
               data => {
                 let _resposta = (data as any);
                 let _objetoRetorno = JSON.parse(_resposta._body);
-      
+
                 this.respostaApi = _objetoRetorno;
-      
+
                 if (this.respostaApi) {
                   if (this.respostaApi.sucesso) {
                     chamado.HabilitarChamado = false;
@@ -293,19 +297,19 @@ export class HomePage {
                 this.alertsProvider.fecharCarregando();
               });
           }
-          else{
+          else {
             this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
             this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
         });
       }
-      else{
+      else {
         let _titulo = this.alertsProvider.msgTituloPadrao;
 
-        let _botoes: any = [{ text:  this.alertsProvider.msgBotaoCancelar }, 
-          { text:  this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarDownloadClick }]
-    
-            this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo,  this.alertsProvider.msgConfirmacaoEstrutura, _botoes);
+        let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
+        { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarDownloadClick }]
+
+        this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacaoEstrutura, _botoes);
       }
     }
     catch (e) {
@@ -316,8 +320,8 @@ export class HomePage {
     }
   }
 
-  salvarEstruturaOffline(){
-    try{
+  salvarEstruturaOffline() {
+    try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
       this.offlineProvider.removerConfigEstruturaSQLite();
@@ -327,7 +331,7 @@ export class HomePage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       this.alertsProvider.fecharCarregando();
     }
-    catch(e){
+    catch (e) {
       console.log(e);
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
@@ -349,15 +353,17 @@ export class HomePage {
   }
 
   abrirDetalhesClick(chamado) {
-    this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: chamado.ChamadoID, 
-      AlterarChamado: this.alterarChamado});
+    this.navCtrl.push(ChamadoDetalhesPage, {
+      ChamadoID: chamado.ChamadoID,
+      AlterarChamado: this.alterarChamado
+    });
   }
 
   historicoClick(chamado) {
     this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: chamado.ChamadoID });
   }
 
-  novoChamadoClick(){
+  novoChamadoClick() {
     this.navCtrl.push(ChamadoNovoPage);
   }
 
@@ -365,7 +371,7 @@ export class HomePage {
     this.carregarQrCode();
   }
 
-  offlineClick(chamado: any){
+  offlineClick(chamado: any) {
     this.salvarOffline(chamado);
   }
 
@@ -389,9 +395,9 @@ export class HomePage {
     this.carregarDetalhesChamado(_valor);
   }
 
-  buscarChamadosClick(){
+  buscarChamadosClick() {
     this.renderer.invokeElementMethod(event.target, 'blur');
-    
+
     this.carregarDetalhesChamado(this.search);
   }
 

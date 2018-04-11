@@ -26,13 +26,11 @@ export class ChamadoMateriaisNovoPage {
   chamadoId: string;
   username: string;
   portal: string;
-
   opcoesTiposServico: any;
   opcoesMarcasMaterial: any;
   opcoesModelosMaterial: any;
   modelo: any;
   respostaApi: any;
-
   materiaisForm: FormGroup;
   aplicacoes: AbstractControl;
   marcas: AbstractControl;

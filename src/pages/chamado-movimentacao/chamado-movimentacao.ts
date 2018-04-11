@@ -31,6 +31,7 @@ export class ChamadoMovimentacaoPage {
   habilitarChamado: boolean;
   origemOffline = false;
   alterarChamado: boolean = false;
+  homeOffline: boolean = false;
   statusEncerradoId: number;
   opcoesSubtipos: any;
   opcoesStatus: any;
@@ -61,7 +62,9 @@ export class ChamadoMovimentacaoPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarDadosForm();
+    if (!this.homeOffline) {
+      this.carregarDadosForm();
+    }
   }
 
   //Ações
@@ -69,16 +72,17 @@ export class ChamadoMovimentacaoPage {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
-        if(!this.origemOffline){
+      else {
+        if (!this.origemOffline) {
           this.alterarChamado = this.navParams.get("AlterarChamado");
         }
-        else{
+        else {
           this.alterarChamado = true;
-        } 
+        }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
@@ -103,10 +107,10 @@ export class ChamadoMovimentacaoPage {
 
   carregarSubtipos() {
     try {
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.carregarSubtiposOnline();
       }
-      else{
+      else {
         this.carregarSubtiposOffline();
       }
     }
@@ -127,19 +131,19 @@ export class ChamadoMovimentacaoPage {
   }
 
   carregarSubtiposOffline() {
-    this.offlineProvider.retornarSubtiposOffline(this.portal, this.chamadoId).then( data => {
+    this.offlineProvider.retornarSubtiposOffline(this.portal, this.chamadoId).then(data => {
       this.opcoesSubtipos = data;
     }).catch((e) => {
-        console.log(e);
+      console.log(e);
     });
   }
 
   carregarStatus() {
     try {
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.carregarStatusOnline();
       }
-      else{
+      else {
         this.carregarStatusOffline();
       }
     }
@@ -148,7 +152,7 @@ export class ChamadoMovimentacaoPage {
     }
   }
 
-  carregarStatusOnline(){
+  carregarStatusOnline() {
     this.chamadosProvider.retornarStatus(this.portal).subscribe(
       data => {
         let _resposta = (data as any);
@@ -159,11 +163,11 @@ export class ChamadoMovimentacaoPage {
     )
   }
 
-  carregarStatusOffline(){
-    this.offlineProvider.retornarStatusOffline(this.portal, this.chamadoId).then( data => {
+  carregarStatusOffline() {
+    this.offlineProvider.retornarStatusOffline(this.portal, this.chamadoId).then(data => {
       this.opcoesStatus = data;
     }).catch((e) => {
-        console.log(e);
+      console.log(e);
     });
   }
 
@@ -171,10 +175,10 @@ export class ChamadoMovimentacaoPage {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.carregarDadosFormOnline();
       }
-      else{
+      else {
         this.carregarDadosFormOffline();
       }
     }
@@ -185,7 +189,7 @@ export class ChamadoMovimentacaoPage {
     }
   }
 
-  carregarDadosFormOnline(){
+  carregarDadosFormOnline() {
     this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
       data => {
         let _resposta = (data as any);
@@ -221,11 +225,11 @@ export class ChamadoMovimentacaoPage {
     )
   }
 
-  carregarDadosFormOffline(){
-    this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, this.chamadoId).then( data => {
-    
+  carregarDadosFormOffline() {
+    this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, this.chamadoId).then(data => {
+
       this.chamado = data;
-     
+
       if (this.chamado) {
         let _dataAtendimentoInicial = this.uteisProvider.retornarIonicDateTime(this.chamado.DataInicialEfetivaAtendimento);
         let _dataAtendimentoFinal = this.uteisProvider.retornarIonicDateTime(this.chamado.DataFinalEfetivaAtendimento);
@@ -253,7 +257,7 @@ export class ChamadoMovimentacaoPage {
     });
   }
 
-  carregarHabilitarChamado(){
+  carregarHabilitarChamado() {
     try {
       this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
         data => {
@@ -273,14 +277,14 @@ export class ChamadoMovimentacaoPage {
     }
   }
 
-  carregarAtualizarMovimentacao(){
+  carregarAtualizarMovimentacao() {
     try {
       let _titulo = `${this.alertsProvider.msgTituloAtualizar} ${this.chamadoId}`;
 
-      let _botoes: any = [{ text:  this.alertsProvider.msgBotaoCancelar }, 
+      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
       { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarMovimentacaoClick }]
 
-        this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
     }
     catch (e) {
       console.log(e);
@@ -307,10 +311,10 @@ export class ChamadoMovimentacaoPage {
         DescricaoAtendimento: this.descricaoAtendimento
       };
 
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.atualizarMovimentacaoOnline(_parametros);
       }
-      else{
+      else {
         this.atualizarMovimentacaoOffline(_parametros);
       }
     }
@@ -321,7 +325,7 @@ export class ChamadoMovimentacaoPage {
     }
   }
 
-  atualizarMovimentacaoOnline(_parametros: any){
+  atualizarMovimentacaoOnline(_parametros: any) {
     this.chamadosProvider.salvarRegistroMovimentacoes(this.username, this.portal, this.chamadoId, _parametros).subscribe(
       data => {
         let _resposta = (data as any);
@@ -343,17 +347,17 @@ export class ChamadoMovimentacaoPage {
           this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
         this.alertsProvider.fecharCarregando();
-        
+
       });
   }
 
-  atualizarMovimentacaoOffline(_parametros: any){
-    this.offlineProvider.salvarMovimentacaoOffline(this.portal, this.chamadoId, _parametros).then( data => {
-      if(data){
+  atualizarMovimentacaoOffline(_parametros: any) {
+    this.offlineProvider.salvarMovimentacaoOffline(this.portal, this.chamadoId, _parametros).then(data => {
+      if (data) {
         //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
         this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
-      else{
+      else {
         this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
 
@@ -370,7 +374,7 @@ export class ChamadoMovimentacaoPage {
     this.atualizarMovimentacao();
   }
 
-  redimencionarPagina(){
+  redimencionarPagina() {
     this.renderer.invokeElementMethod(event.target, 'blur');
   }
 }

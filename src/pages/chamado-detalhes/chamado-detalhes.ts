@@ -38,6 +38,7 @@ export class ChamadoDetalhesPage {
   habilitarChamado: boolean;
   origemOffline = false;
   alterarChamado: boolean = false;
+  homeOffline: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
@@ -49,7 +50,9 @@ export class ChamadoDetalhesPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarDetalhesChamado();
+    if(!this.homeOffline){
+      this.carregarDetalhesChamado();
+    }
   }
 
   //Ações
@@ -57,14 +60,15 @@ export class ChamadoDetalhesPage {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
-        if(!this.origemOffline){
+      else {
+        if (!this.origemOffline) {
           this.alterarChamado = this.navParams.get("AlterarChamado");
         }
-        else{
+        else {
           this.alterarChamado = true;
         }
 
@@ -95,10 +99,10 @@ export class ChamadoDetalhesPage {
 
       this.exibirMsg = false;
 
-      if(!this.origemOffline){
+      if (!this.origemOffline) {
         this.carregarDetalhesChamadoOnline();
       }
-      else{
+      else {
         this.carregarDetalhesChamadoOffline();
       }
     }
@@ -111,7 +115,7 @@ export class ChamadoDetalhesPage {
     }
   }
 
-  carregarDetalhesChamadoOnline(){
+  carregarDetalhesChamadoOnline() {
     this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
       data => {
         let _resposta = (data as any);
@@ -131,8 +135,8 @@ export class ChamadoDetalhesPage {
     )
   }
 
-  carregarDetalhesChamadoOffline(){
-    this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, this.chamadoId).then( data => {
+  carregarDetalhesChamadoOffline() {
+    this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, this.chamadoId).then(data => {
       this.chamado = data;
 
       if (!this.chamado) {
@@ -144,13 +148,13 @@ export class ChamadoDetalhesPage {
     });
   }
 
-  carregarMapa(chamado: any){
-    try{
+  carregarMapa(chamado: any) {
+    try {
       let modal = this.modalCtrl.create(ChamadoMapaPage,
         { Endereco: chamado.Endereco, Cidade: chamado.Cidade, Estado: chamado.Estado });
       modal.present();
     }
-    catch(e){
+    catch (e) {
       console.log(e);
     }
   }
@@ -161,29 +165,35 @@ export class ChamadoDetalhesPage {
   }
 
   anexosClick() {
-    this.navCtrl.push(ChamadoAnexosPage, { ChamadoID: this.chamadoId, 
-      HabilitarChamado: this.habilitarChamado, 
+    this.navCtrl.push(ChamadoAnexosPage, {
+      ChamadoID: this.chamadoId,
+      HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
-      AlterarChamado: this.alterarChamado });
+      AlterarChamado: this.alterarChamado
+    });
   }
 
   movimentacaoClick() {
-    this.navCtrl.push(ChamadoMovimentacaoPage, { ChamadoID: this.chamadoId, 
+    this.navCtrl.push(ChamadoMovimentacaoPage, {
+      ChamadoID: this.chamadoId,
       TipoServicoID: this.tipoServicoId,
       "ChamadoDetalhesPage": this,
       OrigemOffline: this.origemOffline,
-      AlterarChamado: this.alterarChamado });
+      AlterarChamado: this.alterarChamado
+    });
   }
 
   materiaisClick() {
-    this.navCtrl.push(ChamadoMateriaisPage, { ChamadoID: this.chamadoId, 
-      HabilitarChamado: this.habilitarChamado,  
+    this.navCtrl.push(ChamadoMateriaisPage, {
+      ChamadoID: this.chamadoId,
+      HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
-      AlterarChamado:  this.alterarChamado});
+      AlterarChamado: this.alterarChamado
+    });
   }
 
   historicoClick() {
-    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId,  OrigemOffline: this.origemOffline });
+    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId, OrigemOffline: this.origemOffline });
   }
 
   atualizarClick() {

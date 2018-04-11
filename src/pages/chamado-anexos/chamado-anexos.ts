@@ -32,12 +32,16 @@ export class ChamadoAnexosPage {
   anexos: any;
   anexo: any;
   refresher: any;
+  index: any;
+  anexoId: any;
+  respostaApi: any;
   isRefreshing: boolean = false;
   exibirMsgAnexos: boolean = false;
   exibirMsgFotos: boolean = false;
   alterarChamado: boolean = false;
   habilitarChamado: boolean;
   origemOffline = false;
+  homeOffline: boolean = false;
 
   fotos: any[] = [];
 
@@ -53,7 +57,7 @@ export class ChamadoAnexosPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    if(!this.origemOffline){
+    if(!this.origemOffline && !this.homeOffline){
         this.carregarAnexos();
     }
   }
@@ -65,6 +69,7 @@ export class ChamadoAnexosPage {
 
       if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
       else{
         if(!this.origemOffline){
@@ -99,7 +104,6 @@ export class ChamadoAnexosPage {
 
   carregarAnexos() {
     try {
-
       if (!this.isRefreshing) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
@@ -194,15 +198,66 @@ export class ChamadoAnexosPage {
     }
   }
 
-  excluirAnexo(anexo: any) {
+  carregarExcluirAnexo(anexo: any) {
     try {
+      this.index = this.anexos.indexOf(anexo);
+      this.anexoId = anexo.AnexoID;
+
       let _titulo = `Excluir ${anexo.NomeAnexo}?`;
 
-      this.alertsProvider.exibirAlertaConfirmacao(_titulo, this.alertsProvider.msgConfirmacao,
-        this.alertsProvider.msgBotaoCancelar, this.alertsProvider.msgBotaoConfirmar);
+      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
+      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirClick }]
+
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
     }
     catch (e) {
       console.log(e);
+    }
+  }
+
+  excluirAnexo() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.respostaApi = _objetoRetorno;
+
+          if (this.respostaApi) {
+            if (this.respostaApi.sucesso) {
+              if (this.index > -1) {
+                this.anexos.splice(this.index, 1);
+              }
+
+              if (!this.anexos[0]) {
+                this.exibirMsgAnexos = true;
+                this.anexos = null;
+              }
+
+              this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+            }
+            else {
+              this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            }
+          }
+          else {
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
+
+          this.index = null;
+          this.anexoId = null;
+          this.alertsProvider.fecharCarregando();
+        });
+    }
+    catch (e) {
+      console.log(e);
+      this.index = null;
+      this.anexoId = null;
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
     }
   }
 
@@ -216,10 +271,6 @@ export class ChamadoAnexosPage {
     //this.carregarAnexo(anexo);
   }
 
-  excluirClick(anexo: any) {
-    this.excluirAnexo(anexo);
-  }
-
   atualizarClick() {
     if (this.tipoAnexos == "anexos") {
       this.carregarAnexos();
@@ -227,6 +278,14 @@ export class ChamadoAnexosPage {
     else if (this.tipoAnexos == "fotos") {
       this.carregarFotos();
     }
+  }
+
+  excluirClick(anexo: any) {
+    this.carregarExcluirAnexo(anexo);
+  }
+
+  confirmarExcluirClick = () => {
+    this.excluirAnexo();
   }
 
   doRefresh(refresher) {

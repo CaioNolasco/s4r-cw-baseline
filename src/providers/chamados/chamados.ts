@@ -73,6 +73,10 @@ export class ChamadosProvider {
     return this.http.delete(this.urlApiChamados + `/ExcluirMaterial/${usuario}/${portal}/${numero}/${material}`);
   }
 
+  excluirAnexo(usuario: string, portal: string, numero: string, anexo: string){
+    return this.http.delete(this.urlApiChamados + `/ExcluirAnexo/${usuario}/${portal}/${numero}/${anexo}`);
+  }
+
   //Retornos
   retornarChamadosAbertos(usuario: string, portal: string, pagina = 1, tamanhoPagina = 10) {
     return this.http.get(this.urlApiChamados + `/RetornarChamadosAbertos/${usuario}/${portal}/${pagina}/${tamanhoPagina}`);

@@ -59,7 +59,7 @@
       </button>
 
       <ion-item-options side="left">
-        <button (click)="sincronizarClick(chamado)" [disabled]="origemOffline" ion-button color="cushman-1">
+        <button (click)="sincronizarClick(chamado)" [disabled]="origemOffline || syncOffline" ion-button color="cushman-1">
           <ion-icon name="sync"></ion-icon>
           Sinc.
         </button>

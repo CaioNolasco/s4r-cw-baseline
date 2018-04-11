@@ -35,6 +35,7 @@ export class ChamadosEquipamentoPage {
   refresher: any;
   exibirMsg: boolean = false;
   isRefreshing: boolean = false;
+  homeOffline: boolean = false;
   pagina = 1;
   tamanhoPagina = 20;
 
@@ -48,16 +49,19 @@ export class ChamadosEquipamentoPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarChamados();
+    if (!this.homeOffline) {
+      this.carregarChamados();
+    }
   }
 
   //Ações
   carregarDados() {
     try {
-      if(this.offlineProvider.validarInternetOffline()){
+      if (this.offlineProvider.validarInternetOffline()) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
+      else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
 
         if (_configLoginProvider) {
@@ -110,7 +114,7 @@ export class ChamadosEquipamentoPage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else{
+            else {
               this.alertsProvider.fecharCarregando();
             }
           }
@@ -121,12 +125,12 @@ export class ChamadosEquipamentoPage {
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.chamados = null;
-      
+
       if (this.isRefreshing) {
         this.refresher.complete();
         this.isRefreshing = false;
       }
-      else{
+      else {
         this.alertsProvider.fecharCarregando();
       }
     }

@@ -37,6 +37,8 @@ export class ChamadosOfflinePage {
   exibirMsg: boolean = false;
   isRefreshing: boolean = false;
   origemOffline: boolean = false;
+  homeOffline: boolean = false;
+  syncOffline: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public offlineProvider: OfflineProvider,
@@ -48,14 +50,18 @@ export class ChamadosOfflinePage {
 
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
-    this.carregarChamados();
+
+    if (!this.homeOffline) {
+      this.carregarChamados();
+    }
   }
 
   ionViewDidEnter() {
-    if (this.offlineProvider.retornarConfigBadgesOffline()) {
+    if (this.offlineProvider.retornarConfigBadgesOffline() && !this.homeOffline) {
       this.carregarChamados();
     }
 
+    this.syncOffline = this.offlineProvider.validarInternetOffline();
     this.carregarBadge();
   }
 
@@ -64,16 +70,17 @@ export class ChamadosOfflinePage {
     try {
       //Verificar se está online ou offline
       this.origemOffline = this.navParams.get("OrigemOffline");
-      
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
+      else {
         this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
         this.exibirMsg = false;
-  
+
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
-  
+
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.nomePortal = _configLoginProvider.nomePortal;
@@ -140,13 +147,13 @@ export class ChamadosOfflinePage {
     }
   }
 
-  sincronizarChamado(chamado: any){
+  sincronizarChamado(chamado: any) {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then( data => {
+      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
         this.chamado = data;
-  
+
         if (this.chamado) {
           let _parametros = {
             ChamadoID: this.chamado.ChamadoID,
@@ -168,9 +175,9 @@ export class ChamadosOfflinePage {
             data => {
               let _resposta = (data as any);
               let _objetoRetorno = JSON.parse(_resposta._body);
-      
+
               this.respostaApi = _objetoRetorno;
-      
+
               if (this.respostaApi) {
                 if (this.respostaApi.sucesso) {
                   let _index = this.chamados.indexOf(chamado);
@@ -204,7 +211,7 @@ export class ChamadosOfflinePage {
         this.alertsProvider.fecharCarregando();
       });
     }
-    catch(e){
+    catch (e) {
       console.log(e);
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
@@ -224,7 +231,7 @@ export class ChamadosOfflinePage {
     this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: chamado.ChamadoID, OrigemOffline: true });
   }
 
-  sincronizarClick(chamado){
+  sincronizarClick(chamado) {
     this.sincronizarChamado(chamado);
   }
 

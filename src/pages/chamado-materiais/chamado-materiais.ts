@@ -36,6 +36,7 @@ export class ChamadoMateriaisPage {
   habilitarChamado: boolean;
   origemOffline = false;
   alterarChamado: boolean = false;
+  homeOffline: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
@@ -47,7 +48,9 @@ export class ChamadoMateriaisPage {
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    this.carregarMateriais();
+    if (!this.homeOffline) {
+      this.carregarMateriais();
+    }
   }
 
   //Ações
@@ -55,14 +58,15 @@ export class ChamadoMateriaisPage {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.homeOffline = true;
       }
-      else{
-        if(!this.origemOffline){
+      else {
+        if (!this.origemOffline) {
           this.alterarChamado = this.navParams.get("AlterarChamado");
         }
-        else{
+        else {
           this.alterarChamado = true;
         }
 
@@ -142,11 +146,11 @@ export class ChamadoMateriaisPage {
   }
 
   carregarMateriaisOffline() {
-    this.offlineProvider.retornarMateriaisOffline(this.portal, this.chamadoId).then( data => {
-    
+    this.offlineProvider.retornarMateriaisOffline(this.portal, this.chamadoId).then(data => {
+
       this.materiais = data;
 
-      if (!this.materiais[0]) { 
+      if (!this.materiais[0]) {
         this.exibirMsg = true;
         this.materiais = null;
       }
@@ -228,13 +232,11 @@ export class ChamadoMateriaisPage {
   //Eventos
   excluirClick(material: any) {
     this.carregarExcluirMaterial(material);
-
   }
 
   confirmarExcluirClick = () => {
     this.excluirMaterial();
   }
-
 
   atualizarClick() {
     this.carregarMateriais();

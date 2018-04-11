@@ -38,9 +38,10 @@ export class MyApp {
   //Ações
   carregarDados(){
     try{
-      this.offlineProvider.removerConfigEstruturaSQLite();
       //Desenvolvimento
-      //localStorage.removeItem("database");
+      this.offlineProvider.removerConfigEstruturaSQLite();
+      this.offlineProvider.excluirBancoSQLite();
+      //localStorage.removeItem("database");s
            
       if(this.offlineProvider.validarInternetOffline()){
         this.rootPage = HomeOfflinePage;

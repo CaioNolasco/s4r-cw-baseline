@@ -4,13 +4,15 @@ import { Network } from '@ionic-native/network';
 
 import { ChamadosProvider } from '../chamados/chamados';
 import { ConstantesProvider } from '../constantes/constantes';
+import { UteisProvider } from './../uteis/uteis';
 
 
 @Injectable()
 @Component({
   providers: [
     ChamadosProvider,
-    ConstantesProvider
+    ConstantesProvider,
+    UteisProvider
   ]
 })
 export class OfflineProvider {
@@ -19,23 +21,22 @@ export class OfflineProvider {
   configEstruturaSQLiteKey = "configEstruturaSQLite";
 
   constructor(public sqlite: SQLite, public network: Network, public chamadosProvider: ChamadosProvider,
-    public constantesProvider: ConstantesProvider) {
+    public constantesProvider: ConstantesProvider, public uteisProvider: UteisProvider) {
   }
 
   //Ações
   validarInternetOffline(): boolean {
     let _offline: boolean = false;
 
-    this.network.onConnect().subscribe(data => {
-      _offline = false;
-    }, error => console.error(error));
+    let _tipo = this.network.type;
 
-    this.network.onDisconnect().subscribe(data => {
+    if(_tipo == "none"){
       _offline = true;
-    }, error => console.error(error));
+    }
 
     return _offline;
   }
+
 
   salvarBancoSQLite(): any {
     let _sqlite: any;
@@ -48,6 +49,13 @@ export class OfflineProvider {
     return _sqlite;
   }
 
+  excluirBancoSQLite(){
+    this.sqlite.deleteDatabase({
+      name: 'baseline.db',
+      location: 'default'
+    }).catch((e) => console.log(e));
+  }
+
   salvarEstruturaSQLite(sqlite: any) {
     if (sqlite) {
       sqlite.then((db: SQLiteObject) => {
@@ -58,7 +66,7 @@ export class OfflineProvider {
             Causa TEXT, Mantenedor TEXT, DescricaoOcorrencia TEXT, LocalizacaoEquipamento TEXT, Equipamento TEXT, StatusChamado TEXT,
             DataInicialEfetivaAtendimento TEXT, DataFinalEfetivaAtendimento TEXT, DataInicialEfetivaSolucao TEXT, 
             DataFinalEfetivaSolucao TEXT, DataProgramacaoAtendimento TEXT, DescricaoAtendimento TEXT, TextoJustificativa TEXT, 
-            Acao TEXT, StatusChamadoID TEXT, TipoChamado TEXT, TipoServicoID TEXT)`, {})
+            Acao INTEGER, StatusChamadoID INTEGER, TipoChamado TEXT, TipoServicoID INTEGER)`, {})
           .catch((e) => console.log(e));
 
         db.executeSql(`CREATE TABLE IF NOT EXISTS MovimentacaoChamado(MovimentacaoChamadoID INTEGER, ChamadoID INTEGER, UsuarioResponsavel TEXT, Acao TEXT, 
@@ -254,14 +262,10 @@ export class OfflineProvider {
             _sql = _sql + ` AND Portal = '${portal}'`;
           }
 
-          let _dataInicialEfetivaAtendimento = parametros.DataAtendimento &&  parametros.InicioAtendimento ? `${parametros.DataAtendimento} ${parametros.InicioAtendimento}` : 
-          parametros.DataAtendimento ? `${parametros.DataAtendimento} 00:00` : '';
-          let _dataFinalEfetivaAtendimento = parametros.DataAtendimento && parametros.FinalAtendimento ? `${parametros.DataAtendimento} ${parametros.FinalAtendimento}` : 
-          parametros.DataAtendimento ?`${parametros.DataAtendimento} 00:00` : '';
-          let _dataInicialEfetivaSolucao = parametros.DataSolucao && parametros.InicioSolucao ? `${parametros.DataSolucao} ${parametros.InicioSolucao}` : 
-          parametros.DataSolucao ? `${parametros.DataSolucao} 00:00` : '';
-          let _dataFinalEfetivaSolucao = parametros.DataSolucao && parametros.FinalSolucao ? `${parametros.DataSolucao} ${parametros.FinalSolucao}` :
-          parametros.DataSolucao ? `${parametros.DataSolucao} 00:00` : '';
+          let _dataInicialEfetivaAtendimento = this.uteisProvider.retornarDataSqlite(parametros.DataAtendimento, parametros.InicioAtendimento);
+          let _dataFinalEfetivaAtendimento = this.uteisProvider.retornarDataSqlite(parametros.DataAtendimento, parametros.FinalAtendimento);
+          let _dataInicialEfetivaSolucao = this.uteisProvider.retornarDataSqlite(parametros.DataSolucao, parametros.InicioSolucao);
+          let _dataFinalEfetivaSolucao =  this.uteisProvider.retornarDataSqlite(parametros.DataSolucao, parametros.FinalSolucao);
           let _dataProgramacaoAtendimento = parametros.DataProgramacao ? parametros.DataProgramacao : '';
 
           let _dados = [_dataInicialEfetivaAtendimento, _dataFinalEfetivaAtendimento, _dataInicialEfetivaSolucao, _dataFinalEfetivaSolucao,
