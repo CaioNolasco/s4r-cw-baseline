@@ -147,6 +147,21 @@ export class ChamadosOfflinePage {
     }
   }
 
+  carregarEstruturaOffline() {
+    try {
+      let _titulo = this.alertsProvider.msgTituloPadrao;
+
+      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
+      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarDownloadClick }]
+
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmarAtualizarEstrutura, _botoes);
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
   sincronizarChamado(chamado: any) {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
@@ -159,7 +174,7 @@ export class ChamadosOfflinePage {
         console.log(e);
       });
 
-      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {      
+      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
         this.chamado = data;
 
         if (this.chamado) {
@@ -227,6 +242,24 @@ export class ChamadosOfflinePage {
     }
   }
 
+  salvarEstruturaOffline(){
+    try{
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      this.offlineProvider.removerConfigEstruturaSQLite();
+      let _sqlite = this.offlineProvider.salvarBancoSQLite();
+      this.offlineProvider.salvarEstruturaSQLite(_sqlite);
+
+      this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+      this.alertsProvider.fecharCarregando();
+    }
+    catch(e){
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
   //Eventos
   atualizarClick() {
     this.carregarChamados();
@@ -238,6 +271,14 @@ export class ChamadosOfflinePage {
 
   abrirDetalhesClick(chamado) {
     this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: chamado.ChamadoID, OrigemOffline: true });
+  }
+
+  estruturaClick() {
+    this.carregarEstruturaOffline();
+  }
+
+  confirmarDownloadClick = () => {
+    this.salvarEstruturaOffline();
   }
 
   sincronizarClick(chamado) {

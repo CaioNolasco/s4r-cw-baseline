@@ -27,6 +27,7 @@ export class AlertsProvider {
   msgNenhumItem: string = "Nenhum item localizado!";
   msgConfirmacao: string = "Deseja realmente executar essa ação?";
   msgConfirmacaoEstrutura: string = "Download de estrutura necessária, caso confirme marque offline novamente!";
+  msgConfirmarAtualizarEstrutura: string = "Atualização de estrutura offline!"
   msgEscolhaAcao: string = "Escolha a ação que deseja executar:";
   msgOffline: string = "Você está offline!";
   msgPortal: string = "Você está no contexto do portal: ";

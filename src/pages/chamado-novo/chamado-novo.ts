@@ -323,19 +323,21 @@ export class ChamadoNovoPage {
     try {
       this.pontoVenda = null;
 
-      this.chamadosProvider.retornarValoresPontoVenda(this.portal, postoAtendimento).subscribe(
-        data => {
-          let _resposta = (data as any);
+      if (postoAtendimento) {
+        this.chamadosProvider.retornarValoresPontoVenda(this.portal, postoAtendimento).subscribe(
+          data => {
+            let _resposta = (data as any);
 
-          let _objetoRetorno = JSON.parse(_resposta._body);
+            let _objetoRetorno = JSON.parse(_resposta._body);
 
-          this.pontoVenda = _objetoRetorno;
+            this.pontoVenda = _objetoRetorno;
 
-          if (!this.pontoVenda) {
-            this.pontoVenda = null;
+            if (!this.pontoVenda) {
+              this.pontoVenda = null;
+            }
           }
-        }
-      )
+        )
+      }
     }
     catch (e) {
       console.log(e);
@@ -394,28 +396,30 @@ export class ChamadoNovoPage {
     }
   }
 
-  carregarValoresSla(sla: any){
+  carregarValoresSla(sla: any) {
     try {
       this.valorSla = null;
 
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      if(sla){
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-      this.chamadosProvider.retornarValoresSla(this.portal, this.tiposServico.value, this.postosAtendimento.value, sla).subscribe(
-        data => {
-          let _resposta = (data as any);
-
-          let _objetoRetorno = JSON.parse(_resposta._body);
-
-          this.valorSla = _objetoRetorno;
-
-          if (!this.valorSla) {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
-            this.valorSla = null;
+        this.chamadosProvider.retornarValoresSla(this.portal, this.tiposServico.value, this.postosAtendimento.value, sla).subscribe(
+          data => {
+            let _resposta = (data as any);
+  
+            let _objetoRetorno = JSON.parse(_resposta._body);
+  
+            this.valorSla = _objetoRetorno;
+  
+            if (!this.valorSla) {
+              this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+              this.valorSla = null;
+            }
+  
+            this.alertsProvider.fecharCarregando();
           }
-
-          this.alertsProvider.fecharCarregando();
-        }
-      )
+        )
+      }
     }
     catch (e) {
       console.log(e);
@@ -425,7 +429,7 @@ export class ChamadoNovoPage {
     }
   }
 
-  carregarChamado(chamadoId: any){
+  carregarChamado(chamadoId: any) {
     try {
       this.tipoChamado = this.constantesProvider.tituloChamado;
       this.chamadoId = chamadoId;
@@ -435,9 +439,9 @@ export class ChamadoNovoPage {
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
-  
+
           this.chamado = _objetoRetorno;
-  
+
           if (!this.chamado) {
             this.chamado = null;
           }
@@ -452,7 +456,7 @@ export class ChamadoNovoPage {
 
   salvarChamado() {
     try {
-      if (this.chamadoForm.valid && this.valorSla  && this.pontoVenda) {
+      if (this.chamadoForm.valid && this.valorSla && this.pontoVenda) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
         let _dataPrevistaAtendimento = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaAtendimento);
@@ -482,9 +486,9 @@ export class ChamadoNovoPage {
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
-  
+
             this.respostaApi = _objetoRetorno;
-  
+
             if (this.respostaApi) {
               if (this.respostaApi.sucesso) {
                 this.navParams.get("HomePage").carregarChamados();
@@ -499,7 +503,7 @@ export class ChamadoNovoPage {
               console.log(this.respostaApi.mensagem);
               this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
-  
+
             this.alertsProvider.fecharCarregando();
           });
       }
@@ -517,7 +521,7 @@ export class ChamadoNovoPage {
   salvarFoto() {
     try {
       const _options: CameraOptions = {
-        quality: 50,
+        quality: 5,
         destinationType: this.camera.DestinationType.DATA_URL,
         encodingType: this.camera.EncodingType.JPEG,
         mediaType: this.camera.MediaType.PICTURE
@@ -529,7 +533,7 @@ export class ChamadoNovoPage {
           this.fotos = [];
         }
 
-        this.fotos.push({ Base64: this.base64Image, url: this.base64Image});
+        this.fotos.push({ Base64: this.base64Image, url: this.base64Image });
         //this.fotos.reverse();
         this.exibirMsg = false;
       }, (e) => {
@@ -572,7 +576,7 @@ export class ChamadoNovoPage {
   //Eventos
   navegarClick(tipoChamado: string) {
     this.tipoChamado = tipoChamado;
-    this.viewCtrl.showBackButton(tipoChamado == this.constantesProvider.tituloDadosBasicos || 
+    this.viewCtrl.showBackButton(tipoChamado == this.constantesProvider.tituloDadosBasicos ||
       tipoChamado == this.constantesProvider.tituloChamado);
   }
 
@@ -600,7 +604,7 @@ export class ChamadoNovoPage {
     this.excluirFoto();
   }
 
-  homeClick(){
+  homeClick() {
     this.navCtrl.setRoot(HomePage);
   }
 
@@ -630,7 +634,7 @@ export class ChamadoNovoPage {
     this.carregarEquipamentos(localizacao);
   }
 
-  slaChange(sla: any){
+  slaChange(sla: any) {
     this.carregarValoresSla(sla);
   }
 
