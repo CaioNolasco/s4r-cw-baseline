@@ -185,7 +185,8 @@ export class HomePage {
           this.chamado = _objetoRetorno;
 
           if (this.chamado) {
-            this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: this.chamado.ChamadoID });
+            this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: this.chamado.ChamadoID,
+              AlterarChamado: this.alterarChamado });
           }
           else {
             this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
@@ -364,7 +365,7 @@ export class HomePage {
   }
 
   novoChamadoClick() {
-    this.navCtrl.push(ChamadoNovoPage);
+    this.navCtrl.push(ChamadoNovoPage, { "HomePage": this });
   }
 
   qrCodeClick() {

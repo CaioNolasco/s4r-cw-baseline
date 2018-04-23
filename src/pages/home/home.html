@@ -38,12 +38,6 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <ion-fab *ngIf="adicionarChamado" bottom right>
-    <button (click)="novoChamadoClick()" ion-fab color="cushman-2">
-      <ion-icon name="add"></ion-icon>
-    </button>
-  </ion-fab>
-
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
@@ -107,4 +101,11 @@
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
+  <div class="item-altura-fab"></div>
+
+  <ion-fab *ngIf="adicionarChamado" bottom right>
+    <button (click)="novoChamadoClick()" ion-fab color="cushman-2">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

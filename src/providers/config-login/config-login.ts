@@ -10,8 +10,8 @@ export class ConfigLoginProvider {
   configLoginKey: string = "configLogin";
   configLoginPortaisKey: string = "configLoginPortais";
 
-  configLogin = { username: "", password: "", portal: "", nomePortal: "" };
-  configLoginPortais = { valor: "", texto: "" };
+  configLogin: any = { username: "", password: "", portal: "", nomePortal: "" };
+  configLoginPortais: any = { valor: "", texto: "" };
 
   //Load
   constructor(private alertsProvider: AlertsProvider) {

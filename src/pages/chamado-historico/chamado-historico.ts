@@ -28,7 +28,7 @@ export class ChamadoHistoricoPage {
   refresher: any;
   isRefreshing: boolean = false;
   exibirMsg: boolean = false;
-  origemOffline = false;
+  origemOffline: boolean = false;
   homeOffline: boolean = false;
 
   //Load

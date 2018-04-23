@@ -10,9 +10,6 @@ import { HomePage } from '../home/home';
 import { RelatoriosPage } from './../relatorios/relatorios';
 import { ChamadosOfflinePage } from './../chamados-offline/chamados-offline';
 
-
-
-
 @Component({
   templateUrl: 'tabs.html',
   providers: [

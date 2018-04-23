@@ -48,6 +48,16 @@ export class UteisProvider {
     return data;
   }
 
+  retornarDataHoraApi(data: string): string {
+    if (data && data != 'null' && (data.indexOf("T") >= 0)) {
+      let _data: Date = new Date(data);
+
+      let _apiData = `${_data.getUTCFullYear()}-${this.retornarZerosData(this.retornarMes(_data.getUTCMonth()))}-${this.retornarZerosData(_data.getUTCDate())} ${this.retornarZerosData(_data.getUTCHours())}:${this.retornarZerosData(_data.getUTCMinutes())}:${this.retornarZerosData(_data.getUTCSeconds())}`;
+      return _apiData;
+    }
+    return data;
+  }
+
   retornarDataSqlite(data: string, hora: string){
     return data && hora ? `${data}T${hora}` : data ? `${data}T00:00:00` : '';
 

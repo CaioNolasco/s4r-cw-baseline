@@ -32,6 +32,12 @@ ion-icon {
   background-size: cover;
 }
 
+.icone-excluir-foto{
+  margin: 0px !important;
+  width: 25px !important;
+  height: 25px !important;
+}
+
 //Alertas
 .toast-danger > .toast-wrapper{
   background-color: #F2DEDE;
@@ -267,4 +273,8 @@ ion-icon {
 //Novo Chamado
 .item-novo-chamado{
   padding-left: 0px;
+}
+
+.item-altura-fab{
+  height: 70px;
 }

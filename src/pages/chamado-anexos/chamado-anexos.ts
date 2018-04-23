@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, App, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, ViewController, App, ModalController, Platform } from 'ionic-angular';
 import { GalleryModal } from 'ionic-gallery-modal';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
+import { Camera, CameraOptions } from '@ionic-native/camera';
 
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
@@ -19,7 +20,7 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     ConfigLoginProvider,
     AlertsProvider,
     ChamadosProvider,
-    InAppBrowser, 
+    InAppBrowser,
     OfflineProvider]
 })
 export class ChamadoAnexosPage {
@@ -30,35 +31,38 @@ export class ChamadoAnexosPage {
   chamadoId: any;
   tipoAnexos: any;
   anexos: any;
+  fotos: any;
   anexo: any;
   refresher: any;
   index: any;
   anexoId: any;
   respostaApi: any;
+  sequenciaFotos: any;
   isRefreshing: boolean = false;
   exibirMsgAnexos: boolean = false;
   exibirMsgFotos: boolean = false;
   alterarChamado: boolean = false;
   habilitarChamado: boolean;
-  origemOffline = false;
+  origemOffline: boolean = false;
   homeOffline: boolean = false;
-
-  fotos: any[] = [];
+  ios: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
     public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser, public offlineProvider: OfflineProvider,
-    public app: App) {
+    public app: App, public camera: Camera, public platform: Platform) {
+
     this.carregarDados();
-    this.carregarFotos();
   }
 
   ionViewDidLoad() {
     this.viewCtrl.setBackButtonText('');
 
-    if(!this.origemOffline && !this.homeOffline){
-        this.carregarAnexos();
+    this.carregarFotos();
+
+    if (!this.origemOffline && !this.homeOffline) {
+      this.carregarAnexos();
     }
   }
 
@@ -67,27 +71,31 @@ export class ChamadoAnexosPage {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
-      if(this.offlineProvider.validarInternetOffline() && !this.origemOffline){
+      if (this.platform.is('ios')) {
+        this.ios = true;
+      }
+
+      if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
         this.homeOffline = true;
       }
-      else{
-        if(!this.origemOffline){
+      else {
+        if (!this.origemOffline) {
           this.tipoAnexos = "anexos";
           this.alterarChamado = this.navParams.get("AlterarChamado");
         }
-        else{
+        else {
           this.tipoAnexos = "fotos";
           this.alterarChamado = true;
         }
-  
+
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
-  
+
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.portal = _configLoginProvider.portal;
           this.chamadoId = this.navParams.get("ChamadoID");
-          this.habilitarChamado =  this.navParams.get("HabilitarChamado");
+          this.habilitarChamado = this.navParams.get("HabilitarChamado");
           this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
           this.exibirMsgAnexos = false;
           this.exibirMsgFotos = false;
@@ -102,26 +110,27 @@ export class ChamadoAnexosPage {
     }
   }
 
-  carregarAnexos() {
+  carregarAnexos(exibirCarregando: boolean = true) {
     try {
-      if (!this.isRefreshing) {
+      if (!this.isRefreshing && exibirCarregando) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
 
       this.exibirMsgAnexos = false;
 
-        this.chamadosProvider.retornarAnexosChamado(this.username, this.portal, this.chamadoId).subscribe(
-          data => {
-            let _resposta = (data as any);
-            let _objetoRetorno = JSON.parse(_resposta._body);
-  
-            this.anexos = _objetoRetorno;
-  
-            if (!this.anexos[0]) {
-              this.exibirMsgAnexos = true;
-              this.anexos = null;
-            }
-  
+      this.chamadosProvider.retornarAnexosChamado(this.portal, this.chamadoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.anexos = _objetoRetorno;
+
+          if (!this.anexos[0]) {
+            this.exibirMsgAnexos = true;
+            this.anexos = null;
+          }
+
+          if (exibirCarregando) {
             if (this.isRefreshing) {
               this.refresher.complete();
               this.isRefreshing = false;
@@ -130,7 +139,8 @@ export class ChamadoAnexosPage {
               this.alertsProvider.fecharCarregando();
             }
           }
-        )
+        }
+      )
     }
     catch (e) {
       console.log(e);
@@ -149,39 +159,86 @@ export class ChamadoAnexosPage {
   }
 
   carregarFotos() {
-    try {
-
+    try {      
       this.exibirMsgFotos = false;
 
-      this.fotos.push({
-        url: `https://i.ytimg.com/vi/peOP8Gs8NFY/maxresdefault.jpg`,
-        sequencia: 0
-      });
-
-      this.fotos.push({
-        url: `https://i.ytimg.com/vi/IkVrj9-c3To/hqdefault.jpg`,
-        sequencia: 1
-      });
-
-      this.fotos.push({
-        url: `https://i.ytimg.com/vi/jpgYesWUNm8/maxresdefault.jpg`,
-        sequencia: 2
-      });
-
-      this.fotos.push({
-        url: `https://i.ytimg.com/vi/WcMsR2uknOQ/maxresdefault.jpg`,
-        sequencia: 3
-      });
-
-      if (!this.fotos) {
-        this.exibirMsgFotos = true;
-        this.fotos = null;
+      if (!this.origemOffline) {
+        this.carregarFotosOnline();
+      }
+      else {
+        this.carregarFotosOffline();
       }
     }
     catch (e) {
       console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgFotos = true;
       this.fotos = null;
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+    }
+  }
+
+  carregarFotosOnline(){
+      this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, false).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.fotos = _objetoRetorno;
+
+          if (!this.fotos[0]) {
+            this.exibirMsgFotos = true;
+            this.fotos = null;
+          }
+
+          if (this.isRefreshing) {
+            this.refresher.complete();
+            this.isRefreshing = false;
+          }
+        }
+      )
+  }
+
+  carregarFotosOffline(){
+    try{
+      if (!this.isRefreshing) {
+        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      }
+
+      this.offlineProvider.retornarFotosOffline(this.portal, this.chamadoId, false).then(data => {
+        this.fotos = data;
+        
+        if (!this.fotos[0]) {
+          this.exibirMsgFotos = true;
+          this.fotos = null;
+        }
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+        else {
+          this.alertsProvider.fecharCarregando();
+        }
+      });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsgFotos = true;
+      this.fotos = null;
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
@@ -198,15 +255,16 @@ export class ChamadoAnexosPage {
     }
   }
 
-  carregarExcluirAnexo(anexo: any) {
+  carregarExcluirAnexo(anexo: any, foto: boolean) {
     try {
-      this.index = this.anexos.indexOf(anexo);
+      this.index = foto ? this.fotos.indexOf(anexo) : this.anexos.indexOf(anexo);
       this.anexoId = anexo.AnexoID;
+      this.sequenciaFotos = anexo.sequencia;
 
-      let _titulo = `Excluir ${anexo.NomeAnexo}?`;
+      let _titulo = this.origemOffline ? `Excluir` : `Excluir ${anexo.NomeAnexo}`;
 
       let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirClick }]
+      { text: this.alertsProvider.msgBotaoConfirmar, handler: foto ? this.confirmarExcluirFotoClick : this.confirmarExcluirAnexoClick }]
 
       this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
     }
@@ -261,6 +319,228 @@ export class ChamadoAnexosPage {
     }
   }
 
+  excluirFoto() {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      if (!this.origemOffline) {
+        this.excluirFotoOnline();
+      }
+      else {
+        this.excluirFotoOffline();
+      }
+    }
+    catch (e) {
+      console.log(e);
+      this.index = null;
+      this.anexoId = null;
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
+  excluirFotoOnline(){
+    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
+
+        this.respostaApi = _objetoRetorno;
+
+        if (this.respostaApi) {
+          if (this.respostaApi.sucesso) {
+            if (this.index > -1) {
+              this.fotos.splice(this.index, 1);
+            }
+
+            if (!this.fotos[0]) {
+              this.exibirMsgFotos = true;
+              this.fotos = null;
+            }
+
+            this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+          }
+          else {
+            this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
+        }
+        else {
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        }
+
+        this.index = null;
+        this.anexoId = null;
+        this.alertsProvider.fecharCarregando();
+      });
+  }
+
+  excluirFotoOffline(){
+    this.offlineProvider.excluirFotoChamadoOffline(this.portal, this.chamadoId, this.sequenciaFotos).then(data => {
+      if (data) {
+        if (this.index > -1) {
+          this.fotos.splice(this.index, 1);
+        }
+
+        if (!this.fotos[0]) {
+          this.exibirMsgFotos = true;
+          this.fotos = null;
+        }
+        
+        this.index = null;
+        this.anexoId = null;
+        this.alertsProvider.fecharCarregando();
+        //this.carregarFotos();
+        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+    });
+  }
+
+  salvarFoto() {
+    try {
+      const _options: CameraOptions = {
+        quality: 5,
+        destinationType: this.camera.DestinationType.DATA_URL,
+        encodingType: this.camera.EncodingType.JPEG,
+        mediaType: this.camera.MediaType.PICTURE
+      }
+
+      let _base64Imagem: string;
+
+      this.camera.getPicture(_options).then((imageData) => {
+        _base64Imagem = imageData;
+        
+        let _sequencia: number
+
+        if(this.fotos){
+          if(this.fotos[0]){
+            _sequencia = +this.fotos[this.fotos.length - 1].sequencia;
+            _sequencia = _sequencia + 1;
+          }
+          else{
+            _sequencia = 0;
+          }
+        }
+        else{
+          _sequencia = 0;
+        }
+        
+
+        let _parametros = {
+          Base64: "data:image/jpeg;base64," + _base64Imagem,
+          url: "data:image/jpeg;base64," + _base64Imagem,
+          sequencia: _sequencia
+        };
+
+        if (!this.origemOffline) {
+          this.salvarArquivo(_parametros, true);
+        }
+        else {
+          this.salvarFotoOffline(_parametros);
+        }
+
+        this.exibirMsgFotos = false;
+      }, (e) => {
+        console.log(e);
+        //this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  salvarAnexo(anexo: any) {
+    try {
+      let _arquivo = anexo.target.files[0];
+      let _base64Anexo: string;
+
+      let _reader = new FileReader();
+      _reader.onload = (e) => {
+        _base64Anexo = _reader.result;
+
+        let _parametros = {
+          Base64: _base64Anexo,
+          NomeAnexo: _arquivo.name
+        };
+
+        this.salvarArquivo(_parametros, false);
+      };
+
+      _reader.readAsDataURL(_arquivo);
+
+      this.exibirMsgAnexos = false;
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
+  salvarArquivo(parametros: any, foto: boolean) {
+    try {
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId, parametros).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.respostaApi = _objetoRetorno;
+
+          if (this.respostaApi) {
+            if (this.respostaApi.sucesso) {
+              this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+
+              if (foto) {
+                this.carregarFotos();
+              }
+              else {
+                this.isRefreshing = true;
+                this.carregarAnexos(false);
+              }
+            }
+            else {
+              this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            }
+          }
+          else {
+            console.log(this.respostaApi.mensagem);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
+
+          this.alertsProvider.fecharCarregando();
+        });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
+  salvarFotoOffline(parametros: any){
+    this.offlineProvider.salvarFotoOffline(this.portal, this.chamadoId, parametros).then(data => {
+      if (data) {
+
+        if(!this.fotos){
+          this.fotos = [];
+        }
+
+        this.fotos.push(parametros);
+        //this.carregarFotos();
+        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+    });
+  }
+
   //Eventos
   abrirFotoClick(sequencia: number) {
     this.carregarAbrirFoto(sequencia);
@@ -280,18 +560,32 @@ export class ChamadoAnexosPage {
     }
   }
 
-  excluirClick(anexo: any) {
-    this.carregarExcluirAnexo(anexo);
+  excluirClick(anexo: any, foto: boolean) {
+    this.carregarExcluirAnexo(anexo, foto);
   }
 
-  confirmarExcluirClick = () => {
+  confirmarExcluirAnexoClick = () => {
     this.excluirAnexo();
+  }
+
+  confirmarExcluirFotoClick = () => {
+    this.excluirFoto();
+  }
+
+  fotoClick() {
+    this.salvarFoto();
+  }
+
+  anexoChange(anexo: any) {
+    this.salvarAnexo(anexo);
+    anexo.srcElement.value = null;
   }
 
   doRefresh(refresher) {
     this.refresher = refresher;
     this.isRefreshing = true;
 
+    this.carregarFotos();
     this.carregarAnexos();
   }
 }

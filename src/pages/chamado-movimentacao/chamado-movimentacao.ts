@@ -28,10 +28,6 @@ export class ChamadoMovimentacaoPage {
   chamadoId: string;
   username: string;
   portal: string;
-  habilitarChamado: boolean;
-  origemOffline = false;
-  alterarChamado: boolean = false;
-  homeOffline: boolean = false;
   statusEncerradoId: number;
   opcoesSubtipos: any;
   opcoesStatus: any;
@@ -50,6 +46,10 @@ export class ChamadoMovimentacaoPage {
   status: any;
   tipoChamado: any;
   tipoServicoId: any;
+  habilitarChamado: boolean;
+  origemOffline: boolean = false;
+  alterarChamado: boolean = false;
+  homeOffline: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
@@ -335,8 +335,8 @@ export class ChamadoMovimentacaoPage {
 
         if (this.respostaApi) {
           if (this.respostaApi.sucesso) {
-            this.carregarHabilitarChamado();
-            this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
+            //this.carregarHabilitarChamado();
+            //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
             this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
           }
           else {

@@ -41,7 +41,7 @@ export class MyApp {
       //Desenvolvimento
       //this.offlineProvider.removerConfigEstruturaSQLite();
       //this.offlineProvider.excluirBancoSQLite();
-      //localStorage.removeItem("database");s
+      //localStorage.removeItem("database");
            
       if(this.offlineProvider.validarInternetOffline()){
         this.rootPage = HomeOfflinePage;

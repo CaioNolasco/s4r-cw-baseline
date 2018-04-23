@@ -36,7 +36,7 @@ export class ChamadoDetalhesPage {
   tipoServicoId: any;
   exibirMsg: boolean = false;
   habilitarChamado: boolean;
-  origemOffline = false;
+  origemOffline: boolean = false;
   alterarChamado: boolean = false;
   homeOffline: boolean = false;
 

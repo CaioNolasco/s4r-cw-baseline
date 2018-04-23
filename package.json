@@ -24,6 +24,7 @@
     "@angular/platform-browser": "5.0.3",
     "@angular/platform-browser-dynamic": "5.0.3",
     "@ionic-native/barcode-scanner": "^4.6.0",
+    "@ionic-native/camera": "^4.7.0",
     "@ionic-native/core": "4.4.0",
     "@ionic-native/file": "^4.6.0",
     "@ionic-native/file-opener": "^4.6.0",
@@ -40,6 +41,7 @@
     "cordova-browser": "5.0.3",
     "cordova-ios": "4.5.4",
     "cordova-plugin-add-swift-support": "^1.7.1",
+    "cordova-plugin-camera": "^4.0.2",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-device": "^2.0.1",
     "cordova-plugin-file": "^6.0.1",
@@ -47,6 +49,7 @@
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^1.1.16",
+    "cordova-plugin-ios-camera-permissions": "^1.2.0",
     "cordova-plugin-network-information": "^2.0.1",
     "cordova-plugin-qrscanner": "^2.5.0",
     "cordova-plugin-splashscreen": "^5.0.2",
@@ -83,7 +86,14 @@
       "cordova-plugin-file": {},
       "cordova-plugin-file-opener2": {},
       "cordova-plugin-network-information": {},
-      "cordova-sqlite-storage": {}
+      "cordova-sqlite-storage": {},
+      "cordova-plugin-camera": {},
+      "cordova-plugin-ios-camera-permissions": {
+        "CAMERA_USAGE_DESCRIPTION": "This app needs camera access",
+        "MICROPHONE_USAGE_DESCRIPTION": "This app needs microphone access",
+        "PHOTOLIBRARY_ADD_USAGE_DESCRIPTION": "This app needs write-access to photo library",
+        "PHOTOLIBRARY_USAGE_DESCRIPTION": "This app needs read/write-access photo library access"
+      }
     },
     "platforms": [
       "android",

@@ -18,7 +18,7 @@ import { UteisProvider } from './../uteis/uteis';
 export class OfflineProvider {
   //Propriedades
   configBadgesOfflineKey: string = "configBadgesOffline";
-  configEstruturaSQLiteKey = "configEstruturaSQLite";
+  configEstruturaSQLiteKey: string = "configEstruturaSQLite";
 
   constructor(public sqlite: SQLite, public network: Network, public chamadosProvider: ChamadosProvider,
     public constantesProvider: ConstantesProvider, public uteisProvider: UteisProvider) {
@@ -30,13 +30,12 @@ export class OfflineProvider {
 
     let _tipo = this.network.type;
 
-    if(_tipo == "none"){
+    if (_tipo == "none") {
       _offline = true;
     }
 
     return _offline;
   }
-
 
   salvarBancoSQLite(): any {
     let _sqlite: any;
@@ -49,7 +48,7 @@ export class OfflineProvider {
     return _sqlite;
   }
 
-  excluirBancoSQLite(){
+  excluirBancoSQLite() {
     this.sqlite.deleteDatabase({
       name: 'baseline.db',
       location: 'default'
@@ -81,6 +80,9 @@ export class OfflineProvider {
           .catch((e) => console.log(e));
 
         db.executeSql(`CREATE TABLE IF NOT EXISTS StatusChamado(StatusChamadoID INTEGER, ChamadoID INTEGER, StatusChamado TEXT, Portal TEXT)`, {})
+          .catch((e) => console.log(e));
+
+        db.executeSql(`CREATE TABLE IF NOT EXISTS AnexoChamado(AnexoID INTEGER, ChamadoID INTEGER, url TEXT, sequencia TEXT, Portal TEXT)`, {})
           .catch((e) => console.log(e));
       }).catch((e) => console.log(e));
 
@@ -129,6 +131,7 @@ export class OfflineProvider {
                 this.salvarMateriaisOffline(db, portal, chamado.ChamadoID);
                 this.salvarSubtiposOffline(db, portal, chamado.ChamadoID, _chamadoDetalhe.TipoServicoID);
                 this.salvarStatusOffline(db, portal, chamado.ChamadoID);
+                this.salvarAnexosOffline(db, portal, chamado.ChamadoID);
 
               }).catch((e) => _chamadoOffline = false);
             }
@@ -162,34 +165,6 @@ export class OfflineProvider {
           for (let _historico of _historicos) {
             let _dados = [_historico.MovimentacaoChamadoID, chamadoId, _historico.UsuarioResponsavel,
             _historico.Acao, _historico.DescricaoMovimentacao, _historico.StatusChamado, _historico.DataHora, portal];
-
-            db.executeSql(_sql, _dados).catch((e) => console.log(e));
-          }
-        }
-      }
-    )
-  }
-
-  salvarMateriaisOffline(db: SQLiteObject, portal: string, chamadoId: any) {
-    let _materiais: any;
-
-    this.chamadosProvider.retornarMateriaisChamado(portal, chamadoId).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
-
-        _materiais = _objetoRetorno;
-
-        if (_materiais[0]) {
-          let _sql = `INSERT INTO MaterialChamado (MaterialChamadoID, ChamadoID, Quantidade, TipoServico, Marca, 
-            Potencia, Modelo, Capacidade, ValorUnitario, ValorTotal, Portal) 
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
-
-          for (let _material of _materiais) {
-
-            let _dados = [_material.MaterialChamadoID, chamadoId, _material.Quantidade, _material.TipoServico,
-            _material.Marca, _material.Potencia, _material.Modelo, _material.Capacidade, _material.ValorUnitario,
-            _material.ValorTotal, portal];
 
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
@@ -247,6 +222,34 @@ export class OfflineProvider {
     )
   }
 
+  salvarMateriaisOffline(db: SQLiteObject, portal: string, chamadoId: any) {
+    let _materiais: any;
+
+    this.chamadosProvider.retornarMateriaisChamado(portal, chamadoId).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
+
+        _materiais = _objetoRetorno;
+
+        if (_materiais[0]) {
+          let _sql = `INSERT INTO MaterialChamado (MaterialChamadoID, ChamadoID, Quantidade, TipoServico, Marca, 
+            Potencia, Modelo, Capacidade, ValorUnitario, ValorTotal, Portal) 
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+          for (let _material of _materiais) {
+
+            let _dados = [_material.MaterialChamadoID, chamadoId, _material.Quantidade, _material.TipoServico,
+            _material.Marca, _material.Potencia, _material.Modelo, _material.Capacidade, _material.ValorUnitario,
+            _material.ValorTotal, portal];
+
+            db.executeSql(_sql, _dados).catch((e) => console.log(e));
+          }
+        }
+      }
+    )
+  }
+
   salvarMovimentacaoOffline(portal: string, chamadoId: any, parametros: any) {
     return new Promise((resolve, reject) => {
       let _movimentacaoOffline = true;
@@ -265,7 +268,7 @@ export class OfflineProvider {
           let _dataInicialEfetivaAtendimento = this.uteisProvider.retornarDataSqlite(parametros.DataAtendimento, parametros.InicioAtendimento);
           let _dataFinalEfetivaAtendimento = this.uteisProvider.retornarDataSqlite(parametros.DataAtendimento, parametros.FinalAtendimento);
           let _dataInicialEfetivaSolucao = this.uteisProvider.retornarDataSqlite(parametros.DataSolucao, parametros.InicioSolucao);
-          let _dataFinalEfetivaSolucao =  this.uteisProvider.retornarDataSqlite(parametros.DataSolucao, parametros.FinalSolucao);
+          let _dataFinalEfetivaSolucao = this.uteisProvider.retornarDataSqlite(parametros.DataSolucao, parametros.FinalSolucao);
           let _dataProgramacaoAtendimento = parametros.DataProgramacao ? parametros.DataProgramacao : '';
 
           let _dados = [_dataInicialEfetivaAtendimento, _dataFinalEfetivaAtendimento, _dataInicialEfetivaSolucao, _dataFinalEfetivaSolucao,
@@ -279,6 +282,54 @@ export class OfflineProvider {
       }
 
       resolve(_movimentacaoOffline);
+    });
+  }
+
+  salvarAnexosOffline(db: SQLiteObject, portal: string, chamadoId: any) {
+    let _anexos: any;
+
+    this.chamadosProvider.retornarFotosChamado(portal, chamadoId, true).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
+
+        _anexos = _objetoRetorno;
+
+        if (_anexos[0]) {
+          let _sql = `INSERT INTO AnexoChamado (AnexoID, ChamadoID, url, sequencia, Portal) 
+          VALUES (?, ?, ?, ?, ?)`;
+
+          for (let _anexo of _anexos) {
+            let _dados = [_anexo.AnexoID, chamadoId, _anexo.url, _anexo.sequencia, portal];
+
+            db.executeSql(_sql, _dados).catch((e) => console.log(e));
+          }
+        }
+      }
+    )
+  }
+
+  salvarFotoOffline(portal: string, chamadoId: any, parametros: any) {
+    return new Promise((resolve, reject) => {
+      let _fotoOffline = true;
+      let _sqlite = this.salvarBancoSQLite();
+
+      if (_sqlite) {
+        _sqlite.then((db: SQLiteObject) => {
+          let _sql = `INSERT INTO AnexoChamado (ChamadoID, url, sequencia, Portal) 
+          VALUES (?, ?, ?, ?)`;
+
+          let _dados = [chamadoId, parametros.Base64, parametros.sequencia, portal];
+
+          db.executeSql(_sql, _dados).catch((e) => _fotoOffline = false);
+        
+        }).catch((e) => _fotoOffline = false);
+      }
+      else {
+        _fotoOffline = false;
+      }
+
+      resolve(_fotoOffline);
     });
   }
 
@@ -302,6 +353,7 @@ export class OfflineProvider {
         this.excluirMaterialChamadoOffline(db, portal, chamadoId);
         this.excluirSubtipoServicoOffline(db, portal, chamadoId);
         this.excluirStatusChamadoOffline(db, portal, chamadoId);
+        this.excluirAnexoChamadoOffline(db, portal, chamadoId);
       }).catch((e) => _execucao = false);
     }
     else {
@@ -357,6 +409,44 @@ export class OfflineProvider {
     let _dados = [chamadoId];
 
     db.executeSql(_sql, _dados).catch((e) => console.log(e));
+  }
+
+  excluirAnexoChamadoOffline(db: SQLiteObject, portal: string, chamadoId: any) {
+    let _sql = 'DELETE FROM AnexoChamado WHERE ChamadoID = ?';
+
+    if (portal) {
+      _sql = _sql + ` AND Portal = '${portal}'`;
+    }
+
+    let _dados = [chamadoId];
+
+    db.executeSql(_sql, _dados).catch((e) => console.log(e));
+  }
+
+  excluirFotoChamadoOffline(portal: string, chamadoId: any, sequencia: any) {
+    return new Promise((resolve, reject) => {
+      let _fotoOffline = true;
+      let _sqlite = this.salvarBancoSQLite();
+
+      if (_sqlite) {
+        _sqlite.then((db: SQLiteObject) => {
+          let _sql = 'DELETE FROM AnexoChamado WHERE ChamadoID = ? AND sequencia = ?';
+
+          if (portal) {
+            _sql = _sql + ` AND Portal = '${portal}'`;
+          }
+
+          let _dados = [chamadoId, sequencia];
+
+          db.executeSql(_sql, _dados).catch((e) => _fotoOffline = false);
+        }).catch((e) => _fotoOffline = false);
+      }
+      else {
+        _fotoOffline = false;
+      }
+
+      resolve(_fotoOffline);
+    });
   }
 
   salvarConfigBadgesOffline() {
@@ -452,7 +542,7 @@ export class OfflineProvider {
           if (data.rows.length > 0) {
             _chamado = data.rows.item(0);
           }
-
+          
           resolve(_chamado);
         }, (e) => {
           reject(e);
@@ -537,6 +627,39 @@ export class OfflineProvider {
             }
           }
           resolve(_status);
+        }, (e) => {
+          reject(e);
+        })
+      });
+    });
+  }
+
+  retornarFotosOffline(portal: string, chamadoId: any, sincronizacao: boolean) {
+    return new Promise((resolve, reject) => {
+
+      let _sqlite = this.salvarBancoSQLite();
+
+      _sqlite.then((db: SQLiteObject) => {
+        let _sql = `SELECT * FROM AnexoChamado WHERE ChamadoID = ${chamadoId}`;
+
+        if(sincronizacao){
+          _sql = _sql + ` AND AnexoID is null or AnexoID = ''`;
+        }
+
+        if (portal) {
+          _sql = _sql + ` AND Portal = '${portal}'`;
+        }
+
+        
+
+        db.executeSql(_sql, []).then((data) => {
+          let _anexos = [];
+          if (data.rows.length > 0) {
+            for (let i = 0; i < data.rows.length; i++) {
+              _anexos.push(data.rows.item(i));
+            }
+          }
+          resolve(_anexos);
         }, (e) => {
           reject(e);
         })

@@ -108,11 +108,19 @@
           </ion-col>
         </ion-row>
 
-        <ion-row>
+        <!-- <ion-row>
             <ion-col col>
                 <button (click)="atualizarMovimentacaoClick()" *ngIf="habilitarChamado && alterarChamado" ion-button full color="cushman-2">Salvar</button>
             </ion-col>
-        </ion-row>
+        </ion-row> -->
   </ion-grid>
+
+  <div class="item-altura-fab"></div>
+
+  <ion-fab *ngIf="habilitarChamado && alterarChamado" bottom right>
+    <button (click)="atualizarMovimentacaoClick()" ion-fab color="cushman-2">
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
 
 </ion-content>

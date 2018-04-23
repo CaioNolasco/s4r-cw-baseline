@@ -5,32 +5,32 @@ import { AlertController, ToastController, LoadingController } from 'ionic-angul
 export class AlertsProvider {
 
   //Propriedades
-  public alertaClasses = ["toast-danger", "toast-success", "toast-warning"];
+  alertaClasses: any = ["toast-danger", "toast-success", "toast-warning"];
+  loader: any;
 
-  public msgTituloPadrao = "Alerta";
-  public msgTituloAtualizar = "Atualizar";
-  public msgBotaoPadrao = "OK";
-  public msgBotaoConfirmar = "Confirmar";
-  public msgBotaoCancelar = "Cancelar";
-  public msgBotaoNavegar = "Navegar";
-  public msgBotaoFiltrar = "Filtrar";
-  public msgValorExistente = "O valor preenchido está em uso!";
-  public msgSucesso = "Ação executada com sucesso!";
-  public msgErro = "Não foi possível executar a ação!";
-  public msgErroAcesso = "Acesso negado!";
-  public msgErroAcessoConfig = "Acesso negado, ";
-  public msgErroCampos = "Campos preenchidos incorretamente!";
-  public msgErroPortal = "Você não está vínculado a nenhum contexto de portal!";
-  public msgAguarde = "Por favor aguarde...";
-  public msgNenhumItem = "Nenhum item localizado!";
-  public msgConfirmacao = "Deseja realmente executar essa ação?";
-  public msgConfirmacaoEstrutura = "Download de estrutura necessária, caso confirme marque offline novamente!";
-  public msgEscolhaAcao = "Escolha a ação que deseja executar:";
-  public msgOffline = "Você está offline!";
-  public msgPortal = "Você está no contexto do portal: ";
+  msgTituloPadrao: string = "Alerta";
+  msgTituloAtualizar: string = "Atualizar";
+  msgBotaoPadrao: string = "OK";
+  msgBotaoConfirmar: string = "Confirmar";
+  msgBotaoCancelar: string = "Cancelar";
+  msgBotaoNavegar: string = "Navegar";
+  msgBotaoFiltrar: string = "Filtrar";
+  msgValorExistente: string = "O valor preenchido está em uso!";
+  msgSucesso: string = "Ação executada com sucesso!";
+  msgErro: string = "Não foi possível executar a ação!";
+  msgErroAcesso: string = "Acesso negado!";
+  msgErroAcessoConfig: string = "Acesso negado, ";
+  msgErroCampos: string = "Campos preenchidos incorretamente!";
+  msgErroCampo: string = "Campo preenchido incorretamente: ";
+  msgErroPortal: string = "Você não está vínculado a nenhum contexto de portal!";
+  msgAguarde: string = "Por favor aguarde...";
+  msgNenhumItem: string = "Nenhum item localizado!";
+  msgConfirmacao: string = "Deseja realmente executar essa ação?";
+  msgConfirmacaoEstrutura: string = "Download de estrutura necessária, caso confirme marque offline novamente!";
+  msgEscolhaAcao: string = "Escolha a ação que deseja executar:";
+  msgOffline: string = "Você está offline!";
+  msgPortal: string = "Você está no contexto do portal: ";
   
-
-  public loader;
   //Load
   constructor(public alertCtrl: AlertController, public toastCtrl: ToastController, 
     public loadingCtrl: LoadingController) {

@@ -7,6 +7,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from "@angular/http"
 import { Network } from '@ionic-native/network';
 import { SQLite, SQLiteDatabaseConfig } from '@ionic-native/sqlite';
+import {Camera} from '@ionic-native/camera';
 
 import { ConfigLoginProvider } from '../providers/config-login/config-login';
 import { AlertsProvider } from '../providers/alerts/alerts';
@@ -34,7 +35,7 @@ import { ChamadoMateriaisNovoPage } from './../pages/chamado-materiais-novo/cham
 
 import * as GalleryModal from 'ionic-gallery-modal';
 
-// Desenvolvimento
+//Desenvolvimento
 // declare var SQL;
 // class SQLiteObject {
 //   _objectInstance: any;
@@ -152,8 +153,10 @@ import * as GalleryModal from 'ionic-gallery-modal';
     UteisProvider,
     Network,
     OfflineProvider,
-    SQLite
-    //{ provide: SQLite, useClass: SQLiteMock }
+    SQLite,
+    //Desenvolvimento
+    //{ provide: SQLite, useClass: SQLiteMock },
+    Camera
   ]
 })
 export class AppModule { }

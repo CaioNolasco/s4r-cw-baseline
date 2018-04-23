@@ -150,8 +150,16 @@ export class ChamadosOfflinePage {
   sincronizarChamado(chamado: any) {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      let _fotos;
 
-      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
+      this.offlineProvider.retornarFotosOffline(this.portal, chamado.ChamadoID, true).then(data => {
+        _fotos = data;
+      }).catch((e) => {
+        _fotos = null;
+        console.log(e);
+      });
+
+      this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {      
         this.chamado = data;
 
         if (this.chamado) {
@@ -168,7 +176,8 @@ export class ChamadosOfflinePage {
             FinalSolucao: this.uteisProvider.retornarHoraApi(this.chamado.DataFinalEfetivaSolucao, true),
             DataProgramacao: this.uteisProvider.retornarDataApi(this.chamado.DataProgramacaoAtendimento, true),
             Justificativa: this.chamado.TextoJustificativa,
-            DescricaoAtendimento: this.chamado.DescricaoAtendimento
+            DescricaoAtendimento: this.chamado.DescricaoAtendimento,
+            Anexos: _fotos
           };
 
           this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID, false, _parametros).subscribe(

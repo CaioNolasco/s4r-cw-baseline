@@ -34,7 +34,7 @@ export class ChamadoMateriaisPage {
   isRefreshing: boolean = false;
   exibirMsg: boolean = false;
   habilitarChamado: boolean;
-  origemOffline = false;
+  origemOffline: boolean = false;
   alterarChamado: boolean = false;
   homeOffline: boolean = false;
 
@@ -165,13 +165,12 @@ export class ChamadoMateriaisPage {
     });
   }
 
-
   carregarExcluirMaterial(material: any) {
     try {
       this.index = this.materiais.indexOf(material);
       this.materialChamadoId = material.MaterialChamadoID;
 
-      let _titulo = `Excluir ${material.TipoServico} - ${material.Marca} - ${material.Modelo}?`;
+      let _titulo = `Excluir ${material.TipoServico} - ${material.Marca} - ${material.Modelo}`;
 
       let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
       { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirClick }]

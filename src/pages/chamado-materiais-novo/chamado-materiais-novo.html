@@ -107,11 +107,19 @@
         </ion-col>
       </ion-row>
 
-      <ion-row>
+      <!-- <ion-row>
         <ion-col col>
           <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-button full color="cushman-2">Salvar</button>
         </ion-col>
-      </ion-row>
+      </ion-row> -->
     </ion-grid>
+
+    <div class="item-altura-fab"></div>
+
+    <ion-fab bottom right>
+      <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-fab color="cushman-2">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-fab>
   </form>
 </ion-content>

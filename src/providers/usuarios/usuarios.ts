@@ -17,7 +17,7 @@ import { LoginPage } from './../../pages/login/login';
 
 export class UsuariosProvider {
 
-  private urlApiUsuarios = "/api/usuarios";
+  private urlApiUsuarios: string = "/api/usuarios";
 
   constructor(public http: Http, public platform: Platform, public constantes: ConstantesProvider,
     public configLoginProvider: ConfigLoginProvider, public app: App, public offlineProvider: OfflineProvider) {

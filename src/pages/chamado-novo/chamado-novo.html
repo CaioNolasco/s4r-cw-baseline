@@ -1,18 +1,451 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>{{ tipoChamado }}</ion-title>
-    <!-- <ion-buttons end>
-      <button ion-button icon-only>
+    <ion-title>{{ tipoChamado }} {{ chamadoId }}</ion-title>
+    <ion-buttons start>
+      <button (click)="fotoClick()" *ngIf="tipoChamado == 'Fotos'" ion-button icon-only>
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-buttons end>
+      <button (click)="salvarChamadoClick()" *ngIf="tipoChamado != 'Chamado'" [disabled]="!chamadoForm.valid" ion-button icon-only>
         <ion-icon name="checkmark-circle"></ion-icon>
       </button>
-    </ion-buttons> -->
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content>
+
+  <ion-item *ngIf="tipoChamado == 'Fotos' && exibirMsg">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="fotoClick()" name="camera" color="cushman-2" item-end></ion-icon>
+  </ion-item>
+
+  <form [formGroup]="chamadoForm">
+    <ion-grid *ngIf="tipoChamado == 'Dados Básicos'">
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Centro de Custo
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-input type="number" formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)"
+              placeholder="Código"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Posto de Atendimento
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-select formControlName="postosAtendimento" (ionChange)="postoAtendimentoChange($event)" [disabled]="!opcoesPontosVenda"
+              interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{pontoVenda.PontoVendaID}}" *ngFor="let pontoVenda of opcoesPontosVenda">{{pontoVenda.NomePontoVenda}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="postosAtendimento.value && pontoVenda">
+        <ion-col col class="item-novo-chamado">
+          <ion-card>
+            <ion-card-header class="card-header-chamado">
+              <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon> Localização
+            </ion-card-header>
+            <ion-card-content>
+              <ion-grid>
+                <ion-row>
+                  <!-- <ion-col col-12>
+                          <h1 ion-text>
+                           {{ pontoVenda.NomePontoVenda }}
+                          </h1>
+                        </ion-col> -->
+
+                  <ion-col col-10>
+                    <p ion-text>
+                      {{ pontoVenda.Endereco }}
+                    </p>
+                    <p ion-text>
+                      {{ pontoVenda.Cidade }} / {{ pontoVenda.Estado }}
+                    </p>
+                    <p ion-text>
+                      {{ pontoVenda.CEP }}
+                    </p>
+                  </ion-col>
+                  <ion-col col-2>
+                    <h1 ion-text class="card-icone-h1">
+                      <ion-icon (click)="mapaClick(pontoVenda)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
+                    </h1>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Nome do Solicitante
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-input formControlName="solicitante" placeholder="Solicitante"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">E-mail do Solicitante
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-input formControlName="email" (keyup.enter)="emailChange()" (blur)="emailChange()" placeholder="E-mail"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid *ngIf="tipoChamado == 'Problema'">
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-movimentacao">
+            <ion-label stacked color="cushman-3">Descrição do Problema</ion-label>
+            <ion-textarea formControlName="descricao" placeholder="Preencha a descrição"></ion-textarea>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Tipo de Serviço
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-select formControlName="tiposServico" (ionChange)="tiposServicoChange($event)" [disabled]="!opcoesTiposServico" interface="action-sheet"
+              cancelText="Cancelar">
+              <ion-option value="{{tipoServico.TipoServicoID}}" *ngFor="let tipoServico of opcoesTiposServico">{{tipoServico.NomeTipoServico}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col-6>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Causa</ion-label>
+            <ion-select formControlName="causas" [disabled]="!opcoesSubtipos" interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{subtipo.SubtipoServicoID}}" *ngFor="let subtipo of opcoesSubtipos">{{subtipo.Descricao}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+        <ion-col col-6>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">SLA
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-select formControlName="sla"  (ionChange)="slaChange($event)" [disabled]="!opcoesCriticidades" interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{criticidade.CriticidadeID}}" *ngFor="let criticidade of opcoesCriticidades">{{criticidade.Descricao}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="sla.value && valorSla">
+        <ion-col col class="item-novo-chamado">
+          <ion-card>
+            <ion-card-header class="card-header-chamado">
+              <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon> Tempos
+            </ion-card-header>
+            <ion-card-content>
+              <ion-grid>
+                <ion-row>
+                  <ion-col col-12>
+                    <h1 ion-text>
+                      SLA {{valorSla.Sla}}
+                    </h1>
+                  </ion-col>
+                  <ion-col col-6>
+                    <p ion-text>
+                      <b>
+                        Prev. Atendimento
+                      </b>
+                    </p>
+                    <p ion-text>
+                      {{ valorSla.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+                    </p>
+                  </ion-col>
+                  <ion-col col-6>
+                    <p ion-text>
+                      <b>
+                        Prev. Solução
+                      </b>
+                    </p>
+                    <p ion-text>
+                      {{ valorSla.DataPrevistaSolucao | date : "dd/MM/yyyy HH:mm" }}
+                    </p>
+                  </ion-col>
+                </ion-row>
+              </ion-grid>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Mantenedor
+              <div class="texto-obrigatorio"> * </div>
+            </ion-label>
+            <ion-select formControlName="mantenedores" [disabled]="!opcoesMantenedores" interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{mantenedor.MantenedorID}}" *ngFor="let mantenedor of opcoesMantenedores">{{mantenedor.Nome}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Localização</ion-label>
+            <ion-select formControlName="localizacoes" (ionChange)="localizacoesChange($event)" [disabled]="!opcoesLocalizacoes" interface="action-sheet"
+              cancelText="Cancelar">
+              <ion-option value="{{localizacao.LocalizacaoPontoVendaID}}" *ngFor="let localizacao of opcoesLocalizacoes">{{localizacao.DescricaoLocalizacao}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">Equipamento</ion-label>
+            <ion-select formControlName="equipamentos" [disabled]="!opcoesEquipamentos" interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{equipamento.EquipamentoID}}" *ngFor="let equipamento of opcoesEquipamentos">{{equipamento.NomeEquipamento}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+
+    <ion-grid *ngIf="tipoChamado == 'Fotos'">
+      <ion-row *ngIf="fotos">
+        <ion-col *ngFor="let foto of fotos; let id = index" col-6 col-md-4 col-xl-3>
+            <img (click)="abrirFotoClick(id)" *ngIf="foto" [src]="foto.Base64" class="thumb-fotos" />
+          <!-- <div ></div> -->
+          <ion-fab right top>
+            <button (click)="excluirFotoClick(id)" mini ion-fab color="cushman-1" class="icone-excluir-foto">
+              <ion-icon name="close"></ion-icon>
+            </button>
+          </ion-fab>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <div *ngIf="chamado && tipoChamado == 'Chamado'">
+    <ion-card *ngIf="chamado">
+      <ion-card-header class="card-header-chamado">
+        <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon> Tempos
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1 ion-text>
+                SLA {{chamado.Criticidade}} - {{chamado.Nivel}}
+              </h1>
+            </ion-col>
+
+            <ion-col col-6>
+              <p ion-text>
+                <b>
+                  Data de Abertura
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.DataAbertura | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </ion-col>
+            <ion-col col-6>
+              <p ion-text>
+                <b>
+                  Prev. de Atendimento
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </ion-col>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <ion-note class="card-note">
+                {{ chamado.StatusChamado }}
+              </ion-note>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header class="card-header-chamado">
+        <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon> Localização
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h1 ion-text>
+                {{ nomePortal }}
+              </h1>
+            </ion-col>
+
+            <ion-col col-10>
+              <p ion-text>
+                {{ chamado.NomePontoVenda }}
+              </p>
+              <p ion-text>
+                {{ chamado.Endereco }}
+              </p>
+              <p ion-text>
+                {{ chamado.Cidade }} / {{ chamado.Estado }}
+              </p>
+              <p ion-text>
+                {{ chamado.CEP }}
+              </p>
+
+            </ion-col>
+            <ion-col col-2>
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
+                <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
+              </h1>
+            </ion-col>
+
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header class="card-header-chamado">
+        <ion-icon name="contact" class="card-icone" item-start></ion-icon> Contato
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <p ion-text>
+                <b>
+                  Solicitante
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.NomeUsuarioSolicitante }}
+              </p>
+            </ion-col>
+
+          </ion-row>
+
+          <ion-row>
+
+            <ion-col col-10>
+              <p ion-text>
+                <b>
+                  E-mail
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.EmailSolicitante }}
+              </p>
+            </ion-col>
+            <ion-col col-2>
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
+                <a href="mailto:{{ chamado.EmailSolicitante }}">
+                  <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
+                </a>
+              </h1>
+            </ion-col>
+          </ion-row>
+
+          <ion-row>
+
+            <ion-col col-10>
+              <p ion-text>
+                <b>
+                  Fone
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.TelefoneSolicitante }}
+              </p>
+            </ion-col>
+            <ion-col col-2>
+              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
+                <a href="tel:{{ chamado.TelefoneSolicitante }}">
+                  <ion-icon name="call" color="cushman-2" class="card-icone-texto"></ion-icon>
+                </a>
+              </h1>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header class="card-header-chamado">
+        <ion-icon name="build" class="card-icone" item-start></ion-icon> Manutenção
+      </ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row>
+            <ion-col col-12>
+              <h2 ion-text>
+                {{ chamado.TipoServico }} / {{ chamado.Causa }} / {{ chamado.Mantenedor }}
+              </h2>
+            </ion-col>
+
+            <ion-col col-12>
+              <p ion-text>
+                <b>
+                  Causa
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.DescricaoOcorrencia }}
+              </p>
+            </ion-col>
+
+            <ion-col col-12>
+              <p ion-text>
+                <b>
+                  Local
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.LocalizacaoEquipamento }}
+              </p>
+            </ion-col>
+
+            <ion-col col-12>
+              <p ion-text>
+                <b>
+                  Equipamento
+                </b>
+              </p>
+              <p ion-text>
+                {{ chamado.Equipamento }}
+              </p>
+            </ion-col>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+<div class="item-altura-fab"></div>
 
   <ion-fab *ngIf="tipoChamado == 'Dados Básicos'" bottom right>
     <button (click)="navegarClick('Problema')" ion-fab color="cushman-2">
@@ -25,160 +458,23 @@
     </button>
   </ion-fab>
   <ion-fab *ngIf="tipoChamado == 'Problema'" bottom right>
-    <button (click)="navegarClick('Resumo')" ion-fab color="cushman-2">
+    <button (click)="navegarClick('Fotos')" ion-fab color="cushman-2">
       <ion-icon name="arrow-forward"></ion-icon>
     </button>
   </ion-fab>
-
-  <ion-grid *ngIf="tipoChamado == 'Dados Básicos'">
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Centro de Custo</ion-label>
-          <ion-input type="number" placeholder="Código"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Posto de Atendimento</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1234">1234 - HQ S4R</ion-option>
-            <ion-option value="12345">12345 - HQ S4R</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col class="item-novo-chamado">
-        <ion-card>
-          <ion-card-header class="card-header-chamado">
-            <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon> Localização
-          </ion-card-header>
-          <ion-card-content>
-            <ion-grid>
-              <ion-row>
-                <ion-col col-12>
-                  <h1 ion-text>
-                    Portal Banco Pan
-                  </h1>
-                </ion-col>
-
-                <ion-col col-10>
-                  <p ion-text>
-                    Nome do Ponto de Venda
-                  </p>
-                  <p ion-text>
-                    Endereço Ponto de Venda
-                  </p>
-                  <p ion-text>
-                    Cidade / Estado
-                  </p>
-                  <p ion-text>
-                    CEP
-                  </p>
-                </ion-col>
-                <ion-col col-2>
-                  <h1 ion-text class="card-icone-h1">
-                    <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
-                  </h1>
-                </ion-col>
-              </ion-row>
-            </ion-grid>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Nome do Solicitante</ion-label>
-          <ion-input placeholder="Solicitante"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">E-mail do Solicitante</ion-label>
-          <ion-input placeholder="E-mail"></ion-input>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  <ion-grid *ngIf="tipoChamado == 'Problema'">
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Descrição do Problema</ion-label>
-          <ion-textarea placeholder="Preencha a descrição"></ion-textarea>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Tipo de Serviço</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1">AC / Ar Condicionado / Outros</ion-option>
-            <ion-option value="2">Cleaning / Limpeza</ion-option>
-            <ion-option value="3">Elevator / Elevador</ion-option>
-            <ion-option value="2">Plumbing / Hidráulica</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col-6>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Causa</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1">Falha Motor</ion-option>
-            <ion-option value="2">Falha Painel</ion-option>
-            <ion-option value="3">Inoperante</ion-option>
-            <ion-option value="2">Cabo de Aço</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-      <ion-col col-6>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">SLA</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1">Alta</ion-option>
-            <ion-option value="2">Média</ion-option>
-            <ion-option value="3">Baixa</ion-option>
-            <ion-option value="2">Urgente</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Localização</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1">Ambulatório</ion-option>
-            <ion-option value="2">Bloco 2 - Mezanino</ion-option>
-            <ion-option value="3">Bloco 2 - Warehouse</ion-option>
-            <ion-option value="4">Bloco 3 - Mezanino</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-novo-chamado">
-          <ion-label stacked color="cushman-3">Equipamento</ion-label>
-          <ion-select interface="action-sheet" cancelText="Cancelar">
-            <ion-option value="1">Elevador A</ion-option>
-            <ion-option value="2">Elevador B</ion-option>
-            <ion-option value="3">Elevador C</ion-option>
-            <ion-option value="4">Elevador D</ion-option>
-          </ion-select>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <ion-fab *ngIf="tipoChamado == 'Fotos'" bottom left>
+    <button (click)="navegarClick('Problema')" ion-fab color="cushman-2">
+      <ion-icon name="arrow-back"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab *ngIf="tipoChamado == 'Fotos'" bottom right>
+    <button (click)="salvarChamadoClick()" [disabled]="!chamadoForm.valid" ion-fab color="cushman-2">
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
+  <ion-fab *ngIf="tipoChamado == 'Chamado'" bottom center>
+    <button (click)="homeClick()" ion-fab color="cushman-1">
+      <ion-icon name="close"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>
