@@ -117,8 +117,20 @@ export class ChamadosEquipamentoPage {
             else {
               this.alertsProvider.fecharCarregando();
             }
-          }
-        )
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.exibirMsg = true;
+            this.chamados = null;
+      
+            if (this.isRefreshing) {
+              this.refresher.complete();
+              this.isRefreshing = false;
+            }
+            else {
+              this.alertsProvider.fecharCarregando();
+            }
+          });
     }
     catch (e) {
       console.log(e);

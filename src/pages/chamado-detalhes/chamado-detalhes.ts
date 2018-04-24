@@ -131,8 +131,10 @@ export class ChamadoDetalhesPage {
         }
 
         this.alertsProvider.fecharCarregando();
-      }
-    )
+      }, e => {
+        console.log(e);
+        this.alertsProvider.fecharCarregando();
+      });
   }
 
   carregarDetalhesChamadoOffline() {

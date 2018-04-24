@@ -138,6 +138,9 @@ export class OfflineProvider {
             else {
               _chamadoOffline = false;
             }
+          }, e => {
+            console.log(e);
+            _chamadoOffline = false;
           });
       }
       else {
@@ -169,8 +172,9 @@ export class OfflineProvider {
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   salvarSubtiposOffline(db: SQLiteObject, portal: string, chamadoId: any, tipoServicoId: any) {
@@ -193,8 +197,9 @@ export class OfflineProvider {
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   salvarStatusOffline(db: SQLiteObject, portal: string, chamadoId: any) {
@@ -218,8 +223,9 @@ export class OfflineProvider {
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   salvarMateriaisOffline(db: SQLiteObject, portal: string, chamadoId: any) {
@@ -246,8 +252,9 @@ export class OfflineProvider {
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   salvarMovimentacaoOffline(portal: string, chamadoId: any, parametros: any) {
@@ -305,8 +312,9 @@ export class OfflineProvider {
             db.executeSql(_sql, _dados).catch((e) => console.log(e));
           }
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   salvarFotoOffline(portal: string, chamadoId: any, parametros: any) {

@@ -126,8 +126,9 @@ export class ChamadoMovimentacaoPage {
         let _objetoRetorno = JSON.parse(_resposta._body);
 
         this.opcoesSubtipos = _objetoRetorno;
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   carregarSubtiposOffline() {
@@ -159,8 +160,9 @@ export class ChamadoMovimentacaoPage {
         let _objetoRetorno = JSON.parse(_resposta._body);
 
         this.opcoesStatus = _objetoRetorno;
-      }
-    )
+      }, e => {
+        console.log(e);
+      });
   }
 
   carregarStatusOffline() {
@@ -221,8 +223,10 @@ export class ChamadoMovimentacaoPage {
         }
 
         this.alertsProvider.fecharCarregando();
-      }
-    )
+      }, e => {
+        console.log(e);
+        this.alertsProvider.fecharCarregando();
+      });
   }
 
   carregarDadosFormOffline() {
@@ -269,8 +273,9 @@ export class ChamadoMovimentacaoPage {
           if (this.chamado) {
             this.habilitarChamado = this.chamado.HabilitarChamado;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -346,8 +351,12 @@ export class ChamadoMovimentacaoPage {
         else {
           this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
+
         this.alertsProvider.fecharCarregando();
 
+      }, e => {
+        console.log(e);
+        this.alertsProvider.fecharCarregando();
       });
   }
 

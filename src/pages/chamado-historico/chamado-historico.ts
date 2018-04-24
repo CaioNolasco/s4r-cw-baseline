@@ -125,8 +125,17 @@ export class ChamadoHistoricoPage {
         else {
           this.alertsProvider.fecharCarregando();
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+        else {
+          this.alertsProvider.fecharCarregando();
+        }
+      });
   }
 
   carregarHistoricoOffline() {

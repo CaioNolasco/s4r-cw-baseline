@@ -59,7 +59,9 @@ export class TabsPage {
   carregarBadge() {
     this.events.subscribe('badge:exibir', () => {
       this.badgesOffline = this.offlineProvider.retornarConfigBadgesOffline();
-    });
+    }, e => {
+      console.log(e);
+    });;
 
     this.badgesOffline = this.offlineProvider.retornarConfigBadgesOffline();
   }
@@ -74,8 +76,9 @@ export class TabsPage {
           this.permissoesChamado = _objetoRetorno;
 
          this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);      
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);

@@ -161,8 +161,10 @@ export class ChamadoNovoPage {
             this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
             this.opcoesPontosVenda = null
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        });
     }
     catch (e) {
       console.log(e);
@@ -192,8 +194,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesTiposServico[0]) {
             this.opcoesTiposServico = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -215,8 +218,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesSubtipos[0]) {
             this.opcoesSubtipos = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -240,8 +244,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesCriticidades[0]) {
             this.opcoesCriticidades = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -263,8 +268,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesMantenedores[0]) {
             this.opcoesMantenedores = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -288,8 +294,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesLocalizacoes[0]) {
             this.opcoesLocalizacoes = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -311,8 +318,9 @@ export class ChamadoNovoPage {
           if (!this.opcoesEquipamentos[0]) {
             this.opcoesEquipamentos = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -335,8 +343,11 @@ export class ChamadoNovoPage {
             if (!this.pontoVenda) {
               this.pontoVenda = null;
             }
-          }
-        )
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.pontoVenda = null;
+          });
       }
     }
     catch (e) {
@@ -400,25 +411,29 @@ export class ChamadoNovoPage {
     try {
       this.valorSla = null;
 
-      if(sla){
+      if (sla) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
         this.chamadosProvider.retornarValoresSla(this.portal, this.tiposServico.value, this.postosAtendimento.value, sla).subscribe(
           data => {
             let _resposta = (data as any);
-  
+
             let _objetoRetorno = JSON.parse(_resposta._body);
-  
+
             this.valorSla = _objetoRetorno;
-  
+
             if (!this.valorSla) {
               this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
               this.valorSla = null;
             }
-  
+
             this.alertsProvider.fecharCarregando();
-          }
-        )
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.pontoVenda = null;
+            this.alertsProvider.fecharCarregando();
+          });
       }
     }
     catch (e) {
@@ -445,8 +460,10 @@ export class ChamadoNovoPage {
           if (!this.chamado) {
             this.chamado = null;
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        });
     }
     catch (e) {
       console.log(e);
@@ -504,6 +521,10 @@ export class ChamadoNovoPage {
               this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
+            this.alertsProvider.fecharCarregando();
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.alertsProvider.fecharCarregando();
           });
       }

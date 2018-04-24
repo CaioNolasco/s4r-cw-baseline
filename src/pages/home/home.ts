@@ -112,8 +112,9 @@ export class HomePage {
 
           this.adicionarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoCadastrar);
           this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -122,7 +123,6 @@ export class HomePage {
 
   carregarChamados(novaPagina: boolean = false) {
     try {
-
       if (!this.isRefreshing) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
@@ -155,8 +155,20 @@ export class HomePage {
             else {
               this.alertsProvider.fecharCarregando();
             }
-          }
-        )
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.exibirMsg = true;
+            this.chamados = null;
+      
+            if (this.isRefreshing) {
+              this.refresher.complete();
+              this.isRefreshing = false;
+            }
+            else {
+              this.alertsProvider.fecharCarregando();
+            }
+          });
     }
     catch (e) {
       console.log(e);
@@ -191,8 +203,10 @@ export class HomePage {
           else {
             this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
           }
-        }, error => {
-          if (error.status == 404) {
+        }, e => {
+          console.log(e);
+
+          if (e.status == 404) {
             this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
           }
           else {
@@ -295,6 +309,11 @@ export class HomePage {
                   this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                 }
 
+                this.alertsProvider.fecharCarregando();
+              }, e => {
+                console.log(e);
+                this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
+                this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                 this.alertsProvider.fecharCarregando();
               });
           }

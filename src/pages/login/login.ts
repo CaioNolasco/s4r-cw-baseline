@@ -114,8 +114,11 @@ export class LoginPage {
           }
 
           this.alertsProvider.fecharCarregando();
-        }
-      )
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.fecharCarregando();
+        });
     }
     catch (e) {
       console.log(e);

@@ -96,8 +96,9 @@ export class ChamadoMateriaisNovoPage {
           let _objetoRetorno = JSON.parse(_resposta._body);
 
           this.opcoesTiposServico = _objetoRetorno;
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -112,8 +113,9 @@ export class ChamadoMateriaisNovoPage {
           let _objetoRetorno = JSON.parse(_resposta._body);
 
           this.opcoesMarcasMaterial = _objetoRetorno;
-        }
-      )
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -136,8 +138,11 @@ export class ChamadoMateriaisNovoPage {
           if (!this.opcoesModelosMaterial[0]) {
             this.opcoesModelosMaterial = null
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.opcoesModelosMaterial = null;
+        });
     }
     catch (e) {
       console.log(e);
@@ -160,8 +165,11 @@ export class ChamadoMateriaisNovoPage {
             if (!this.modelo) {
               this.modelo = null;
             }
-          }
-        )
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.modelo = null;
+          });
       }
     }
     catch (e) {
@@ -204,6 +212,10 @@ export class ChamadoMateriaisNovoPage {
               this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
+            this.alertsProvider.fecharCarregando();
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.alertsProvider.fecharCarregando();
           });
       }

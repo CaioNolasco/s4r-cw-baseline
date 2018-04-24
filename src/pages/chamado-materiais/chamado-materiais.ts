@@ -141,8 +141,17 @@ export class ChamadoMateriaisPage {
         else {
           this.alertsProvider.fecharCarregando();
         }
-      }
-    )
+      }, e => {
+        console.log(e);
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+        else {
+          this.alertsProvider.fecharCarregando();
+        }
+      });
   }
 
   carregarMateriaisOffline() {
@@ -181,7 +190,7 @@ export class ChamadoMateriaisPage {
       console.log(e);
     }
   }
-
+  
   excluirMaterial() {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
@@ -216,6 +225,12 @@ export class ChamadoMateriaisPage {
 
           this.index = null;
           this.materialChamadoId = null;
+          this.alertsProvider.fecharCarregando();
+        }, e => {
+          console.log(e);
+          this.index = null;
+          this.materialChamadoId = null;
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.alertsProvider.fecharCarregando();
         });
     }

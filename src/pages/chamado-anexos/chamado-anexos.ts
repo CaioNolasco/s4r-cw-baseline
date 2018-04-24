@@ -111,7 +111,7 @@ export class ChamadoAnexosPage {
   }
 
   carregarAnexos(exibirCarregando: boolean = true) {
-    try {
+    try{
       if (!this.isRefreshing && exibirCarregando) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
@@ -122,14 +122,14 @@ export class ChamadoAnexosPage {
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
-
+  
           this.anexos = _objetoRetorno;
-
+  
           if (!this.anexos[0]) {
             this.exibirMsgAnexos = true;
             this.anexos = null;
           }
-
+  
           if (exibirCarregando) {
             if (this.isRefreshing) {
               this.refresher.complete();
@@ -139,10 +139,22 @@ export class ChamadoAnexosPage {
               this.alertsProvider.fecharCarregando();
             }
           }
-        }
-      )
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.exibirMsgAnexos = true;
+          this.anexos = null;
+  
+          if (this.isRefreshing) {
+            this.refresher.complete();
+            this.isRefreshing = false;
+          }
+          else {
+            this.alertsProvider.fecharCarregando();
+          }
+        });
     }
-    catch (e) {
+    catch(e){
       console.log(e);
       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgAnexos = true;
@@ -159,7 +171,7 @@ export class ChamadoAnexosPage {
   }
 
   carregarFotos() {
-    try {      
+    try {
       this.exibirMsgFotos = false;
 
       if (!this.origemOffline) {
@@ -182,36 +194,42 @@ export class ChamadoAnexosPage {
     }
   }
 
-  carregarFotosOnline(){
-      this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, false).subscribe(
-        data => {
-          let _resposta = (data as any);
-          let _objetoRetorno = JSON.parse(_resposta._body);
+  carregarFotosOnline() {
+    this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, false).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
 
-          this.fotos = _objetoRetorno;
+        this.fotos = _objetoRetorno;
 
-          if (!this.fotos[0]) {
-            this.exibirMsgFotos = true;
-            this.fotos = null;
-          }
-
-          if (this.isRefreshing) {
-            this.refresher.complete();
-            this.isRefreshing = false;
-          }
+        if (!this.fotos[0]) {
+          this.exibirMsgFotos = true;
+          this.fotos = null;
         }
-      )
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+      }, e => {
+        console.log(e);
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+      });
   }
 
-  carregarFotosOffline(){
-    try{
+  carregarFotosOffline() {
+    try {
       if (!this.isRefreshing) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
 
       this.offlineProvider.retornarFotosOffline(this.portal, this.chamadoId, false).then(data => {
         this.fotos = data;
-        
+
         if (!this.fotos[0]) {
           this.exibirMsgFotos = true;
           this.fotos = null;
@@ -308,6 +326,12 @@ export class ChamadoAnexosPage {
           this.index = null;
           this.anexoId = null;
           this.alertsProvider.fecharCarregando();
+        }, e => {
+          console.log(e);
+          this.index = null;
+          this.anexoId = null;
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.fecharCarregando();
         });
     }
     catch (e) {
@@ -339,7 +363,7 @@ export class ChamadoAnexosPage {
     }
   }
 
-  excluirFotoOnline(){
+  excluirFotoOnline() {
     this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId).subscribe(
       data => {
         let _resposta = (data as any);
@@ -371,10 +395,16 @@ export class ChamadoAnexosPage {
         this.index = null;
         this.anexoId = null;
         this.alertsProvider.fecharCarregando();
+      }, e => {
+        console.log(e);
+        this.index = null;
+        this.anexoId = null;
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.fecharCarregando();
       });
   }
 
-  excluirFotoOffline(){
+  excluirFotoOffline() {
     this.offlineProvider.excluirFotoChamadoOffline(this.portal, this.chamadoId, this.sequenciaFotos).then(data => {
       if (data) {
         if (this.index > -1) {
@@ -385,7 +415,7 @@ export class ChamadoAnexosPage {
           this.exibirMsgFotos = true;
           this.fotos = null;
         }
-        
+
         this.index = null;
         this.anexoId = null;
         this.alertsProvider.fecharCarregando();
@@ -411,22 +441,22 @@ export class ChamadoAnexosPage {
 
       this.camera.getPicture(_options).then((imageData) => {
         _base64Imagem = imageData;
-        
+
         let _sequencia: number
 
-        if(this.fotos){
-          if(this.fotos[0]){
+        if (this.fotos) {
+          if (this.fotos[0]) {
             _sequencia = +this.fotos[this.fotos.length - 1].sequencia;
             _sequencia = _sequencia + 1;
           }
-          else{
+          else {
             _sequencia = 0;
           }
         }
-        else{
+        else {
           _sequencia = 0;
         }
-        
+
 
         let _parametros = {
           Base64: "data:image/jpeg;base64," + _base64Imagem,
@@ -514,6 +544,10 @@ export class ChamadoAnexosPage {
           }
 
           this.alertsProvider.fecharCarregando();
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.fecharCarregando();
         });
     }
     catch (e) {
@@ -523,11 +557,11 @@ export class ChamadoAnexosPage {
     }
   }
 
-  salvarFotoOffline(parametros: any){
+  salvarFotoOffline(parametros: any) {
     this.offlineProvider.salvarFotoOffline(this.portal, this.chamadoId, parametros).then(data => {
       if (data) {
 
-        if(!this.fotos){
+        if (!this.fotos) {
           this.fotos = [];
         }
 
