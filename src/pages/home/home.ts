@@ -123,7 +123,7 @@ export class HomePage {
 
   carregarChamados(novaPagina: boolean = false) {
     try {
-      if (!this.isRefreshing) {
+      if (!this.isRefreshing && !novaPagina) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
 
@@ -152,7 +152,7 @@ export class HomePage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else {
+            else if(!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           }, e => {
@@ -165,7 +165,7 @@ export class HomePage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else {
+            else if(!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           });

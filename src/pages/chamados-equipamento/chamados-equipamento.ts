@@ -85,7 +85,7 @@ export class ChamadosEquipamentoPage {
   carregarChamados(novaPagina: boolean = false) {
     try {
 
-      if (!this.isRefreshing) {
+      if (!this.isRefreshing && !novaPagina) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       }
 
@@ -114,7 +114,7 @@ export class ChamadosEquipamentoPage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else {
+            else if(!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           }, e => {
@@ -127,7 +127,7 @@ export class ChamadosEquipamentoPage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else {
+            else if(!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           });
