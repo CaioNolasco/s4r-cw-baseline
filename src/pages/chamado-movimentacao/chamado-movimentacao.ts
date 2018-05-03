@@ -1,5 +1,6 @@
 import { Component, Renderer } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, App } from 'ionic-angular';
+import { Device } from '@ionic-native/device';
 
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { ChamadosProvider } from '../../providers/chamados/chamados';
@@ -21,7 +22,8 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     AlertsProvider,
     UteisProvider,
     ConstantesProvider,
-    OfflineProvider]
+    OfflineProvider,
+    Device]
 })
 export class ChamadoMovimentacaoPage {
   //Propriedades
@@ -46,6 +48,7 @@ export class ChamadoMovimentacaoPage {
   status: any;
   tipoChamado: any;
   tipoServicoId: any;
+  geolocalizacao: any;
   habilitarChamado: boolean;
   origemOffline: boolean = false;
   alterarChamado: boolean = false;
@@ -55,7 +58,7 @@ export class ChamadoMovimentacaoPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public configLoginProvider: ConfigLoginProvider, public chamadosProvider: ChamadosProvider,
     public alertsProvider: AlertsProvider, public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider,
-    public renderer: Renderer, public offlineProvider: OfflineProvider, public app: App) {
+    public renderer: Renderer, public offlineProvider: OfflineProvider, public app: App, public device: Device) {
     this.carregarDados();
   }
 
@@ -79,6 +82,10 @@ export class ChamadoMovimentacaoPage {
       else {
         if (!this.origemOffline) {
           this.alterarChamado = this.navParams.get("AlterarChamado");
+          this.geolocalizacao = this.uteisProvider.retornarGeolocalizacao();
+          this.geolocalizacao.then((data)=>{
+            this.geolocalizacao = data;
+          });
         }
         else {
           this.alterarChamado = true;
@@ -313,7 +320,16 @@ export class ChamadoMovimentacaoPage {
         FinalSolucao: this.uteisProvider.retornarHoraApi(this.finalSolucao),
         DataProgramacao: this.uteisProvider.retornarDataApi(this.dataProgramacao),
         Justificativa: this.justificativa,
-        DescricaoAtendimento: this.descricaoAtendimento
+        DescricaoAtendimento: this.descricaoAtendimento,
+        Rastreabilidade: {ChamadoID: this.chamadoId, 
+          StatusChamadoID: this.status, 
+          Tipo: this.constantesProvider.acaoMovimentacao,
+          UUID: this.device.uuid,
+          Plataforma: this.device.platform,
+          Modelo: this.device.model,
+          Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
+          Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
+         }
       };
 
       if (!this.origemOffline) {
@@ -340,8 +356,8 @@ export class ChamadoMovimentacaoPage {
 
         if (this.respostaApi) {
           if (this.respostaApi.sucesso) {
-            //this.carregarHabilitarChamado();
-            //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
+            this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
+            this.carregarHabilitarChamado();
             this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
           }
           else {

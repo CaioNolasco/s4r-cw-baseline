@@ -6,8 +6,9 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 import { HttpModule } from "@angular/http"
 import { Network } from '@ionic-native/network';
+import { Geolocation } from '@ionic-native/geolocation';
 import { SQLite, SQLiteDatabaseConfig } from '@ionic-native/sqlite';
-import {Camera} from '@ionic-native/camera';
+import { ChartsModule } from 'ng2-charts';
 
 import { ConfigLoginProvider } from '../providers/config-login/config-login';
 import { AlertsProvider } from '../providers/alerts/alerts';
@@ -16,7 +17,7 @@ import { UsuariosProvider } from '../providers/usuarios/usuarios';
 import { ConstantesProvider } from '../providers/constantes/constantes';
 import { UteisProvider } from '../providers/uteis/uteis';
 import { OfflineProvider } from '../providers/offline/offline';
-
+import { RelatoriosProvider } from '../providers/relatorios/relatorios';
 import { HomePage } from '../pages/home/home';
 import { ChamadosOfflinePage } from './../pages/chamados-offline/chamados-offline';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -32,6 +33,7 @@ import { ChamadosEquipamentoPage } from './../pages/chamados-equipamento/chamado
 import { ChamadoNovoPage } from './../pages/chamado-novo/chamado-novo';
 import { HomeOfflinePage } from './../pages/home-offline/home-offline';
 import { ChamadoMateriaisNovoPage } from './../pages/chamado-materiais-novo/chamado-materiais-novo';
+import { RotinasPage } from '../pages/rotinas/rotinas';
 
 import * as GalleryModal from 'ionic-gallery-modal';
 
@@ -113,13 +115,15 @@ import * as GalleryModal from 'ionic-gallery-modal';
     ChamadoNovoPage,
     HomeOfflinePage,
     ChamadoMateriaisNovoPage,
-    ChamadosOfflinePage
+    ChamadosOfflinePage,
+    RotinasPage
   ],
   imports: [
     BrowserModule,
     GalleryModal.GalleryModalModule,
     IonicModule.forRoot(MyApp),
-    HttpModule
+    HttpModule,
+    ChartsModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -138,7 +142,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     ChamadosEquipamentoPage,
     ChamadoNovoPage,
     HomeOfflinePage,
-    ChamadoMateriaisNovoPage
+    ChamadoMateriaisNovoPage,
+    RotinasPage
   ],
   providers: [
     StatusBar,
@@ -153,10 +158,11 @@ import * as GalleryModal from 'ionic-gallery-modal';
     UteisProvider,
     Network,
     OfflineProvider,
+    Geolocation,
     SQLite,
+    RelatoriosProvider
     //Desenvolvimento
-    //{ provide: SQLite, useClass: SQLiteMock },
-    Camera
+    //{ provide: SQLite, useClass: SQLiteMock }
   ]
 })
 export class AppModule { }

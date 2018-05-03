@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Events } from 'ionic-angular';
+import { Events, NavParams } from 'ionic-angular';
 
 import { OfflineProvider } from '../../providers/offline/offline';
 import { UsuariosProvider } from './../../providers/usuarios/usuarios';
@@ -28,12 +28,13 @@ export class TabsPage {
   badgesOffline: string;
   username: string;
   portal: string;
+  index: number;
   permissoesChamado: any;
   alterarChamado: boolean = false;
 
   //Load
   constructor(public offlineProvider: OfflineProvider, public events: Events, public usuariosProvider: UsuariosProvider,
-  public configLoginProvider: ConfigLoginProvider, public constantesProvider: ConstantesProvider) {
+    public configLoginProvider: ConfigLoginProvider, public constantesProvider: ConstantesProvider, public navParams: NavParams) {
     this.carregarDados();
   }
 
@@ -47,8 +48,21 @@ export class TabsPage {
       if (_configLoginProvider) {
         this.username = _configLoginProvider.username;
         this.portal = _configLoginProvider.portal;
-      
+
         this.carregarPermissoesChamado();
+      }
+
+      //Index (Side Menu)
+      this.index = 0;
+      if (this.navParams.get("Index")){
+        this.index = this.navParams.get("Index");
+      }
+
+      if (this.index == 1) {
+        let _componenteTabs = this.navParams.get("ComponenteTabs");
+        if (_componenteTabs) {
+          this.tab2Root = _componenteTabs;
+        }
       }
     }
     catch (e) {
@@ -66,8 +80,8 @@ export class TabsPage {
     this.badgesOffline = this.offlineProvider.retornarConfigBadgesOffline();
   }
 
-  carregarPermissoesChamado(){
-    try{
+  carregarPermissoesChamado() {
+    try {
       this.usuariosProvider.retornarPermissoesFuncionalidade(this.username, this.portal, this.constantesProvider.funcCadastroChamadoCorretivo).subscribe(
         data => {
           let _resposta = (data as any);
@@ -75,7 +89,7 @@ export class TabsPage {
 
           this.permissoesChamado = _objetoRetorno;
 
-         this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);      
+          this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);
         }, e => {
           console.log(e);
         });

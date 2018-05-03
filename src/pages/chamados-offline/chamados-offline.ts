@@ -1,16 +1,17 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController, App, Events } from 'ionic-angular';
+import { Device } from '@ionic-native/device';
 
 import { OfflineProvider } from './../../providers/offline/offline';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { UteisProvider } from './../../providers/uteis/uteis';
 import { ChamadosProvider } from './../../providers/chamados/chamados';
+import { ConstantesProvider } from '../../providers/constantes/constantes';
 
 import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoDetalhesPage } from '../chamado-detalhes/chamado-detalhes';
 import { HomeOfflinePage } from '../home-offline/home-offline';
-
 
 @IonicPage()
 @Component({
@@ -21,7 +22,9 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     ConfigLoginProvider,
     AlertsProvider,
     UteisProvider,
-    ChamadosProvider
+    ChamadosProvider,
+    ConstantesProvider,
+    Device
   ]
 })
 export class ChamadosOfflinePage {
@@ -34,6 +37,7 @@ export class ChamadosOfflinePage {
   chamado: any;
   refresher: any;
   respostaApi: any;
+  geolocalizacao: any;
   exibirMsg: boolean = false;
   isRefreshing: boolean = false;
   origemOffline: boolean = false;
@@ -44,7 +48,7 @@ export class ChamadosOfflinePage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public offlineProvider: OfflineProvider,
     public events: Events, public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider,
     public viewCtrl: ViewController, public uteisProvider: UteisProvider, public chamadosProvider: ChamadosProvider,
-    public app: App) {
+    public app: App, public constantesProvider: ConstantesProvider, public device: Device) {
     this.carregarDados();
   }
 
@@ -76,6 +80,13 @@ export class ChamadosOfflinePage {
         this.homeOffline = true;
       }
       else {
+        if (!this.origemOffline) {
+          this.geolocalizacao = this.uteisProvider.retornarGeolocalizacao();
+          this.geolocalizacao.then((data)=>{
+            this.geolocalizacao = data;
+          });
+        }
+
         this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
         this.exibirMsg = false;
 
@@ -192,10 +203,20 @@ export class ChamadosOfflinePage {
             DataProgramacao: this.uteisProvider.retornarDataApi(this.chamado.DataProgramacaoAtendimento, true),
             Justificativa: this.chamado.TextoJustificativa,
             DescricaoAtendimento: this.chamado.DescricaoAtendimento,
-            Anexos: _fotos
+            Anexos: _fotos,
+            Rastreabilidade: {ChamadoID: this.chamado.ChamadoID, 
+              StatusChamadoID: this.chamado.StatusChamadoID, 
+              Tipo: this.constantesProvider.acaoSincronizacao,
+              UUID: this.device.uuid,
+              Plataforma: this.device.platform,
+              Modelo: this.device.model,
+              Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
+              Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
+             }
           };
 
-          this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID, false, _parametros).subscribe(
+          this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID, 
+           this.constantesProvider.tipoAnexos, this.constantesProvider.tipoRotinas, false, _parametros).subscribe(
             data => {
               let _resposta = (data as any);
               let _objetoRetorno = JSON.parse(_resposta._body);

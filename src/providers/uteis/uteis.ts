@@ -1,11 +1,16 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Component } from '@angular/core';
 import { Platform } from 'ionic-angular';
+import { Geolocation } from '@ionic-native/geolocation';
+
 
 @Injectable()
+@Component({ providers: [
+  Geolocation
+] })
 
 export class UteisProvider {
 
-  constructor(public platform: Platform) {
+  constructor(public platform: Platform, public geolocation: Geolocation) {
   }
 
   //Ações
@@ -92,5 +97,16 @@ export class UteisProvider {
       return '';
 
     return decodeURIComponent(_results[2].replace(/\+/g, " "));
+  }
+
+  retornarGeolocalizacao(){
+    return new Promise((resolve, reject) => {
+      this.geolocation.getCurrentPosition().then((data) => {
+        resolve(data);
+       }).catch((e) => {
+         console.log(e);
+         resolve(null);
+       });
+    });
   }
 }

@@ -295,7 +295,7 @@ export class OfflineProvider {
   salvarAnexosOffline(db: SQLiteObject, portal: string, chamadoId: any) {
     let _anexos: any;
 
-    this.chamadosProvider.retornarFotosChamado(portal, chamadoId, true).subscribe(
+    this.chamadosProvider.retornarFotosChamado(portal, chamadoId, this.constantesProvider.tipoAnexos, true).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);

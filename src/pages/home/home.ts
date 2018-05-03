@@ -241,6 +241,9 @@ export class HomePage {
 
           this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
         }
+      }).catch(e => {
+        console.log(e);
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       });
     }
     catch (e) {

@@ -1,12 +1,63 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>Relatórios</ion-title>
+    <ion-buttons start>
+      <button ion-button icon-only menuToggle>
+        <ion-icon name="menu"></ion-icon>
+      </button>
+    </ion-buttons>
+    <ion-title>Corretivos</ion-title>
   </ion-navbar>
+  <ion-toolbar color="cushman-1">
+    <ion-segment [(ngModel)]="tipoCorretivo" color="cushman-4">
+      <ion-segment-button value="mes">
+        Mês
+      </ion-segment-button>
+      <ion-segment-button value="pendentes">
+        Pendentes
+      </ion-segment-button>
+      <ion-segment-button value="evolucao">
+        Evolução
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <ion-refresher (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
 
+    <!-- <ion-slides pager>
+
+    <ion-slide> -->
+    <div [hidden]="tipoCorretivo != 'mes'">
+      <h6>Chamados Corretivos {{ nomeMes }}/{{ ano }} (%)</h6>
+      <div style="display: block">
+        <canvas #corretivosMes baseChart height="400"></canvas>
+      </div>
+    </div>
+    <!-- </ion-slide>
+
+    <ion-slide> -->
+    <div [hidden]="tipoCorretivo != 'pendentes'">
+      <h6>Corretivos Pendentes: Atrasados / Dentro Prazo (%)</h6>
+      <div style="display: block">
+        <canvas #corretivosPendentes baseChart height="400"></canvas>
+      </div>
+    </div>
+    <!-- </ion-slide>
+
+    <ion-slide> -->
+    <div [hidden]="tipoCorretivo != 'evolucao'">
+      <h6>Evolução de Chamados Corretivos</h6>
+      <div style="display: block">
+        <canvas #evolucao baseChart height="400"></canvas>
+      </div>
+    </div>
+    <!-- </ion-slide>
+
+  </ion-slides> -->
 </ion-content>

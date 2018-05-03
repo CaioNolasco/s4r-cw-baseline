@@ -1,1 +1,20 @@
-<ion-nav [root]="rootPage"></ion-nav>
+<ion-menu [content]="content">
+    <ion-header>
+        <ion-toolbar color="cushman-2">
+            <ion-title>Menu</ion-title>
+        </ion-toolbar>
+    </ion-header>
+    <ion-content>
+        <ion-list>
+            <!-- <button ion-item (click)="abrirRaizClick(relatoriosPage, 1)">
+                Relatórios
+            </button> -->
+            <button ion-item menuClose *ngFor="let pagina of paginas" (click)="abrirClick(pagina)">
+                <ion-icon item-left [name]="pagina.icone"></ion-icon>
+                {{ pagina.titulo }}
+            </button>
+        </ion-list>
+    </ion-content>
+</ion-menu>
+
+<ion-nav id="nav" #content [root]="rootPage"></ion-nav>

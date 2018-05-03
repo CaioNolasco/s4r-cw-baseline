@@ -8,6 +8,7 @@ import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { OfflineProvider } from './../../providers/offline/offline';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
 
 import { LoginPage } from '../login/login';
 import { HomeOfflinePage } from '../home-offline/home-offline';
@@ -21,7 +22,9 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     AlertsProvider,
     ChamadosProvider,
     InAppBrowser,
-    OfflineProvider]
+    OfflineProvider,
+    ConstantesProvider,
+    Camera]
 })
 export class ChamadoAnexosPage {
   //Propriedades
@@ -51,7 +54,7 @@ export class ChamadoAnexosPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
     public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser, public offlineProvider: OfflineProvider,
-    public app: App, public camera: Camera, public platform: Platform) {
+    public app: App, public camera: Camera, public platform: Platform, public constantesProvider: ConstantesProvider) {
 
     this.carregarDados();
   }
@@ -118,7 +121,7 @@ export class ChamadoAnexosPage {
 
       this.exibirMsgAnexos = false;
 
-      this.chamadosProvider.retornarAnexosChamado(this.portal, this.chamadoId).subscribe(
+      this.chamadosProvider.retornarAnexosChamado(this.portal, this.chamadoId, this.constantesProvider.tipoAnexos).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -195,7 +198,7 @@ export class ChamadoAnexosPage {
   }
 
   carregarFotosOnline() {
-    this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, false).subscribe(
+    this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, this.constantesProvider.tipoAnexos, false).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -295,7 +298,7 @@ export class ChamadoAnexosPage {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-      this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId).subscribe(
+      this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -364,7 +367,7 @@ export class ChamadoAnexosPage {
   }
 
   excluirFotoOnline() {
-    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId).subscribe(
+    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -515,7 +518,8 @@ export class ChamadoAnexosPage {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
-      this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId, parametros).subscribe(
+      this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId, 
+        this.constantesProvider.tipoAnexos, parametros).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);

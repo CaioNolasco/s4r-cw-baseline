@@ -30,8 +30,8 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Centro de Custo
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              Centro de Custo
             </ion-label>
             <ion-input type="number" formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)"
               placeholder="Código"></ion-input>
@@ -41,8 +41,8 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Posto de Atendimento
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              Posto de Atendimento
             </ion-label>
             <ion-select formControlName="postosAtendimento" (ionChange)="postoAtendimentoChange($event)" [disabled]="!opcoesPontosVenda"
               interface="action-sheet" cancelText="Cancelar">
@@ -91,18 +91,18 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Nome do Solicitante
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              Nome do Solicitante
             </ion-label>
-            <ion-input formControlName="solicitante" placeholder="Solicitante"></ion-input>
+            <ion-input formControlName="solicitante" (keyup.enter)="redimencionarPagina()" placeholder="Solicitante"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">E-mail do Solicitante
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              E-mail do Solicitante
             </ion-label>
             <ion-input formControlName="email" (keyup.enter)="emailChange()" (blur)="emailChange()" placeholder="E-mail"></ion-input>
           </ion-item>
@@ -122,8 +122,8 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Tipo de Serviço
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              Tipo de Serviço
             </ion-label>
             <ion-select formControlName="tiposServico" (ionChange)="tiposServicoChange($event)" [disabled]="!opcoesTiposServico" interface="action-sheet"
               cancelText="Cancelar">
@@ -143,8 +143,8 @@
         </ion-col>
         <ion-col col-6>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">SLA
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              SLA
             </ion-label>
             <ion-select formControlName="sla"  (ionChange)="slaChange($event)" [disabled]="!opcoesCriticidades" interface="action-sheet" cancelText="Cancelar">
               <ion-option value="{{criticidade.CriticidadeID}}" *ngFor="let criticidade of opcoesCriticidades">{{criticidade.Descricao}}</ion-option>
@@ -197,8 +197,8 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Mantenedor
-              <div class="texto-obrigatorio"> * </div>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div>
+              Mantenedor
             </ion-label>
             <ion-select formControlName="mantenedores" [disabled]="!opcoesMantenedores" interface="action-sheet" cancelText="Cancelar">
               <ion-option value="{{mantenedor.MantenedorID}}" *ngFor="let mantenedor of opcoesMantenedores">{{mantenedor.Nome}}</ion-option>

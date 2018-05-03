@@ -23,7 +23,8 @@ export class AlertsProvider {
   msgErroCampos: string = "Campos preenchidos incorretamente!";
   msgErroCampo: string = "Campo preenchido incorretamente: ";
   msgErroPortal: string = "Você não está vínculado a nenhum contexto de portal!";
-  msgAguarde: string = "Por favor aguarde...";
+  msgErroRotina: string = "Adicione ao menos uma foto e preencha todos os campos obrigatórios!";
+  msgAguarde: string = "Por favor, aguarde...";
   msgNenhumItem: string = "Nenhum item localizado!";
   msgConfirmacao: string = "Deseja realmente executar essa ação?";
   msgConfirmacaoEstrutura: string = "Download de estrutura necessária, caso confirme marque offline novamente!";

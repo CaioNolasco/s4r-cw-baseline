@@ -1,0 +1,109 @@
+<ion-header>
+
+  <ion-navbar color="cushman-1">
+    <ion-title>Rotinas {{ chamadoId }}</ion-title>
+    <ion-buttons end>
+      <button (click)="atualizarRotinaClick()" *ngIf="habilitarChamado && alterarChamado" [disabled]="!rotinaForm.valid" ion-button
+        icon-only>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  <ion-toolbar color="cushman-1">
+    <ion-segment [(ngModel)]="tipoRotina" color="cushman-4">
+      <ion-segment-button value="rotina">
+        Rotina
+      </ion-segment-button>
+      <ion-segment-button value="fotos">
+        Fotos
+      </ion-segment-button>
+    </ion-segment>
+    <ion-buttons end>
+        <button (click)="fotoClick()" *ngIf="tipoRotina == 'fotos' && (habilitarChamado && alterarChamado) || origemOffline" ion-button
+          icon-only>
+          <ion-icon name="camera"></ion-icon>
+        </button>
+      </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher *ngIf="tipoRotina == 'fotos'" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+
+  <ion-item *ngIf="tipoRotina == 'rotina' && exibirMsgRotina">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+  </ion-item>
+
+  <form *ngIf="tipoRotina == 'rotina'" [formGroup]="rotinaForm">
+    <ion-grid>
+      <ion-row *ngFor="let input of inputs">
+        <ion-col col>
+          <ion-item *ngIf="input.TipoCampo == 'Boleano'" class="item-rotina">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-toggle formControlName="{{ input.ChamadoRotinaID }}" [disabled]="!habilitarChamado || !alterarChamado" color="cushman-2"></ion-toggle>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Texto'" class="item-rotina">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-input formControlName="{{ input.ChamadoRotinaID }}" (keyup.enter)="redimencionarPagina()" placeholder="Texto" [disabled]="!habilitarChamado || !alterarChamado"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Numerico'" class="item-rotina">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-input type="number" formControlName="{{ input.ChamadoRotinaID }}" (keyup.enter)="redimencionarPagina()" placeholder="Número" [disabled]="!habilitarChamado || !alterarChamado"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Opcao'" class="item-rotina">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-select formControlName="{{ input.ChamadoRotinaID }}" placeholder="Seleção" [disabled]="!habilitarChamado || !alterarChamado || !input.Opcoes"
+              interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{opcao.Valor}}" *ngFor="let opcao of input.Opcoes">{{opcao.Texto}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <ion-item *ngIf="tipoRotina == 'fotos' && exibirMsgFotos">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+  </ion-item>
+
+  <ion-grid *ngIf="tipoRotina == 'fotos' && fotos">
+    <ion-row>
+      <ion-col col-6 col-md-4 col-xl-3 *ngFor="let foto of fotos">
+        <div (click)="abrirFotoClick(foto.sequencia)" class="thumb-fotos" [style.background-image]="'url('+ foto.url +')'"></div>
+
+        <!-- <ion-fab *ngIf="(habilitarChamado && alterarChamado) || (origemOffline && !foto.AnexoID)" right top>
+          <button (click)="excluirClick(foto)" mini ion-fab color="cushman-1" class="icone-excluir-foto">
+            <ion-icon name="close"></ion-icon>
+          </button>
+        </ion-fab> -->
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+
+  <div class="item-altura-fab"></div>
+  <ion-fab *ngIf="habilitarChamado && alterarChamado" bottom right>
+    <button (click)="atualizarRotinaClick()" [disabled]="!rotinaForm.valid" ion-fab color="cushman-2">
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>

@@ -2,6 +2,7 @@ import { Platform, App } from 'ionic-angular';
 import { Http } from '@angular/http';
 import { Injectable, Component } from '@angular/core';
 
+
 import { ConstantesProvider } from '../constantes/constantes';
 import { ConfigLoginProvider } from '../config-login/config-login';
 import { OfflineProvider } from '../offline/offline';

@@ -12,6 +12,9 @@
       <button (click)="materiaisClick()" ion-button icon-only>
         <ion-icon ios="ios-briefcase-outline" name="briefcase"></ion-icon>
       </button>
+        <button (click)="rotinaClick()" *ngIf="chamado && chamado.TipoChamado == tipoChamadoPreventivo" ion-button icon-only>
+          <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
+        </button>
       <button (click)="historicoClick()" ion-button icon-only>
         <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
       </button>

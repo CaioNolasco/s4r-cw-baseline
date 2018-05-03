@@ -10,15 +10,13 @@
   </ion-navbar>
 </ion-header>
 
-
-
 <ion-content>
   <form [formGroup]="materiaisForm">
     <ion-grid>
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3">Aplicações <div class="texto-obrigatorio"> * </div></ion-label> 
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Aplicações</ion-label> 
             <ion-select formControlName="aplicacoes" [disabled]="!opcoesTiposServico" interface="action-sheet"
               cancelText="Cancelar">
               <ion-option value="{{tipoServico.TipoServicoID}}" *ngFor="let tipoServico of opcoesTiposServico">{{tipoServico.NomeTipoServico}}</ion-option>
@@ -30,7 +28,7 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3">Marca <div class="texto-obrigatorio"> * </div></ion-label>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Marca</ion-label>
             <ion-select  formControlName="marcas" (ionChange)="marcasChange($event)" [disabled]="!opcoesMarcasMaterial"
               interface="action-sheet" cancelText="Cancelar">
               <ion-option value="{{marcaMaterial.MarcaMaterialID}}" *ngFor="let marcaMaterial of opcoesMarcasMaterial">{{marcaMaterial.NomeMarcaMaterial}}</ion-option>
@@ -42,7 +40,7 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3">Modelo <div class="texto-obrigatorio"> * </div></ion-label>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Modelo</ion-label>
             <ion-select  formControlName="modelos" (ionChange)="modelosChange($event)" [disabled]="!opcoesModelosMaterial" interface="action-sheet"
               cancelText="Cancelar">
               <ion-option value="{{modeloMaterial.ModeloMaterialID}}" *ngFor="let modeloMaterial of opcoesModelosMaterial">{{modeloMaterial.NomeModeloMaterial}}</ion-option>
@@ -101,7 +99,7 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3">Quantidade <div class="texto-obrigatorio"> * </div></ion-label>
+            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Quantidade</ion-label>
             <ion-input formControlName="quantidade" (keyup.enter)="redimencionarPagina()" type="number" placeholder="Quantidade"></ion-input>
           </ion-item>
         </ion-col>

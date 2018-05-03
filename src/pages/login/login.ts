@@ -148,6 +148,9 @@ export class LoginPage {
         }
 
         this.carregarOpcoesPortais();
+      }).catch(e => {
+        console.log(e);
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       });
     }
     catch (e) {

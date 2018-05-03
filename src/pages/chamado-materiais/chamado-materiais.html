@@ -19,10 +19,10 @@
   </ion-fab>
 
   <ion-item *ngIf="exibirMsg">
-      <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-      {{ msgNenhumItem }}
-      <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
-    </ion-item>
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+  </ion-item>
 
   <ion-list *ngIf="materiais">
     <ion-item-sliding *ngFor="let material of materiais">
@@ -40,7 +40,10 @@
               </p>
             </ion-col>
             <ion-col col-2>
-             <h1><ion-icon (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" name="trash" color="cushman-1" class="icone-material"></ion-icon></h1>
+              <h1>
+                <ion-icon (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" name="trash"
+                  color="cushman-1" class="icone-material"></ion-icon>
+              </h1>
             </ion-col>
           </ion-row>
           <ion-row>
@@ -97,7 +100,8 @@
       </ion-item>
 
       <ion-item-options side="left">
-        <button (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" [disabled]="" ion-button color="cushman-1">
+        <button (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" [disabled]="" ion-button
+          color="cushman-1">
           <ion-icon name="trash"></ion-icon>
           Excluir
         </button>

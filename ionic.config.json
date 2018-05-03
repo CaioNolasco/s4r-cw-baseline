@@ -8,11 +8,11 @@
   "proxies": [
     {
       "path": "/usuariosapi",
-      "proxyUrl": "http://cwfacilities6377.cloudapp.net:9999/api/usuarios/"
+      "proxyUrl": "http://localhost:49608/api/usuarios/"
     },
     {
       "path": "/chamadosapi",
-      "proxyUrl": "http://cwfacilities6377.cloudapp.net:9999/api/chamados/"
+      "proxyUrl": "http://localhost:49608/api/chamados/"
     }
   ]
 }

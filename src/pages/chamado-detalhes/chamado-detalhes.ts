@@ -5,6 +5,7 @@ import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { OfflineProvider } from '../../providers/offline/offline';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
 
 import { ChamadoAnexosPage } from './../chamado-anexos/chamado-anexos';
 import { ChamadoMapaPage } from './../chamado-mapa/chamado-mapa';
@@ -13,6 +14,7 @@ import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoMateriaisPage } from './../chamado-materiais/chamado-materiais';
 import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movimentacao';
 import { HomeOfflinePage } from '../home-offline/home-offline';
+import { RotinasPage } from '../rotinas/rotinas';
 
 
 @IonicPage()
@@ -23,7 +25,8 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     AlertsProvider,
     ConfigLoginProvider,
     ChamadosProvider,
-    OfflineProvider]
+    OfflineProvider,
+    ConstantesProvider]
 })
 export class ChamadoDetalhesPage {
   //Propriedades
@@ -32,6 +35,7 @@ export class ChamadoDetalhesPage {
   nomePortal: string;
   msgNenhumItem: string;
   chamadoId: string;
+  tipoChamadoPreventivo: number;
   chamado: any;
   tipoServicoId: any;
   exibirMsg: boolean = false;
@@ -43,7 +47,8 @@ export class ChamadoDetalhesPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public configLoginProvider: ConfigLoginProvider,
-    public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App) {
+    public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App, 
+    public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -59,6 +64,7 @@ export class ChamadoDetalhesPage {
   carregarDados() {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
+      this.tipoChamadoPreventivo = this.constantesProvider.tipoChamadoPreventivo;
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot(HomeOfflinePage);
@@ -181,6 +187,15 @@ export class ChamadoDetalhesPage {
       TipoServicoID: this.tipoServicoId,
       "ChamadoDetalhesPage": this,
       OrigemOffline: this.origemOffline,
+      AlterarChamado: this.alterarChamado
+    });
+  }
+
+  rotinaClick() {
+    this.navCtrl.push(RotinasPage, {
+      ChamadoID: this.chamadoId,
+      OrigemOffline: this.origemOffline,
+      HabilitarChamado: this.habilitarChamado,
       AlterarChamado: this.alterarChamado
     });
   }

@@ -26,7 +26,8 @@ import { HomePage } from './../home/home';
     ConstantesProvider,
     ChamadosProvider,
     AlertsProvider,
-    UteisProvider
+    UteisProvider,
+    Camera
   ]
 })
 export class ChamadoNovoPage {
@@ -499,7 +500,7 @@ export class ChamadoNovoPage {
           Anexos: this.fotos
         };
 
-        this.chamadosProvider.salvarChamado(this.username, this.portal, _parametros).subscribe(
+        this.chamadosProvider.salvarChamado(this.username, this.portal, this.constantesProvider.tipoAnexos, _parametros).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
