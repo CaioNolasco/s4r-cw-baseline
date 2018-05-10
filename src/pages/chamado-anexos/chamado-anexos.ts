@@ -460,7 +460,6 @@ export class ChamadoAnexosPage {
           _sequencia = 0;
         }
 
-
         let _parametros = {
           Base64: "data:image/jpeg;base64," + _base64Imagem,
           url: "data:image/jpeg;base64," + _base64Imagem,

@@ -177,11 +177,30 @@ export class ChamadosOfflinePage {
     try {
       this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
       let _fotos;
+      let _fotosRotina;
+      let _rotina;
 
+      //Fotos
       this.offlineProvider.retornarFotosOffline(this.portal, chamado.ChamadoID, true).then(data => {
         _fotos = data;
       }).catch((e) => {
         _fotos = null;
+        console.log(e);
+      });
+
+      //Fotos Rotinas
+      this.offlineProvider.retornarFotosRotinaOffline(this.portal, chamado.ChamadoID, true).then(data => {
+        _fotosRotina = data;
+      }).catch((e) => {
+        _fotosRotina = null;
+        console.log(e);
+      });
+
+      //Rotinas
+      this.offlineProvider.retornarRotinaOffline(this.portal, chamado.ChamadoID).then(data => {
+        _rotina = data;
+      }).catch((e) => {
+        _rotina = null;
         console.log(e);
       });
 
@@ -204,6 +223,8 @@ export class ChamadosOfflinePage {
             Justificativa: this.chamado.TextoJustificativa,
             DescricaoAtendimento: this.chamado.DescricaoAtendimento,
             Anexos: _fotos,
+            AnexosRotina: _fotosRotina,
+            Rotina: _rotina,
             Rastreabilidade: {ChamadoID: this.chamado.ChamadoID, 
               StatusChamadoID: this.chamado.StatusChamadoID, 
               Tipo: this.constantesProvider.acaoSincronizacao,

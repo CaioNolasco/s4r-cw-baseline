@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, App, Nav, NavController } from 'ionic-angular';
+import { Platform, App, Nav, NavController, MenuController } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
@@ -26,7 +26,7 @@ export class MyApp {
 
   //Load
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public configLoginProvider: ConfigLoginProvider,
-    public offlineProvider: OfflineProvider) {
+    public offlineProvider: OfflineProvider, public menuController: MenuController) {
     platform.ready().then(() => {
       splashScreen.show();
 
@@ -79,6 +79,8 @@ export class MyApp {
 
   carregarMenu() {
     try {
+      //Menu
+      this.menuController.enable(false, 'menu');
       this.paginas = [
         { titulo: 'Corretivos', componente: TabsPage, componenteTabs: RelatoriosPage, index: 1, icone: 'stats' }
       ];

@@ -1,6 +1,6 @@
 
 import { Component, ViewChild } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, MenuController } from 'ionic-angular';
 import { Chart } from 'chart.js';
 
 import { OfflineProvider } from '../../providers/offline/offline';
@@ -43,7 +43,7 @@ export class RelatoriosPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public offlineProvider: OfflineProvider,
     public app: App, public configLoginProvider: ConfigLoginProvider, public constantesProvider: ConstantesProvider,
-    public alertsProvider: AlertsProvider, public relatoriosProvider: RelatoriosProvider) {
+    public alertsProvider: AlertsProvider, public relatoriosProvider: RelatoriosProvider, public menuController: MenuController) {
     this.carregarDados();
   }
 
@@ -52,6 +52,8 @@ export class RelatoriosPage {
       this.carregarCorretivosMes();
       this.carregarCorretivosPendentes();
       this.carregarEvolucao();
+      //Menu
+      this.menuController.enable(true, 'menu');
     }
   }
 
@@ -74,6 +76,7 @@ export class RelatoriosPage {
 
           this.nomeMes = this.constantesProvider.nomesMeses[_dataAtual.getUTCMonth()];
           this.tipoCorretivo = "mes";
+
         }
         else {
           this.navCtrl.setRoot(LoginPage);

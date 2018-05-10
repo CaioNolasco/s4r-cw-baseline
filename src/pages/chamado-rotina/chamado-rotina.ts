@@ -17,8 +17,8 @@ import { LoginPage } from '../login/login';
 
 @IonicPage()
 @Component({
-  selector: 'page-rotinas',
-  templateUrl: 'rotinas.html',
+  selector: 'page-chamado-rotina',
+  templateUrl: 'chamado-rotina.html',
   providers: [
     OfflineProvider,
     UteisProvider,
@@ -29,7 +29,8 @@ import { LoginPage } from '../login/login';
     Camera,
     Device]
 })
-export class RotinasPage {
+
+export class ChamadoRotinaPage {
   //Propriedades
   chamadoId: string;
   username: string;
@@ -187,6 +188,39 @@ export class RotinasPage {
   }
 
   carregarRotinaOffline() {
+    this.offlineProvider.retornarRotinaOffline(this.portal, this.chamadoId).then(data => {
+
+      this.inputs = data;
+
+      if (!this.inputs[0]) {
+        this.exibirMsgRotina = true;
+        this.inputs = null;
+      }
+      else {
+        this.habilitarChamado = true;
+
+        //Carregar Form
+        let _group = {};
+
+        for (let input of this.inputs) {
+          _group[input.ChamadoRotinaID] = input.Obrigatorio ? ['', Validators.compose([Validators.required])] : [''];
+        }
+
+        this.rotinaForm = this.formBuilder.group(_group);
+
+        for (let input of this.inputs) {
+
+          if (input.TipoCampo == "Boleano") {
+            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta == 1);
+          }
+          else {
+            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta);
+          }
+        }
+      }
+
+      this.alertsProvider.fecharCarregando();
+    });
   }
 
   carregarFotos() {
@@ -241,6 +275,35 @@ export class RotinasPage {
   }
 
   carregarFotosOffline() {
+    try {
+      this.offlineProvider.retornarFotosRotinaOffline(this.portal, this.chamadoId, false).then(data => {
+        this.fotos = data;
+
+        if (!this.fotos[0]) {
+          this.exibirMsgFotos = true;
+          this.fotos = null;
+        }
+
+        if (this.isRefreshing) {
+          this.refresher.complete();
+          this.isRefreshing = false;
+        }
+      });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.exibirMsgFotos = true;
+      this.fotos = null;
+
+      if (this.isRefreshing) {
+        this.refresher.complete();
+        this.isRefreshing = false;
+      }
+      else {
+        this.alertsProvider.fecharCarregando();
+      }
+    }
   }
 
   carregarAbrirFoto(sequencia: number) {
@@ -369,6 +432,32 @@ export class RotinasPage {
   }
 
   salvarFotoOffline(parametros: any) {
+    try{
+      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+
+      this.offlineProvider.salvarFotoRotinaOffline(this.portal, this.chamadoId, parametros).then(data => {
+        if (data) {
+  
+          if (!this.fotos) {
+            this.fotos = [];
+          }
+  
+          this.fotos.push(parametros);
+          //this.carregarFotos();
+          this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        }
+        else {
+          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        }
+
+        this.alertsProvider.fecharCarregando();
+      });
+    }
+    catch(e){
+      console.log(e);
+      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
   }
 
   excluirFoto() {
@@ -438,7 +527,7 @@ export class RotinasPage {
   atualizarRotina() {
     try {
       if (this.rotinaForm.valid && this.fotos && this.inputs) {
-      //if (this.rotinaForm.valid && this.inputs) {
+        //if (this.rotinaForm.valid && this.inputs) {
         this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
 
         let _parametrosRotina = [];
@@ -515,6 +604,17 @@ export class RotinasPage {
   }
 
   atualizarRotinaOffline(_parametros: any) {
+    this.offlineProvider.salvarRotinaOffline(this.portal, this.chamadoId, _parametros).then(data => {
+
+      if (data) {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+      }
+      else {
+        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+
+      this.alertsProvider.fecharCarregando();
+    });
   }
 
   //Eventos

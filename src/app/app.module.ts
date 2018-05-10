@@ -18,6 +18,7 @@ import { ConstantesProvider } from '../providers/constantes/constantes';
 import { UteisProvider } from '../providers/uteis/uteis';
 import { OfflineProvider } from '../providers/offline/offline';
 import { RelatoriosProvider } from '../providers/relatorios/relatorios';
+
 import { HomePage } from '../pages/home/home';
 import { ChamadosOfflinePage } from './../pages/chamados-offline/chamados-offline';
 import { TabsPage } from '../pages/tabs/tabs';
@@ -33,7 +34,8 @@ import { ChamadosEquipamentoPage } from './../pages/chamados-equipamento/chamado
 import { ChamadoNovoPage } from './../pages/chamado-novo/chamado-novo';
 import { HomeOfflinePage } from './../pages/home-offline/home-offline';
 import { ChamadoMateriaisNovoPage } from './../pages/chamado-materiais-novo/chamado-materiais-novo';
-import { RotinasPage } from '../pages/rotinas/rotinas';
+import { ChamadoRotinaPage } from './../pages/chamado-rotina/chamado-rotina';
+import { ChamadoDetalhesPopoverPage } from './../pages/chamado-detalhes-popover/chamado-detalhes-popover';
 
 import * as GalleryModal from 'ionic-gallery-modal';
 
@@ -116,7 +118,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     HomeOfflinePage,
     ChamadoMateriaisNovoPage,
     ChamadosOfflinePage,
-    RotinasPage
+    ChamadoRotinaPage,
+    ChamadoDetalhesPopoverPage
   ],
   imports: [
     BrowserModule,
@@ -143,7 +146,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     ChamadoNovoPage,
     HomeOfflinePage,
     ChamadoMateriaisNovoPage,
-    RotinasPage
+    ChamadoRotinaPage,
+    ChamadoDetalhesPopoverPage    
   ],
   providers: [
     StatusBar,
@@ -159,8 +163,8 @@ import * as GalleryModal from 'ionic-gallery-modal';
     Network,
     OfflineProvider,
     Geolocation,
-    SQLite,
-    RelatoriosProvider
+    RelatoriosProvider,
+    SQLite
     //Desenvolvimento
     //{ provide: SQLite, useClass: SQLiteMock }
   ]

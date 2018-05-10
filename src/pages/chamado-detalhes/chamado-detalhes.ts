@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, ViewController, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, ViewController, ModalController, PopoverController } from 'ionic-angular';
 
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
@@ -14,8 +14,8 @@ import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 import { ChamadoMateriaisPage } from './../chamado-materiais/chamado-materiais';
 import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movimentacao';
 import { HomeOfflinePage } from '../home-offline/home-offline';
-import { RotinasPage } from '../rotinas/rotinas';
-
+import { ChamadoRotinaPage } from './../chamado-rotina/chamado-rotina';
+import { ChamadoDetalhesPopoverPage } from './../chamado-detalhes-popover/chamado-detalhes-popover';
 
 @IonicPage()
 @Component({
@@ -48,7 +48,7 @@ export class ChamadoDetalhesPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public configLoginProvider: ConfigLoginProvider,
     public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App, 
-    public constantesProvider: ConstantesProvider) {
+    public constantesProvider: ConstantesProvider, public popoverController: PopoverController) {
     this.carregarDados();
   }
 
@@ -192,7 +192,7 @@ export class ChamadoDetalhesPage {
   }
 
   rotinaClick() {
-    this.navCtrl.push(RotinasPage, {
+    this.navCtrl.push(ChamadoRotinaPage, {
       ChamadoID: this.chamadoId,
       OrigemOffline: this.origemOffline,
       HabilitarChamado: this.habilitarChamado,
@@ -210,10 +210,26 @@ export class ChamadoDetalhesPage {
   }
 
   historicoClick() {
-    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: this.chamadoId, OrigemOffline: this.origemOffline });
+    this.navCtrl.push(ChamadoHistoricoPage, { 
+      ChamadoID: this.chamadoId, 
+      OrigemOffline: this.origemOffline 
+    });
   }
 
   atualizarClick() {
     this.carregarDetalhesChamado();
+  }
+
+  popoverClick(evento) {
+    let _popover = this.popoverController.create(ChamadoDetalhesPopoverPage, 
+      { ChamadoID: this.chamadoId,
+        HabilitarChamado: this.habilitarChamado,
+        OrigemOffline: this.origemOffline,
+        AlterarChamado: this.alterarChamado,
+        TipoServicoID: this.tipoServicoId,
+        "ChamadoDetalhesPage": this});
+    _popover.present({
+      ev: evento
+    });
   }
 }

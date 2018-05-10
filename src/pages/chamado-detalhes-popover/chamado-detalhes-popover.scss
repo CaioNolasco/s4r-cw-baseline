@@ -1,0 +1,15 @@
+ .list{
+     margin-bottom: -1px !important;
+ }
+
+ .popover-ios .popover-arrow::after{
+     background-color: map-get($colors, cushman-2) !important;
+ }
+
+ .popover-ios .popover-content{
+     background-color: transparent !important;
+ }
+
+ .menu-popover{
+     background-color: #ffffff;
+ }

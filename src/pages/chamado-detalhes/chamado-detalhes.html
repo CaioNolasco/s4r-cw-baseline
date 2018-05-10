@@ -3,20 +3,23 @@
   <ion-navbar color="cushman-1">
     <ion-title>{{ chamadoId }}</ion-title>
     <ion-buttons *ngIf="chamadoId" end>
-      <button (click)="anexosClick()" ion-button icon-only>
+       <button (click)="anexosClick()" ion-button icon-only>
         <ion-icon name="attach"></ion-icon>
       </button>
       <button (click)="movimentacaoClick()" ion-button icon-only>
         <ion-icon ios="ios-hammer-outline" name="hammer"></ion-icon>
       </button>
-      <button (click)="materiaisClick()" ion-button icon-only>
+      <!-- <button (click)="materiaisClick()" ion-button icon-only>
         <ion-icon ios="ios-briefcase-outline" name="briefcase"></ion-icon>
-      </button>
+      </button> -->
         <button (click)="rotinaClick()" *ngIf="chamado && chamado.TipoChamado == tipoChamadoPreventivo" ion-button icon-only>
           <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
         </button>
-      <button (click)="historicoClick()" ion-button icon-only>
+      <!-- <button (click)="historicoClick()" ion-button icon-only>
         <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
+      </button> -->
+      <button ion-button icon-only (click)="popoverClick($event)">
+        <ion-icon name="more"></ion-icon>
       </button>
     </ion-buttons>
   </ion-navbar>

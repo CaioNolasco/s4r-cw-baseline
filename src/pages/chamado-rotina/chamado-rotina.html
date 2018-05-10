@@ -19,7 +19,7 @@
       </ion-segment-button>
     </ion-segment>
     <ion-buttons end>
-        <button (click)="fotoClick()" *ngIf="tipoRotina == 'fotos' && (habilitarChamado && alterarChamado) || origemOffline" ion-button
+        <button (click)="fotoClick()" *ngIf="tipoRotina == 'fotos' && habilitarChamado && alterarChamado" ion-button
           icon-only>
           <ion-icon name="camera"></ion-icon>
         </button>
