@@ -861,6 +861,7 @@ export class OfflineProvider {
           let _rotina = [];
           if (data.rows.length > 0) {
             for (let i = 0; i < data.rows.length; i++) {
+              
               _rotina.push({
                 ChamadoRotinaID: data.rows.item(i)["ChamadoRotinaID"],
                 ChamadoID: data.rows.item(i)["ChamadoID"],
@@ -871,6 +872,8 @@ export class OfflineProvider {
                 Resposta: data.rows.item(i)["Resposta"],
                 Opcoes: JSON.parse(data.rows.item(i)["Opcoes"])
               });
+
+              console.log(data.rows.item(i)["Resposta"]);
             }
           }
           resolve(_rotina);

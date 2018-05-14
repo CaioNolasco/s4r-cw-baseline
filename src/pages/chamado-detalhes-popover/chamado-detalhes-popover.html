@@ -13,7 +13,7 @@
       <ion-icon ios="ios-briefcase-outline" name="briefcase" item-start></ion-icon>
       Materiais
     </ion-item>
-    <ion-item (click)="rotinaClick()">
+    <ion-item (click)="rotinaClick()" *ngIf="tipoChamado == tipoChamadoPreventivo">
       <ion-icon ios="ios-paper-outline" name="paper" item-start></ion-icon>
       Rotina
     </ion-item>

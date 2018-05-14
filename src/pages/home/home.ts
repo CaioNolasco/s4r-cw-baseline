@@ -298,6 +298,7 @@ export class HomePage {
                 if (this.respostaApi) {
                   if (this.respostaApi.sucesso) {
                     chamado.HabilitarChamado = false;
+                    //chamado.Offline = true;
                     this.offlineProvider.salvarConfigBadgesOffline();
                     this.events.publish('badge:exibir');
                     this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);

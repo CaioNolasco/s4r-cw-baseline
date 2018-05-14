@@ -211,7 +211,7 @@ export class ChamadoRotinaPage {
         for (let input of this.inputs) {
 
           if (input.TipoCampo == "Boleano") {
-            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta == 1);
+            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta == 1 || input.Resposta == "true");
           }
           else {
             this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta);

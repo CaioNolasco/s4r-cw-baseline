@@ -38,6 +38,7 @@ export class ChamadoDetalhesPage {
   tipoChamadoPreventivo: number;
   chamado: any;
   tipoServicoId: any;
+  tipoChamado: any;
   exibirMsg: boolean = false;
   habilitarChamado: boolean;
   origemOffline: boolean = false;
@@ -128,12 +129,15 @@ export class ChamadoDetalhesPage {
         let _objetoRetorno = JSON.parse(_resposta._body);
 
         this.chamado = _objetoRetorno;
-        this.tipoServicoId = this.chamado.TipoServicoID;
-        this.habilitarChamado = this.chamado.HabilitarChamado;
-
+      
         if (!this.chamado) {
           this.exibirMsg = true;
           this.chamado = null;
+        }
+        else{
+          this.tipoServicoId = this.chamado.TipoServicoID;
+          this.tipoChamado = this.chamado.TipoChamado;
+          this.habilitarChamado = this.chamado.HabilitarChamado;
         }
 
         this.alertsProvider.fecharCarregando();
@@ -150,6 +154,9 @@ export class ChamadoDetalhesPage {
       if (!this.chamado) {
         this.exibirMsg = true;
         this.chamado = null;
+      }
+      else {
+        this.tipoChamado = this.chamado.TipoChamado;
       }
 
       this.alertsProvider.fecharCarregando();
@@ -227,6 +234,7 @@ export class ChamadoDetalhesPage {
         OrigemOffline: this.origemOffline,
         AlterarChamado: this.alterarChamado,
         TipoServicoID: this.tipoServicoId,
+        TipoChamado: this.tipoChamado,
         "ChamadoDetalhesPage": this});
     _popover.present({
       ev: evento

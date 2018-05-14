@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, ViewController } from 'ionic-angular';
 
+import { ConstantesProvider } from '../../providers/constantes/constantes';
+
 import { ChamadoAnexosPage } from '../chamado-anexos/chamado-anexos';
 import { ChamadoMovimentacaoPage } from '../chamado-movimentacao/chamado-movimentacao';
 import { ChamadoMateriaisPage } from '../chamado-materiais/chamado-materiais';
@@ -11,18 +13,21 @@ import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
 @Component({
   selector: 'page-chamado-detalhes-popover',
   templateUrl: 'chamado-detalhes-popover.html',
-})
+  providers: [ConstantesProvider]})
 export class ChamadoDetalhesPopoverPage {
   //Propriedades
   chamadoId: string;
   habilitarChamado: boolean;
+  tipoChamadoPreventivo: number;
   tipoServicoId: any;
   chamadoDetalhesPage: any
+  tipoChamado: any;
   origemOffline: boolean = false;
   alterarChamado: boolean = false;
 
   //Load
-  constructor(public navCtrl: NavController, public navParams: NavParams, public app: App, public viewCtrl: ViewController) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public app: App, public viewCtrl: ViewController,
+    public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -32,11 +37,13 @@ export class ChamadoDetalhesPopoverPage {
   //Ações
   carregarDados() {
     try{
+      this.tipoChamadoPreventivo = this.constantesProvider.tipoChamadoPreventivo;
       this.chamadoId = this.navParams.get("ChamadoID");
       this.habilitarChamado = this.navParams.get("HabilitarChamado");
       this.origemOffline = this.navParams.get("OrigemOffline");
       this.alterarChamado = this.navParams.get("AlterarChamado");
       this.tipoServicoId = this.navParams.get("TipoServicoID");
+      this.tipoChamado = this.navParams.get("TipoChamado");
       this.chamadoDetalhesPage = this.navParams.get("ChamadoDetalhesPage");
     }
     catch (e) {

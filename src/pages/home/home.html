@@ -8,7 +8,7 @@
     <ion-title>{{nomePortal}}</ion-title>
     <ion-buttons end>
       <button (click)="qrCodeClick()" ion-button icon-only>
-        <ion-icon name="custom-qrcode" ></ion-icon>
+        <ion-icon name="custom-qrcode"></ion-icon>
       </button>
       <button (click)="logoutClick()" ion-button icon-only>
         <ion-icon name="log-out"></ion-icon>
@@ -26,10 +26,10 @@
     </ion-buttons>
     <ion-searchbar [(ngModel)]="search" (search)="buscarChamados($event)" placeholder="Nº Chamado"></ion-searchbar>
     <ion-buttons end>
-        <button (click)="buscarChamadosClick()" ion-button icon-only>
-          <ion-icon name="eye"></ion-icon>
-        </button>
-      </ion-buttons>
+      <button (click)="buscarChamadosClick()" ion-button icon-only>
+        <ion-icon name="eye"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -78,6 +78,13 @@
               <p ion-text>
                 <ion-icon ios="ios-calendar-outline" name="calendar"></ion-icon>
                 {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+              </p>
+            </ion-col>
+          </ion-row>
+          <ion-row *ngIf="chamado.Offline">
+            <ion-col>
+              <p ion-text end>
+                <ion-icon name="wifi" color="cushman-1"></ion-icon> {{ chamado.NomeUsuarioOffline }}
               </p>
             </ion-col>
           </ion-row>
