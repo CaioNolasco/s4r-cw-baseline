@@ -112,7 +112,7 @@
               <div class="texto-obrigatorio"> * </div>
               {{ "quantidade" | translate }}
             </ion-label>
-            <ion-input formControlName="quantidade" (keyup.enter)="redimencionarPagina()" type="number" placeholder="Quantidade"></ion-input>
+            <ion-input formControlName="quantidade" (keyup.enter)="redimencionarPagina()" type="number" placeholder="{{ 'quantidade' | translate }}"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>

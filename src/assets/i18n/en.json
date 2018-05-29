@@ -73,6 +73,7 @@
     "valorUnitario": "Unit Value",
     "quantidade": "Quantity",
     "valores": "Values",
+    "chamados": "Tickets",
     "msgValorExistente": "The value is in use!",
     "msgSucesso": "Action executed successfully!",
     "msgErro": "Could not perform this action!",
@@ -89,5 +90,6 @@
     "msgConfirmarAtualizarEstrutura": "Offline structure update!",
     "msgEscolhaAcao": "Choose the action you want to perform:",
     "msgOffline": "You are offline!",
-    "msgPortal": "You are in the context of the portal: "
+    "msgPortal": "You are in the context of the portal: ",
+    "msgOpcoesOffline": "To continue use the following options: "
 }

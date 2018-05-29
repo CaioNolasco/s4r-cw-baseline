@@ -73,6 +73,7 @@
     "valorUnitario": "Valor Unitario",
     "quantidade": "Cuantidad",
     "valores": "Valores",
+    "chamados": "Tickets",
     "msgValorExistente": "¡El valor rellenado está en uso!",
     "msgSucesso": "¡Acción ejecutada con éxito!",
     "msgErro": "¡No se pudo ejecutar la acción!",
@@ -89,5 +90,6 @@
     "msgConfirmarAtualizarEstrutura": "¡Actualización de la estructura sin conexión!",
     "msgEscolhaAcao": "Elija la acción que desea ejecutar:",
     "msgOffline": "¡No estás conectado!",
-    "msgPortal": "Usted está en el contexto del portal: "
+    "msgPortal": "Usted está en el contexto del portal: ",
+    "msgOpcoesOffline": "Para continuar utilice una de las siguientes opciones: "
 }
