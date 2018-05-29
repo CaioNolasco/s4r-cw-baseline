@@ -1,16 +1,27 @@
 // Global
 ion-icon {
   &[class*="custom-"] {
-    mask-size: contain;
-    mask-position: 50% 50%;
-    mask-repeat: no-repeat;
-    background: currentColor;
+    background-size: contain;
+    background-position: 50% 50%;
+    background-repeat: no-repeat;
     width: 1em;
-    height: 1em; 
+    height: 1em;
   }
 
   &[class*="custom-qrcode"] {
-    mask-image: url(../assets/imgs/qr-code.svg);
+    background-image: url(../assets/imgs/qr-code.svg);
+  }
+
+  &[class*="custom-brazil"] {
+    background-image: url(../assets/imgs/brazil.svg);
+  }
+
+  &[class*="custom-united-states"] {
+    background-image: url(../assets/imgs/united-states.svg);
+  }
+
+  &[class*="custom-spain"] {
+    background-image: url(../assets/imgs/spain.svg);
   }
 }
 
@@ -19,7 +30,6 @@ ion-icon {
   font-weight: bold;
   float: right;
 }
-
 
 //Anexos
 .item-lista-anexo{
@@ -210,7 +220,7 @@ ion-icon {
 
     .login-content {
       width: 86%;
-      height: 90%;
+      height: 85%;
       
       .logo {
         width: 197px;
@@ -244,6 +254,17 @@ ion-icon {
 
 .btn-login{
     margin-top: 7%;
+}
+
+.login-idioma{
+  right: 10px; 
+  top: 25px; 
+  position: absolute;
+}
+
+.login-idioma > .bar-buttons > .icon > .select > .select-text, 
+.login-idioma > .bar-buttons > .icon > .select > .select-icon{
+  display: none !important;
 }
 
 //Movimentação

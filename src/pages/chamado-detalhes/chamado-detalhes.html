@@ -3,22 +3,16 @@
   <ion-navbar color="cushman-1">
     <ion-title>{{ chamadoId }}</ion-title>
     <ion-buttons *ngIf="chamadoId" end>
-       <button (click)="anexosClick()" ion-button icon-only>
+      <button (click)="anexosClick()" ion-button icon-only tappable>
         <ion-icon name="attach"></ion-icon>
       </button>
-      <button (click)="movimentacaoClick()" ion-button icon-only>
+      <button (click)="movimentacaoClick()" ion-button icon-only tappable>
         <ion-icon ios="ios-hammer-outline" name="hammer"></ion-icon>
       </button>
-      <!-- <button (click)="materiaisClick()" ion-button icon-only>
-        <ion-icon ios="ios-briefcase-outline" name="briefcase"></ion-icon>
-      </button> -->
-        <button (click)="rotinaClick()" *ngIf="chamado && chamado.TipoChamado == tipoChamadoPreventivo" ion-button icon-only>
-          <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
-        </button>
-      <!-- <button (click)="historicoClick()" ion-button icon-only>
-        <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
-      </button> -->
-      <button ion-button icon-only (click)="popoverClick($event)">
+      <button (click)="rotinaClick()" *ngIf="chamado && chamado.TipoChamado == tipoChamadoPreventivo" ion-button icon-only tappable>
+        <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
+      </button>
+      <button (click)="popoverClick($event)" ion-button icon-only tappable>
         <ion-icon name="more"></ion-icon>
       </button>
     </ion-buttons>
@@ -31,27 +25,29 @@
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
   <div *ngIf="chamado">
     <ion-card *ngIf="chamado">
       <ion-card-header class="card-header-chamado">
-        <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon> Tempos
+        <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon>
+        {{ "tempos" | translate }}
       </ion-card-header>
       <ion-card-content>
         <ion-grid>
           <ion-row>
             <ion-col col-12>
               <h1 ion-text>
-                SLA {{chamado.Criticidade}} - {{chamado.Nivel}}
+                <!-- {{chamado.Criticidade}} -->
+                SLA - {{chamado.Nivel}}
               </h1>
             </ion-col>
 
             <ion-col col-6>
               <p ion-text>
                 <b>
-                  Data de Abertura
+                  {{ "dataAbertura" | translate }}
                 </b>
               </p>
               <p ion-text>
@@ -61,7 +57,7 @@
             <ion-col col-6>
               <p ion-text>
                 <b>
-                  Prev. de Atendimento
+                  {{ "previsaoAtendimento" | translate }}
                 </b>
               </p>
               <p ion-text>
@@ -72,7 +68,7 @@
           <ion-row>
             <ion-col>
               <ion-note class="card-note">
-                {{ chamado.StatusChamado }}
+                <!-- {{ chamado.StatusChamado }} -->
               </ion-note>
             </ion-col>
           </ion-row>
@@ -82,7 +78,8 @@
 
     <ion-card>
       <ion-card-header class="card-header-chamado">
-        <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon> Localização
+        <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon>
+        {{ "localizacao" | translate }}
       </ion-card-header>
       <ion-card-content>
         <ion-grid>
@@ -110,7 +107,7 @@
             </ion-col>
             <ion-col col-2>
               <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
-                <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto"></ion-icon>
+                <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto" tappable></ion-icon>
               </h1>
             </ion-col>
 
@@ -121,7 +118,8 @@
 
     <ion-card>
       <ion-card-header class="card-header-chamado">
-        <ion-icon name="contact" class="card-icone" item-start></ion-icon> Contato
+        <ion-icon name="contact" class="card-icone" item-start></ion-icon>
+        {{ "contato" | translate }}
       </ion-card-header>
       <ion-card-content>
         <ion-grid>
@@ -129,7 +127,7 @@
             <ion-col col-12>
               <p ion-text>
                 <b>
-                  Solicitante
+                  {{ "solicitante" | translate }}
                 </b>
               </p>
               <p ion-text>
@@ -186,7 +184,8 @@
 
     <ion-card>
       <ion-card-header class="card-header-chamado">
-        <ion-icon name="build" class="card-icone" item-start></ion-icon> Manutenção
+        <ion-icon name="build" class="card-icone" item-start></ion-icon>
+        {{ "manutencao" | translate }}
       </ion-card-header>
       <ion-card-content>
         <ion-grid>
@@ -200,7 +199,7 @@
             <ion-col col-12>
               <p ion-text>
                 <b>
-                  Causa
+                  {{ "causa" | translate }}
                 </b>
               </p>
               <p ion-text>
@@ -211,7 +210,7 @@
             <ion-col col-12>
               <p ion-text>
                 <b>
-                  Local
+                  {{ "localizacao" | translate }}
                 </b>
               </p>
               <p ion-text>
@@ -222,7 +221,7 @@
             <ion-col col-12>
               <p ion-text>
                 <b>
-                  Equipamento
+                  {{ "equipamento" | translate }}
                 </b>
               </p>
               <p ion-text>

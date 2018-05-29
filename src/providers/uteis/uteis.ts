@@ -1,16 +1,13 @@
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { Geolocation } from '@ionic-native/geolocation';
-
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable()
-@Component({ providers: [
-  Geolocation
-] })
 
 export class UteisProvider {
 
-  constructor(public platform: Platform, public geolocation: Geolocation) {
+  constructor(public platform: Platform, public geolocation: Geolocation, public translateService: TranslateService) {
   }
 
   //Ações
@@ -63,16 +60,8 @@ export class UteisProvider {
     return data;
   }
 
-  retornarDataSqlite(data: string, hora: string){
+  retornarDataSqlite(data: string, hora: string) {
     return data && hora ? `${data}T${hora}` : data ? `${data}T00:00:00` : '';
-
-    // if (data && data != 'null'){
-    //   let _re = /\-/gi;
-    //   let _resultado = data.replace(_re, "/");
-
-    //   return _resultado;
-    // }
-    // return data;
   }
 
   retornarMes(mes: number): number {
@@ -82,7 +71,7 @@ export class UteisProvider {
     return 1;
   }
 
-  retornarZerosData(valor: any){
+  retornarZerosData(valor: any) {
     return ("0" + valor).slice(-2)
   }
 
@@ -99,14 +88,26 @@ export class UteisProvider {
     return decodeURIComponent(_results[2].replace(/\+/g, " "));
   }
 
-  retornarGeolocalizacao(){
+  retornarGeolocalizacao() {
     return new Promise((resolve, reject) => {
       this.geolocation.getCurrentPosition().then((data) => {
         resolve(data);
-       }).catch((e) => {
-         console.log(e);
-         resolve(null);
-       });
+      }).catch((e) => {
+        console.log(e);
+        resolve(null);
+      });
     });
+  }
+
+  retornarTextoTraduzido(chave: string): string {
+    let _valor: string;
+
+    this.translateService.get(chave).subscribe(
+      valor => {
+        _valor = valor;
+      }
+    )
+
+    return _valor;
   }
 }

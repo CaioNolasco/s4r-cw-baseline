@@ -1,14 +1,10 @@
 import { Http } from '@angular/http';
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { ConstantesProvider } from '../constantes/constantes';
 
-@Injectable()
-@Component({
-  providers: [
-    ConstantesProvider
-   ]
-})
+ @Injectable()
+
 export class RelatoriosProvider {
  //Propriedades
  private urlApiRelatorios: string = "/api/relatorios";
@@ -19,15 +15,15 @@ export class RelatoriosProvider {
   }
 
   //Retornos
-  retornarChamadosAbertosFechados(usuario: string, portal: string, mes: number, ano: number) {
-    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosAbertosFechados/${usuario}/${portal}/${mes}/${ano}`);
+  retornarChamadosAbertosFechados(usuario: string, portal: string, mes: number, ano: number, idioma: string) {
+    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosAbertosFechados/${usuario}/${portal}/${mes}/${ano}/${idioma}`);
   }
 
-  retornarChamadosDentroForaPrazo(usuario: string, portal: string) {
-    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosDentroForaPrazo/${usuario}/${portal}`);
+  retornarChamadosDentroForaPrazo(usuario: string, portal: string, idioma: string) {
+    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosDentroForaPrazo/${usuario}/${portal}/${idioma}`);
   }
 
-  retornarChamadosEvolucao(usuario: string, portal: string) {
-    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosEvolucao/${usuario}/${portal}`);
+  retornarChamadosEvolucao(usuario: string, portal: string, idioma: string) {
+    return this.http.get(this.urlApiRelatorios + `/RetornarChamadosEvolucao/${usuario}/${portal}/${idioma}`);
   }
 }

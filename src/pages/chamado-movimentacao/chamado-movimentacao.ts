@@ -9,10 +9,7 @@ import { UteisProvider } from './../../providers/uteis/uteis';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { OfflineProvider } from '../../providers/offline/offline';
 
-import { LoginPage } from '../login/login';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoMovimentacaoPage'})
 @Component({
   selector: 'page-chamado-movimentacao',
   templateUrl: 'chamado-movimentacao.html',
@@ -30,6 +27,7 @@ export class ChamadoMovimentacaoPage {
   chamadoId: string;
   username: string;
   portal: string;
+  idioma: string;
   statusEncerradoId: number;
   opcoesSubtipos: any;
   opcoesStatus: any;
@@ -76,7 +74,7 @@ export class ChamadoMovimentacaoPage {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -92,10 +90,12 @@ export class ChamadoMovimentacaoPage {
         }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
           this.tipoServicoId = this.navParams.get("TipoServicoID");
           this.habilitarChamado = false;
@@ -103,7 +103,7 @@ export class ChamadoMovimentacaoPage {
           this.carregarStatus();
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -161,7 +161,7 @@ export class ChamadoMovimentacaoPage {
   }
 
   carregarStatusOnline() {
-    this.chamadosProvider.retornarStatus(this.portal).subscribe(
+    this.chamadosProvider.retornarStatus(this.portal, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -182,7 +182,7 @@ export class ChamadoMovimentacaoPage {
 
   carregarDadosForm() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       if (!this.origemOffline) {
         this.carregarDadosFormOnline();
@@ -193,13 +193,13 @@ export class ChamadoMovimentacaoPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   carregarDadosFormOnline() {
-    this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
+    this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -270,7 +270,7 @@ export class ChamadoMovimentacaoPage {
 
   carregarHabilitarChamado() {
     try {
-      this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
+      this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -291,12 +291,13 @@ export class ChamadoMovimentacaoPage {
 
   carregarAtualizarMovimentacao() {
     try {
-      let _titulo = `${this.alertsProvider.msgTituloAtualizar} ${this.chamadoId}`;
+      let _titulo = `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAtualizar)} ${this.chamadoId}`;
 
-      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarMovimentacaoClick }]
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
+        handler: this.confirmarMovimentacaoClick }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -305,7 +306,7 @@ export class ChamadoMovimentacaoPage {
 
   atualizarMovimentacao() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       let _parametros = {
         ChamadoID: this.chamadoId,
@@ -341,13 +342,13 @@ export class ChamadoMovimentacaoPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   atualizarMovimentacaoOnline(_parametros: any) {
-    this.chamadosProvider.salvarRegistroMovimentacoes(this.username, this.portal, this.chamadoId, _parametros).subscribe(
+    this.chamadosProvider.salvarRegistroMovimentacoes(this.username, this.portal, this.chamadoId, this.idioma, _parametros).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -356,7 +357,7 @@ export class ChamadoMovimentacaoPage {
 
         if (this.respostaApi) {
           if (this.respostaApi.sucesso) {
-            this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
+            //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
             this.carregarHabilitarChamado();
             this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
           }
@@ -365,7 +366,7 @@ export class ChamadoMovimentacaoPage {
           }
         }
         else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
 
         this.alertsProvider.fecharCarregando();
@@ -380,10 +381,11 @@ export class ChamadoMovimentacaoPage {
     this.offlineProvider.salvarMovimentacaoOffline(this.portal, this.chamadoId, _parametros).then(data => {
       if (data) {
         //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
-        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
 
       this.alertsProvider.fecharCarregando();
@@ -391,7 +393,6 @@ export class ChamadoMovimentacaoPage {
   }
   //Eventos
   atualizarMovimentacaoClick() {
-    //this.carregarAtualizarMovimentacao();
     this.atualizarMovimentacao();
   }
 

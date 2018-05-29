@@ -6,12 +6,9 @@
     </ion-header>
     <ion-content>
         <ion-list>
-            <!-- <button ion-item (click)="abrirRaizClick(relatoriosPage, 1)">
-                Relatórios
-            </button> -->
-            <button ion-item menuClose *ngFor="let pagina of paginas" (click)="abrirClick(pagina)">
+            <button *ngFor="let pagina of paginas" (click)="abrirClick(pagina)" ion-item menuClose tappable>
                 <ion-icon item-left [name]="pagina.icone"></ion-icon>
-                {{ pagina.titulo }}
+                {{ pagina.titulo | translate}}
             </button>
         </ion-list>
     </ion-content>

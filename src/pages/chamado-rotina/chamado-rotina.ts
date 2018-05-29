@@ -12,10 +12,7 @@ import { ChamadosProvider } from '../../providers/chamados/chamados';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 
-import { HomeOfflinePage } from '../home-offline/home-offline';
-import { LoginPage } from '../login/login';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoRotinaPage'})
 @Component({
   selector: 'page-chamado-rotina',
   templateUrl: 'chamado-rotina.html',
@@ -35,6 +32,7 @@ export class ChamadoRotinaPage {
   chamadoId: string;
   username: string;
   portal: string;
+  idioma: string;
   msgNenhumItem: string;
   geolocalizacao: any;
   tipoRotina: any;
@@ -78,7 +76,7 @@ export class ChamadoRotinaPage {
       this.tipoRotina = 'rotina'
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -94,11 +92,13 @@ export class ChamadoRotinaPage {
         }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.idioma = _configLoginIdiomasProvider.valor;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
           this.exibirMsgRotina = false;
@@ -108,7 +108,7 @@ export class ChamadoRotinaPage {
 
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
 
       }
@@ -120,7 +120,7 @@ export class ChamadoRotinaPage {
 
   carregarRotina() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.exibirMsgRotina = false;
 
@@ -133,7 +133,7 @@ export class ChamadoRotinaPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgRotina = true;
       this.inputs = null;
 
@@ -236,7 +236,7 @@ export class ChamadoRotinaPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgFotos = true;
       this.fotos = null;
 
@@ -292,7 +292,7 @@ export class ChamadoRotinaPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgFotos = true;
       this.fotos = null;
 
@@ -325,12 +325,13 @@ export class ChamadoRotinaPage {
       this.anexoId = anexo.AnexoID;
       this.sequenciaFotos = anexo.sequencia;
 
-      let _titulo = this.origemOffline ? `Excluir` : `Excluir ${anexo.NomeAnexo}`;
+      let _titulo = this.origemOffline ? `` : `${anexo.NomeAnexo}`;
 
-      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirFotoClick }]
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
+        handler: this.confirmarExcluirFotoClick }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -386,16 +387,16 @@ export class ChamadoRotinaPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
   salvarFotoOnline(parametros: any) {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId,
-        this.constantesProvider.tipoRotinas, parametros).subscribe(
+        this.constantesProvider.tipoRotinas, this.idioma, parametros).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
@@ -414,26 +415,26 @@ export class ChamadoRotinaPage {
             }
             else {
               console.log(this.respostaApi.mensagem);
-              this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
             this.alertsProvider.fecharCarregando();
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.alertsProvider.fecharCarregando();
           });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   salvarFotoOffline(parametros: any) {
     try{
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.offlineProvider.salvarFotoRotinaOffline(this.portal, this.chamadoId, parametros).then(data => {
         if (data) {
@@ -443,11 +444,11 @@ export class ChamadoRotinaPage {
           }
   
           this.fotos.push(parametros);
-          //this.carregarFotos();
-          this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
         }
         else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
 
         this.alertsProvider.fecharCarregando();
@@ -455,14 +456,14 @@ export class ChamadoRotinaPage {
     }
     catch(e){
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   excluirFoto() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       if (!this.origemOffline) {
         this.excluirFotoOnline();
@@ -475,13 +476,13 @@ export class ChamadoRotinaPage {
       console.log(e);
       this.index = null;
       this.anexoId = null;
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   excluirFotoOnline() {
-    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoRotinas).subscribe(
+    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoRotinas, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -506,7 +507,7 @@ export class ChamadoRotinaPage {
           }
         }
         else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
 
         this.index = null;
@@ -516,7 +517,7 @@ export class ChamadoRotinaPage {
         console.log(e);
         this.index = null;
         this.anexoId = null;
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
       });
   }
@@ -527,8 +528,7 @@ export class ChamadoRotinaPage {
   atualizarRotina() {
     try {
       if (this.rotinaForm.valid && this.fotos && this.inputs) {
-        //if (this.rotinaForm.valid && this.inputs) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
 
         let _parametrosRotina = [];
 
@@ -565,18 +565,18 @@ export class ChamadoRotinaPage {
         }
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErroRotina, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroRotina), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   atualizarRotinaOnline(_parametros: any) {
-    this.chamadosProvider.salvarRotina(this.username, this.portal, this.chamadoId, _parametros).subscribe(
+    this.chamadosProvider.salvarRotina(this.username, this.portal, this.chamadoId, this.idioma, _parametros).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -592,7 +592,7 @@ export class ChamadoRotinaPage {
           }
         }
         else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
 
         this.alertsProvider.fecharCarregando();
@@ -607,10 +607,11 @@ export class ChamadoRotinaPage {
     this.offlineProvider.salvarRotinaOffline(this.portal, this.chamadoId, _parametros).then(data => {
 
       if (data) {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
 
       this.alertsProvider.fecharCarregando();

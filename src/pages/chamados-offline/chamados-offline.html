@@ -3,7 +3,7 @@
   <ion-navbar color="cushman-1">
     <ion-title>{{ nomePortal }} Offline</ion-title>
     <ion-buttons end>
-      <button (click)="estruturaClick()" ion-button icon-only>
+      <button (click)="estruturaClick()" ion-button icon-only tappable>
         <ion-icon ios="ios-download-outline" name="download"></ion-icon>
       </button>
     </ion-buttons>
@@ -19,12 +19,12 @@
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
   <ion-list *ngIf="chamados">
     <ion-item-sliding *ngFor="let chamado of chamados">
-      <button ion-item (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado">
+      <button (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado" ion-item tappable>
         <ion-grid>
           <ion-row>
             <ion-col col-8>
@@ -63,11 +63,11 @@
       </button>
 
       <ion-item-options side="left">
-        <button (click)="sincronizarClick(chamado)" [disabled]="origemOffline || syncOffline" ion-button color="cushman-1">
+        <button (click)="sincronizarClick(chamado)" [disabled]="origemOffline || syncOffline" color="cushman-1" ion-button tappable>
           <ion-icon name="sync"></ion-icon>
-          Sinc.
+          Sync.
         </button>
-        <button (click)="historicoClick(chamado)" ion-button color="cushman-2">
+        <button (click)="historicoClick(chamado)" ion-button color="cushman-2" tappable>
           <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
           Hist.
         </button>

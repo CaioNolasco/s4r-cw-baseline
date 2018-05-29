@@ -5,11 +5,10 @@ import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ChamadosProvider } from '../../providers/chamados/chamados';
 import { OfflineProvider } from './../../providers/offline/offline';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { LoginPage } from '../login/login';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoHistoricoPage'})
 @Component({
   selector: 'page-chamado-historico',
   templateUrl: 'chamado-historico.html',
@@ -17,7 +16,9 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     AlertsProvider,
     ConfigLoginProvider,
     ChamadosProvider,
-    OfflineProvider]
+    OfflineProvider,
+    ConstantesProvider,
+    UteisProvider]
 })
 export class ChamadoHistoricoPage {
   //Propriedades
@@ -34,7 +35,7 @@ export class ChamadoHistoricoPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
-    public offlineProvider: OfflineProvider, public app: App) {
+    public offlineProvider: OfflineProvider, public app: App, public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -52,7 +53,7 @@ export class ChamadoHistoricoPage {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -61,11 +62,11 @@ export class ChamadoHistoricoPage {
         if (_configLoginProvider) {
           this.chamadoId = this.navParams.get("ChamadoID");
           this.portal = _configLoginProvider.portal;
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -77,7 +78,7 @@ export class ChamadoHistoricoPage {
   carregarHistorico() {
     try {
       if (!this.isRefreshing) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.exibirMsg = false;
@@ -91,7 +92,8 @@ export class ChamadoHistoricoPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.historicos = null;
 

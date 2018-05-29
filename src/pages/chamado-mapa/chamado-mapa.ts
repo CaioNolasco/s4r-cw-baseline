@@ -2,14 +2,18 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
 import { AlertsProvider } from '../../providers/alerts/alerts';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
 declare var google;
 
-@IonicPage()
+@IonicPage({name: 'ChamadoMapaPage'})
 @Component({
   selector: 'page-chamado-mapa',
   templateUrl: 'chamado-mapa.html',
-  providers: [AlertsProvider]
+  providers: [AlertsProvider,
+    ConstantesProvider,
+    UteisProvider]
 })
 export class ChamadoMapaPage {
   //Propriedades
@@ -19,7 +23,8 @@ export class ChamadoMapaPage {
   estado: string;
 
   //Load
-  constructor(public navCtrl: NavController, public navParams: NavParams, public alertsProvider: AlertsProvider) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public alertsProvider: AlertsProvider,
+  public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -63,12 +68,13 @@ export class ChamadoMapaPage {
               });
             }
             else {
-              this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+              this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
           });
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
       }
     }
     catch (e) {

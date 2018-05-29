@@ -1,9 +1,9 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>Novo Material</ion-title>
+    <ion-title>{{ "novoMaterial" | translate }}</ion-title>
     <ion-buttons end>
-      <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-button icon-only>
+      <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-button icon-only tappable>
         <ion-icon name="checkmark-circle"></ion-icon>
       </button>
     </ion-buttons>
@@ -16,9 +16,11 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Aplicações</ion-label> 
-            <ion-select formControlName="aplicacoes" [disabled]="!opcoesTiposServico" interface="action-sheet"
-              cancelText="Cancelar">
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "aplicacao" | translate }}
+            </ion-label>
+            <ion-select formControlName="aplicacoes" [disabled]="!opcoesTiposServico" interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{tipoServico.TipoServicoID}}" *ngFor="let tipoServico of opcoesTiposServico">{{tipoServico.NomeTipoServico}}</ion-option>
             </ion-select>
           </ion-item>
@@ -28,9 +30,12 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Marca</ion-label>
-            <ion-select  formControlName="marcas" (ionChange)="marcasChange($event)" [disabled]="!opcoesMarcasMaterial"
-              interface="action-sheet" cancelText="Cancelar">
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "marca" | translate }}
+            </ion-label>
+            <ion-select formControlName="marcas" (ionChange)="marcasChange($event)" [disabled]="!opcoesMarcasMaterial" interface="action-sheet"
+              cancelText="{{ 'materiais' | translate }}">
               <ion-option value="{{marcaMaterial.MarcaMaterialID}}" *ngFor="let marcaMaterial of opcoesMarcasMaterial">{{marcaMaterial.NomeMarcaMaterial}}</ion-option>
             </ion-select>
           </ion-item>
@@ -40,9 +45,12 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-material">
-            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Modelo</ion-label>
-            <ion-select  formControlName="modelos" (ionChange)="modelosChange($event)" [disabled]="!opcoesModelosMaterial" interface="action-sheet"
-              cancelText="Cancelar">
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "modelo" | translate }}
+            </ion-label>
+            <ion-select formControlName="modelos" (ionChange)="modelosChange($event)" [disabled]="!opcoesModelosMaterial" interface="action-sheet"
+              cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{modeloMaterial.ModeloMaterialID}}" *ngFor="let modeloMaterial of opcoesModelosMaterial">{{modeloMaterial.NomeModeloMaterial}}</ion-option>
             </ion-select>
           </ion-item>
@@ -53,7 +61,8 @@
         <ion-col col class="item-novo-chamado">
           <ion-card>
             <ion-card-header class="card-header-chamado">
-              <ion-icon name="build" class="card-icone" item-start></ion-icon> Valores
+              <ion-icon name="build" class="card-icone" item-start></ion-icon>
+              {{ "valores" | translate }}
             </ion-card-header>
             <ion-card-content>
               <ion-grid>
@@ -61,7 +70,7 @@
                   <ion-col col-4>
                     <p ion-text>
                       <b>
-                        Potência
+                        {{ "potencia" | translate }}
                       </b>
                     </p>
                     <p ion-text>
@@ -71,21 +80,21 @@
                   <ion-col col-4>
                     <p ion-text>
                       <b>
-                        Capacidade
+                        {{ "capacidade" | translate }}
                       </b>
                     </p>
                     <p ion-text>
-                        {{ modelo.Capacidade }}
+                      {{ modelo.Capacidade }}
                     </p>
                   </ion-col>
                   <ion-col col-4>
                     <p ion-text>
                       <b>
-                        Valor Unitário
+                        {{ "valorUnitario" | translate }}
                       </b>
                     </p>
                     <p ion-text>
-                        {{ modelo.ValorUnitario }}
+                      {{ modelo.ValorUnitario }}
                     </p>
                   </ion-col>
                 </ion-row>
@@ -99,23 +108,20 @@
       <ion-row>
         <ion-col col>
           <ion-item class="item-novo-chamado">
-            <ion-label stacked color="cushman-3"><div class="texto-obrigatorio"> * </div> Quantidade</ion-label>
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "quantidade" | translate }}
+            </ion-label>
             <ion-input formControlName="quantidade" (keyup.enter)="redimencionarPagina()" type="number" placeholder="Quantidade"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
-
-      <!-- <ion-row>
-        <ion-col col>
-          <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-button full color="cushman-2">Salvar</button>
-        </ion-col>
-      </ion-row> -->
     </ion-grid>
 
     <div class="item-altura-fab"></div>
 
     <ion-fab bottom right>
-      <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" ion-fab color="cushman-2">
+      <button (click)="salvarMaterialClick()" [disabled]="!materiaisForm.valid" color="cushman-2" ion-fab tappable>
         <ion-icon name="checkmark"></ion-icon>
       </button>
     </ion-fab>

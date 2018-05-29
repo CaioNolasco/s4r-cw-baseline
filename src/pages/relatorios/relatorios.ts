@@ -1,4 +1,3 @@
-
 import { Component, ViewChild } from '@angular/core';
 import { IonicPage, NavController, NavParams, App, MenuController } from 'ionic-angular';
 import { Chart } from 'chart.js';
@@ -8,11 +7,9 @@ import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { RelatoriosProvider } from './../../providers/relatorios/relatorios';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { HomeOfflinePage } from '../home-offline/home-offline';
-import { LoginPage } from '../login/login';
-
-@IonicPage()
+@IonicPage({name: 'RelatoriosPage'})
 @Component({
   selector: 'page-relatorios',
   templateUrl: 'relatorios.html',
@@ -32,6 +29,7 @@ export class RelatoriosPage {
   nomeMes: string;
   username: string;
   portal: string;
+  idioma: string;
   mes: number;
   ano: number;
   isRefreshing: boolean = false;
@@ -43,7 +41,8 @@ export class RelatoriosPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public offlineProvider: OfflineProvider,
     public app: App, public configLoginProvider: ConfigLoginProvider, public constantesProvider: ConstantesProvider,
-    public alertsProvider: AlertsProvider, public relatoriosProvider: RelatoriosProvider, public menuController: MenuController) {
+    public alertsProvider: AlertsProvider, public relatoriosProvider: RelatoriosProvider, public menuController: MenuController,
+    public uteisProvider: UteisProvider) {
     this.carregarDados();
   }
 
@@ -61,15 +60,17 @@ export class RelatoriosPage {
   carregarDados() {
     try {
       if (this.offlineProvider.validarInternetOffline()) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.portal = _configLoginProvider.portal;
+          this.idioma = _configLoginIdiomasProvider.valor;
           let _dataAtual = new Date();
           this.mes = _dataAtual.getUTCMonth() + 1;
           this.ano = _dataAtual.getUTCFullYear();
@@ -79,7 +80,7 @@ export class RelatoriosPage {
 
         }
         else {
-          this.navCtrl.setRoot(LoginPage);
+          this.navCtrl.setRoot("LoginPage");
         }
       }
     }
@@ -91,11 +92,11 @@ export class RelatoriosPage {
   carregarCorretivosMes() {
     try {
       if (!this.isRefreshing) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.relatoriosProvider.retornarChamadosAbertosFechados(this.username, this.portal,
-        this.mes, this.ano).subscribe(
+        this.mes, this.ano, this.idioma).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
@@ -130,7 +131,7 @@ export class RelatoriosPage {
             }
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
 
             if (this.isRefreshing) {
               this.refresher.complete();
@@ -143,7 +144,7 @@ export class RelatoriosPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
 
       if (this.isRefreshing) {
         this.refresher.complete();
@@ -157,7 +158,7 @@ export class RelatoriosPage {
 
   carregarCorretivosPendentes() {
     try {
-      this.relatoriosProvider.retornarChamadosDentroForaPrazo(this.username, this.portal).subscribe(
+      this.relatoriosProvider.retornarChamadosDentroForaPrazo(this.username, this.portal, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -183,18 +184,18 @@ export class RelatoriosPage {
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
   carregarEvolucao() {
     try {
-      this.relatoriosProvider.retornarChamadosEvolucao(this.username, this.portal).subscribe(
+      this.relatoriosProvider.retornarChamadosEvolucao(this.username, this.portal, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -220,12 +221,12 @@ export class RelatoriosPage {
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 

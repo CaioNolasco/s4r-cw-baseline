@@ -1,17 +1,10 @@
 import { Platform } from 'ionic-angular';
 import { Http, Headers, RequestOptions } from '@angular/http';
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 import { ConstantesProvider } from '../constantes/constantes';
-import { ConfigLoginProvider } from '../config-login/config-login';
 
 @Injectable()
-@Component({
-  providers: [
-    ConstantesProvider,
-    ConfigLoginProvider
-  ]
-})
 
 export class ChamadosProvider {
 
@@ -20,92 +13,87 @@ export class ChamadosProvider {
 
   //Load
   constructor(public http: Http, public platform: Platform, public constantesProvider: ConstantesProvider) {
-    //if (!this.platform.is("cordova")) {
-    //this.urlApiChamados = "/chamadosapi";
-    //}
-    //else {
     this.urlApiChamados = this.constantesProvider.urlApiBaseline + this.urlApiChamados;
-    //}
   }
 
   //Ações
-  salvarRegistroMovimentacoes(usuario: string, portal: string, numero: string, parametros: any) {
+  salvarRegistroMovimentacoes(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarRegistroMovimentacoes/${usuario}/${portal}/${numero}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarRegistroMovimentacoes/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
   }
 
-  salvarMaterial(usuario: string, portal: string, numero: string, parametros: any) {
+  salvarMaterial(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarMaterial/${usuario}/${portal}/${numero}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarMaterial/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
   }
 
-  salvarOffline(usuario: string, portal: string, numero: string, offline: boolean) {
+  salvarOffline(usuario: string, portal: string, numero: string, offline: boolean, idioma: string) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarOffline/${usuario}/${portal}/${numero}/${offline}`, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarOffline/${usuario}/${portal}/${numero}/${offline}/${idioma}`, _opcoes);
   }
 
   salvarSincronizacao(usuario: string, portal: string, numero: string, 
-    tipo1: string, tipo2: string,  offline: boolean, parametros: any) {
+    tipo1: string, tipo2: string,  offline: boolean, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarSincronizacao/${usuario}/${portal}/${numero}/${offline}/${tipo1}/${tipo2}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarSincronizacao/${usuario}/${portal}/${numero}/${offline}/${tipo1}/${tipo2}/${idioma}`, parametros, _opcoes);
   }
 
-  salvarChamado(usuario: string, portal: string, tipo: string, parametros: any) {
+  salvarChamado(usuario: string, portal: string, tipo: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarChamado/${usuario}/${portal}/${tipo}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarChamado/${usuario}/${portal}/${tipo}/${idioma}`, parametros, _opcoes);
   }
 
-  salvarAnexo(usuario: string, portal: string, numero: string, tipo: string, parametros: any) {
+  salvarAnexo(usuario: string, portal: string, numero: string, tipo: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarAnexo/${usuario}/${portal}/${numero}/${tipo}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarAnexo/${usuario}/${portal}/${numero}/${tipo}/${idioma}`, parametros, _opcoes);
   }
 
-  salvarRotina(usuario: string, portal: string, numero: string, parametros: any) {
+  salvarRotina(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
     _headers.append('Content-Type', 'application/json');
 
     let _opcoes = new RequestOptions({ headers: _headers });
 
-    return this.http.post(this.urlApiChamados + `/SalvarRotina/${usuario}/${portal}/${numero}`, parametros, _opcoes);
+    return this.http.post(this.urlApiChamados + `/SalvarRotina/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
   }
 
-  excluirMaterial(usuario: string, portal: string, numero: string, material: string) {
-    return this.http.delete(this.urlApiChamados + `/ExcluirMaterial/${usuario}/${portal}/${numero}/${material}`);
+  excluirMaterial(usuario: string, portal: string, numero: string, material: string, idioma: string) {
+    return this.http.delete(this.urlApiChamados + `/ExcluirMaterial/${usuario}/${portal}/${numero}/${material}/${idioma}`);
   }
 
-  excluirAnexo(usuario: string, portal: string, numero: string, anexo: string, tipo: string) {
-    return this.http.delete(this.urlApiChamados + `/ExcluirAnexo/${usuario}/${portal}/${numero}/${anexo}/${tipo}`);
+  excluirAnexo(usuario: string, portal: string, numero: string, anexo: string, tipo: string, idioma: string) {
+    return this.http.delete(this.urlApiChamados + `/ExcluirAnexo/${usuario}/${portal}/${numero}/${anexo}/${tipo}/${idioma}`);
   }
 
   //Retornos
@@ -117,8 +105,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarChamadoPorNumero/${usuario}/${portal}/${numero}`);
   }
 
-  retornarChamadoDetalhes(usuario: string, portal: string, numero: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarChamadoDetalhes/${usuario}/${portal}/${numero}`);
+  retornarChamadoDetalhes(usuario: string, portal: string, numero: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarChamadoDetalhes/${usuario}/${portal}/${numero}/${idioma}`);
   }
 
   retornarAnexosChamado(portal: string, numero: string, tipo: string) {
@@ -145,8 +133,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarSubtipos/${portal}/${tipoServico}/${tipo}`);
   }
 
-  retornarStatus(portal: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarStatus/${portal}`);
+  retornarStatus(portal: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarStatus/${portal}/${idioma}`);
   }
 
   retornarTiposServico(portal: string) {
@@ -177,8 +165,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarValoresPontoVenda/${portal}/${pontoVenda}`);
   }
 
-  retornarCriticidades(portal: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarCriticidades/${portal}`);
+  retornarCriticidades(portal: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarCriticidades/${portal}/${idioma}`);
   }
 
   retornarMantenedores(portal: string, tipoServico: string, pontoVenda: string) {
@@ -193,8 +181,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarEquipamentos/${portal}/${localizacao}`);
   }
 
-  retornarValoresSla(portal: string, tipoServico: string, prioridadePontoVenda: string, criticidade: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarValoresSla/${portal}/${tipoServico}/${prioridadePontoVenda}/${criticidade}`);
+  retornarValoresSla(portal: string, tipoServico: string, prioridadePontoVenda: string, criticidade: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarValoresSla/${portal}/${tipoServico}/${prioridadePontoVenda}/${criticidade}/${idioma}`);
   }
 
   retornarRotinaChamado(portal: string, numero: string) {

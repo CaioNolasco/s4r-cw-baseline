@@ -9,11 +9,9 @@ import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { OfflineProvider } from './../../providers/offline/offline';
 import { ConstantesProvider } from './../../providers/constantes/constantes';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { LoginPage } from '../login/login';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoAnexosPage'})
 @Component({
   selector: 'page-chamado-anexos',
   templateUrl: 'chamado-anexos.html',
@@ -24,12 +22,14 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     InAppBrowser,
     OfflineProvider,
     ConstantesProvider,
-    Camera]
+    Camera,
+    UteisProvider]
 })
 export class ChamadoAnexosPage {
   //Propriedades
   username: string;
   portal: string;
+  idioma: string;
   msgNenhumItem: string;
   chamadoId: any;
   tipoAnexos: any;
@@ -54,8 +54,8 @@ export class ChamadoAnexosPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
     public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser, public offlineProvider: OfflineProvider,
-    public app: App, public camera: Camera, public platform: Platform, public constantesProvider: ConstantesProvider) {
-
+    public app: App, public camera: Camera, public platform: Platform, public constantesProvider: ConstantesProvider,
+    public uteisProvider: UteisProvider) {
     this.carregarDados();
   }
 
@@ -79,7 +79,7 @@ export class ChamadoAnexosPage {
       }
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -93,18 +93,20 @@ export class ChamadoAnexosPage {
         }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.portal = _configLoginProvider.portal;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsgAnexos = false;
           this.exibirMsgFotos = false;
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -116,7 +118,7 @@ export class ChamadoAnexosPage {
   carregarAnexos(exibirCarregando: boolean = true) {
     try{
       if (!this.isRefreshing && exibirCarregando) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.exibirMsgAnexos = false;
@@ -144,7 +146,8 @@ export class ChamadoAnexosPage {
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.exibirMsgAnexos = true;
           this.anexos = null;
   
@@ -159,7 +162,8 @@ export class ChamadoAnexosPage {
     }
     catch(e){
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgAnexos = true;
       this.anexos = null;
 
@@ -186,7 +190,8 @@ export class ChamadoAnexosPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgFotos = true;
       this.fotos = null;
 
@@ -227,7 +232,7 @@ export class ChamadoAnexosPage {
   carregarFotosOffline() {
     try {
       if (!this.isRefreshing) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.offlineProvider.retornarFotosOffline(this.portal, this.chamadoId, false).then(data => {
@@ -249,7 +254,8 @@ export class ChamadoAnexosPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsgFotos = true;
       this.fotos = null;
 
@@ -282,12 +288,13 @@ export class ChamadoAnexosPage {
       this.anexoId = anexo.AnexoID;
       this.sequenciaFotos = anexo.sequencia;
 
-      let _titulo = this.origemOffline ? `Excluir` : `Excluir ${anexo.NomeAnexo}`;
+      let _titulo = this.origemOffline ? `` : `${anexo.NomeAnexo}`;
 
-      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: foto ? this.confirmarExcluirFotoClick : this.confirmarExcluirAnexoClick }]
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
+        handler: foto ? this.confirmarExcluirFotoClick : this.confirmarExcluirAnexoClick }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -296,9 +303,9 @@ export class ChamadoAnexosPage {
 
   excluirAnexo() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
-      this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos).subscribe(
+      this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -323,7 +330,8 @@ export class ChamadoAnexosPage {
             }
           }
           else {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+            this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
 
           this.index = null;
@@ -333,7 +341,8 @@ export class ChamadoAnexosPage {
           console.log(e);
           this.index = null;
           this.anexoId = null;
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro),
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.alertsProvider.fecharCarregando();
         });
     }
@@ -341,14 +350,15 @@ export class ChamadoAnexosPage {
       console.log(e);
       this.index = null;
       this.anexoId = null;
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro),
+       this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   excluirFoto() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       if (!this.origemOffline) {
         this.excluirFotoOnline();
@@ -361,13 +371,14 @@ export class ChamadoAnexosPage {
       console.log(e);
       this.index = null;
       this.anexoId = null;
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   excluirFotoOnline() {
-    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos).subscribe(
+    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoAnexos, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -392,7 +403,8 @@ export class ChamadoAnexosPage {
           }
         }
         else {
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         }
 
         this.index = null;
@@ -402,7 +414,8 @@ export class ChamadoAnexosPage {
         console.log(e);
         this.index = null;
         this.anexoId = null;
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro),
+         this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
       });
   }
@@ -422,11 +435,12 @@ export class ChamadoAnexosPage {
         this.index = null;
         this.anexoId = null;
         this.alertsProvider.fecharCarregando();
-        //this.carregarFotos();
-        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     });
   }
@@ -476,12 +490,12 @@ export class ChamadoAnexosPage {
         this.exibirMsgFotos = false;
       }, (e) => {
         console.log(e);
-        //this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
@@ -508,17 +522,18 @@ export class ChamadoAnexosPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   salvarArquivo(parametros: any, foto: boolean) {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId, 
-        this.constantesProvider.tipoAnexos, parametros).subscribe(
+        this.constantesProvider.tipoAnexos, this.idioma, parametros).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -543,19 +558,22 @@ export class ChamadoAnexosPage {
           }
           else {
             console.log(this.respostaApi.mensagem);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+            this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
 
           this.alertsProvider.fecharCarregando();
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.alertsProvider.fecharCarregando();
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
@@ -569,11 +587,12 @@ export class ChamadoAnexosPage {
         }
 
         this.fotos.push(parametros);
-        //this.carregarFotos();
-        this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     });
   }
@@ -585,7 +604,6 @@ export class ChamadoAnexosPage {
 
   acessarClick(anexo: any) {
     this.inAppBrowser.create(anexo.CaminhoAnexo, '_system')
-    //this.carregarAnexo(anexo);
   }
 
   atualizarClick() {
@@ -626,55 +644,3 @@ export class ChamadoAnexosPage {
     this.carregarAnexos();
   }
 }
-
-  // carregarAnexo(anexo: any) {
-  //   try {
-
-  //     this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
-
-  //     this.chamadosProvider.retornarBytesAnexo(anexo.NomeAnexo, this.portal, this.chamadoId).subscribe(
-  //       data => {
-  //         let _resposta = (data as any);
-  //         let _objetoRetorno = JSON.parse(_resposta._body);
-
-  //         this.anexo = _objetoRetorno;
-
-  //         if (this.anexo) {
-  //           fetch('data:' + this.anexo.FileMimeType + ';base64,' + this.anexo.Base64,
-  //             {
-  //               method: "GET"
-  //             }).then(res => res.blob()).then(blob => {
-  //               this.file.writeFile(this.file.externalApplicationStorageDirectory, this.anexo.NomeAnexo, blob, { replace: true }).then(res => {
-  //                 this.fileOpener.open(
-  //                   res.toInternalURL(),
-  //                   this.anexo.FileMimeType
-  //                 ).then((res) => {
-  //                   this.alertsProvider.fecharCarregando();
-  //                 }).catch(e => {
-  //                   console.log(e);
-  //                   this.alertsProvider.fecharCarregando();
-  //                   this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Abrir', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //                 });
-  //               }).catch(e => {
-  //                 console.log(e);
-  //                 this.alertsProvider.fecharCarregando();
-  //                 this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Salvar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //               });
-  //             }).catch(e => {
-  //               console.log(e);
-  //               this.alertsProvider.fecharCarregando();
-  //               this.alertsProvider.exibirToast(this.alertsProvider.msgErro + ' Carregar', this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //             });
-  //         }
-  //         else {
-  //           this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
-  //         }
-  //       }
-  //     )
-  //   }
-  //   catch (e) {
-  //     console.log(e);
-  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //     this.alertsProvider.fecharCarregando();
-  //   }
-  // }

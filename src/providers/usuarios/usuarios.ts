@@ -1,20 +1,12 @@
 import { Platform, App } from 'ionic-angular';
 import { Http } from '@angular/http';
-import { Injectable, Component } from '@angular/core';
-
+import { Injectable } from '@angular/core';
 
 import { ConstantesProvider } from '../constantes/constantes';
 import { ConfigLoginProvider } from '../config-login/config-login';
 import { OfflineProvider } from '../offline/offline';
 
-import { LoginPage } from './../../pages/login/login';
-
 @Injectable()
-@Component({ providers: [
-  ConstantesProvider,
-  ConfigLoginProvider,
-  OfflineProvider
-] })
 
 export class UsuariosProvider {
 
@@ -22,12 +14,7 @@ export class UsuariosProvider {
 
   constructor(public http: Http, public platform: Platform, public constantes: ConstantesProvider,
     public configLoginProvider: ConfigLoginProvider, public app: App, public offlineProvider: OfflineProvider) {
-    //if(!this.platform.is("cordova")){
-      //this.urlApiUsuarios = "/usuariosapi";
-    //}
-    //else{
       this.urlApiUsuarios = this.constantes.urlApiBaseline + this.urlApiUsuarios;
-    //}
   }
 
   //Ações
@@ -35,7 +22,7 @@ export class UsuariosProvider {
     this.configLoginProvider.removerConfigLogin();
     this.offlineProvider.removerConfigBadgesOffline();
     
-    this.app.getRootNav().setRoot(LoginPage);
+    this.app.getRootNav().setRoot("LoginPage");
   }
 
   validarPermissoes(permissoes: any, acao: string){
@@ -53,8 +40,8 @@ export class UsuariosProvider {
   }
 
   //Retornos
-  retornarUsuarioAutenticado(usuario: string, senha: string, portal: string){
-    return this.http.get(this.urlApiUsuarios + `/RetornarUsuarioAutenticado/${usuario}/${senha}/${portal}`);
+  retornarUsuarioAutenticado(usuario: string, senha: string, portal: string, idioma: string){
+    return this.http.get(this.urlApiUsuarios + `/RetornarUsuarioAutenticado/${usuario}/${senha}/${portal}/${idioma}`);
   }
 
   retornarPermissoesFuncionalidade(usuario: string, portal: string, funcionalidade: string){

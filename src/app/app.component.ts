@@ -1,15 +1,13 @@
 import { Component, ViewChild } from '@angular/core';
-import { Platform, App, Nav, NavController, MenuController } from 'ionic-angular';
+import { Platform, Nav, MenuController, App } from 'ionic-angular';
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+import { TranslateService } from '@ngx-translate/core';
 
 import { ConfigLoginProvider } from './../providers/config-login/config-login';
 import { OfflineProvider } from './../providers/offline/offline';
 
-import { LoginPage } from './../pages/login/login';
 import { TabsPage } from '../pages/tabs/tabs';
-import { HomeOfflinePage } from './../pages/home-offline/home-offline';
-import { RelatoriosPage } from './../pages/relatorios/relatorios';
 
 @Component({
   templateUrl: 'app.html',
@@ -26,10 +24,10 @@ export class MyApp {
 
   //Load
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, public configLoginProvider: ConfigLoginProvider,
-    public offlineProvider: OfflineProvider, public menuController: MenuController) {
+    public offlineProvider: OfflineProvider, public menuController: MenuController, public app: App, public translateService: TranslateService) {
     platform.ready().then(() => {
-      splashScreen.show();
-
+      
+      this.carregarIdioma();
       this.carregarDados();
 
       statusBar.styleDefault();
@@ -42,12 +40,9 @@ export class MyApp {
   carregarDados() {
     try {
       //Desenvolvimento
-      //this.offlineProvider.removerConfigEstruturaSQLite();
-      //this.offlineProvider.excluirBancoSQLite();
-      //localStorage.removeItem("database");
 
       if (this.offlineProvider.validarInternetOffline()) {
-        this.rootPage = HomeOfflinePage;
+        this.rootPage = "HomeOfflinePage";
       }
       else {
         this.carregarMenu();
@@ -56,7 +51,7 @@ export class MyApp {
     }
     catch (e) {
       console.log(e);
-      this.rootPage = LoginPage;
+      this.rootPage = "LoginPage";
     }
   }
 
@@ -68,12 +63,12 @@ export class MyApp {
         this.rootPage = TabsPage;
       }
       else {
-        this.rootPage = LoginPage;
+        this.rootPage = "LoginPage";
       }
     }
     catch (e) {
       console.log(e);
-      this.rootPage = LoginPage;
+      this.rootPage = "LoginPage";
     }
   }
 
@@ -82,8 +77,30 @@ export class MyApp {
       //Menu
       this.menuController.enable(false, 'menu');
       this.paginas = [
-        { titulo: 'Corretivos', componente: TabsPage, componenteTabs: RelatoriosPage, index: 1, icone: 'stats' }
+        { titulo: 'corretivos', pagina: 'RelatoriosPage', icone: 'stats' }
       ];
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarIdioma() {
+    try {
+      let _configLoginIdiomas = this.configLoginProvider.retornarConfigLoginIdiomas();
+
+      this.translateService.addLangs(["pt", "en", 'es']);
+      this.translateService.setDefaultLang('pt');
+
+      if (_configLoginIdiomas) {
+        _configLoginIdiomas = JSON.parse(_configLoginIdiomas);
+
+        this.translateService.use(_configLoginIdiomas.valor);
+      }
+      else {
+        let _idiomaNavegador = this.translateService.getBrowserLang();
+        this.translateService.use(_idiomaNavegador.match(/pt|en|es/) ? _idiomaNavegador : 'pt');
+      }
     }
     catch (e) {
       console.log(e);
@@ -92,7 +109,6 @@ export class MyApp {
 
   //Ações
   abrirClick(pagina) {
-    //this.rootPage = pagina.componente;
-    this.nav.setRoot(pagina.componente, {Index: pagina.index, ComponenteTabs: pagina.componenteTabs});
+    this.app.getActiveNav().setRoot(pagina.pagina);
   }
 }

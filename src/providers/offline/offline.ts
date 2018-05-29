@@ -1,4 +1,4 @@
-import { Injectable, Component } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { SQLite, SQLiteObject } from '@ionic-native/sqlite';
 import { Network } from '@ionic-native/network';
 
@@ -8,13 +8,7 @@ import { UteisProvider } from './../uteis/uteis';
 
 
 @Injectable()
-@Component({
-  providers: [
-    ChamadosProvider,
-    ConstantesProvider,
-    UteisProvider
-  ]
-})
+
 export class OfflineProvider {
   //Propriedades
   configBadgesOfflineKey: string = "configBadgesOffline";
@@ -97,13 +91,13 @@ export class OfflineProvider {
     }
   }
 
-  salvarChamadoOffline(portal: string, nomePortal: string, username: string, chamado: any) {
+  salvarChamadoOffline(portal: string, nomePortal: string, username: string, chamado: any, idioma: string) {
     return new Promise((resolve, reject) => {
       let _chamadoOffline = true;
       let _sqlite = this.salvarBancoSQLite();
 
       if (_sqlite) {
-        this.chamadosProvider.retornarChamadoDetalhes(username, portal, chamado.ChamadoID).subscribe(
+        this.chamadosProvider.retornarChamadoDetalhes(username, portal, chamado.ChamadoID, idioma).subscribe(
           data => {
             let _chamadoDetalhe: any;
 
@@ -137,7 +131,7 @@ export class OfflineProvider {
                 this.salvarHistoricoOffline(db, portal, chamado.ChamadoID);
                 this.salvarMateriaisOffline(db, portal, chamado.ChamadoID);
                 this.salvarSubtiposOffline(db, portal, chamado.ChamadoID, _chamadoDetalhe.TipoServicoID);
-                this.salvarStatusOffline(db, portal, chamado.ChamadoID);
+                this.salvarStatusOffline(db, portal, chamado.ChamadoID, idioma);
                 this.salvarAnexosOffline(db, portal, chamado.ChamadoID);
                 this.salvarChamadoRotinaOffline(db, portal, chamado.ChamadoID);
                 this.salvarAnexosRotinaOffline(db, portal, chamado.ChamadoID);
@@ -210,10 +204,10 @@ export class OfflineProvider {
       });
   }
 
-  salvarStatusOffline(db: SQLiteObject, portal: string, chamadoId: any) {
+  salvarStatusOffline(db: SQLiteObject, portal: string, chamadoId: any, idioma: string) {
     let _status: any;
 
-    this.chamadosProvider.retornarStatus(portal).subscribe(
+    this.chamadosProvider.retornarStatus(portal, idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -872,8 +866,6 @@ export class OfflineProvider {
                 Resposta: data.rows.item(i)["Resposta"],
                 Opcoes: JSON.parse(data.rows.item(i)["Opcoes"])
               });
-
-              console.log(data.rows.item(i)["Resposta"]);
             }
           }
           resolve(_rotina);

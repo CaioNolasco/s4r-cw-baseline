@@ -1,12 +1,12 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>Movimentação {{ chamadoId }}</ion-title>
+    <ion-title>{{ "movimentacao" | translate }} {{ chamadoId }}</ion-title>
     <ion-buttons end>
-        <button (click)="atualizarMovimentacaoClick()" *ngIf="habilitarChamado && alterarChamado" ion-button icon-only>
-          <ion-icon name="checkmark-circle"></ion-icon>
-        </button>
-      </ion-buttons>
+      <button (click)="atualizarMovimentacaoClick()" *ngIf="habilitarChamado && alterarChamado" ion-button icon-only tappable>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>
+    </ion-buttons>
   </ion-navbar>
 
 </ion-header>
@@ -16,31 +16,25 @@
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Data do Atendimento</ion-label>
-          <ion-datetime [(ngModel)]="dataAtendimento" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+          <ion-label stacked color="cushman-3">{{ "dataAtendimento" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="dataAtendimento" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY"
+            cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
         </ion-item>
       </ion-col>
     </ion-row>
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Hora Inicial</ion-label>
-          <ion-datetime [(ngModel)]="inicioAtendimento" [disabled]="!habilitarChamado || !alterarChamado || !dataAtendimento" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+          <ion-label stacked color="cushman-3">{{ "horaInicial" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="inicioAtendimento" [disabled]="!habilitarChamado || !alterarChamado || !dataAtendimento" displayFormat="HH:mm"
+            pickerFormat="HH mm" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="00:00"></ion-datetime>
         </ion-item>
       </ion-col>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Hora Final</ion-label>
-          <ion-datetime [(ngModel)]="finalAtendimento" [disabled]="!habilitarChamado || !alterarChamado || !dataAtendimento" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Descrição do Atendimento</ion-label>
-          <ion-textarea [(ngModel)]="descricaoAtendimento" (keyup.enter)="redimencionarPagina()" [disabled]="!habilitarChamado || !alterarChamado" placeholder="Preencha a descrição"></ion-textarea>
+          <ion-label stacked color="cushman-3">{{ "horaFinal" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="finalAtendimento" [disabled]="!habilitarChamado || !alterarChamado || !dataAtendimento" displayFormat="HH:mm"
+            pickerFormat="HH mm" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="00:00"></ion-datetime>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -48,22 +42,9 @@
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Data da Solução</ion-label>
-          <ion-datetime [(ngModel)]="dataSolucao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
-        </ion-item>
-      </ion-col>
-    </ion-row>
-    <ion-row>
-      <ion-col col>
-        <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Início Solução</ion-label>
-          <ion-datetime [(ngModel)]="inicioSolucao" [disabled]="!habilitarChamado || !alterarChamado || !dataSolucao" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
-        </ion-item>
-      </ion-col>
-      <ion-col col>
-        <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Final Solução</ion-label>
-          <ion-datetime [(ngModel)]="finalSolucao" [disabled]="!habilitarChamado || !alterarChamado || !dataSolucao" displayFormat="HH:mm" pickerFormat="HH mm" cancelText="Cancelar" doneText="OK" placeholder="00:00"></ion-datetime>
+          <ion-label stacked color="cushman-3">{{ "descricaoAtendimento" | translate }}</ion-label>
+          <ion-textarea [(ngModel)]="descricaoAtendimento" (keyup.enter)="redimencionarPagina()" [disabled]="!habilitarChamado || !alterarChamado"
+            placeholder="{{ 'preenchaDescricao' | translate }}"></ion-textarea>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -71,8 +52,25 @@
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Programação Atendimento</ion-label>
-          <ion-datetime [(ngModel)]="dataProgramacao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="Cancelar" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+          <ion-label stacked color="cushman-3">{{ "dataSolucao" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="dataSolucao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}"
+            doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+        </ion-item>
+      </ion-col>
+    </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">{{ "inicioSolucao" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="inicioSolucao" [disabled]="!habilitarChamado || !alterarChamado || !dataSolucao" displayFormat="HH:mm"
+            pickerFormat="HH mm" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="00:00"></ion-datetime>
+        </ion-item>
+      </ion-col>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">{{ "finalSolucao" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="finalSolucao" [disabled]="!habilitarChamado || !alterarChamado || !dataSolucao" displayFormat="HH:mm"
+            pickerFormat="HH mm" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="00:00"></ion-datetime>
         </ion-item>
       </ion-col>
     </ion-row>
@@ -80,45 +78,52 @@
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Justificativa</ion-label>
-          <ion-textarea [(ngModel)]="justificativa" (keyup.enter)="redimencionarPagina()" [disabled]="!habilitarChamado || !alterarChamado" placeholder="Preencha a justificativa"></ion-textarea>
+          <ion-label stacked color="cushman-3">{{ "programacaoAtendimento" | translate }}</ion-label>
+          <ion-datetime [(ngModel)]="dataProgramacao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY"
+            cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
         </ion-item>
       </ion-col>
     </ion-row>
 
     <ion-row>
-        <ion-col col>
-          <ion-item class="item-movimentacao">
-            <ion-label stacked color="cushman-3">Ação</ion-label>
-            <ion-select [(ngModel)]="subtipos" [disabled]="!habilitarChamado || !alterarChamado || !opcoesSubtipos" [ngModelOptions]="{standalone: true}" interface="action-sheet" cancelText="Cancelar">
-                <ion-option value="{{subtipo.SubtipoServicoID}}" *ngFor="let subtipo of opcoesSubtipos">{{subtipo.Descricao}}</ion-option> 
-             </ion-select> 
-          </ion-item>
-        </ion-col>
-      </ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">{{ "justificativa" | translate }}</ion-label>
+          <ion-textarea [(ngModel)]="justificativa" (keyup.enter)="redimencionarPagina()" [disabled]="!habilitarChamado || !alterarChamado"
+            placeholder="{{ 'preenchaJustificativa' | translate }}"></ion-textarea>
+        </ion-item>
+      </ion-col>
+    </ion-row>
 
-      <ion-row>
-          <ion-col col>
-            <ion-item class="item-movimentacao">
-              <ion-label stacked color="cushman-3">Status</ion-label>
-              <ion-select [(ngModel)]="status" [disabled]="!habilitarChamado || !alterarChamado || !opcoesStatus" [ngModelOptions]="{standalone: true}" interface="action-sheet" cancelText="Cancelar">
-                  <ion-option value="{{status.StatusChamadoID}}" *ngFor="let status of opcoesStatus">{{status.StatusChamado}}</ion-option> 
-               </ion-select> 
-            </ion-item>
-          </ion-col>
-        </ion-row>
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">{{ "acao" | translate }}</ion-label>
+          <ion-select [(ngModel)]="subtipos" [disabled]="!habilitarChamado || !alterarChamado || !opcoesSubtipos" [ngModelOptions]="{standalone: true}"
+            interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
+            <ion-option value="{{subtipo.SubtipoServicoID}}" *ngFor="let subtipo of opcoesSubtipos">{{subtipo.Descricao}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
 
-        <!-- <ion-row>
-            <ion-col col>
-                <button (click)="atualizarMovimentacaoClick()" *ngIf="habilitarChamado && alterarChamado" ion-button full color="cushman-2">Salvar</button>
-            </ion-col>
-        </ion-row> -->
+    <ion-row>
+      <ion-col col>
+        <ion-item class="item-movimentacao">
+          <ion-label stacked color="cushman-3">Status</ion-label>
+          <ion-select [(ngModel)]="status" [disabled]="!habilitarChamado || !alterarChamado || !opcoesStatus" [ngModelOptions]="{standalone: true}"
+            interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
+            <ion-option value="{{status.StatusChamadoID}}" *ngFor="let status of opcoesStatus">{{status.StatusChamado}}</ion-option>
+          </ion-select>
+        </ion-item>
+      </ion-col>
+    </ion-row>
   </ion-grid>
 
   <div class="item-altura-fab"></div>
 
   <ion-fab *ngIf="habilitarChamado && alterarChamado" bottom right>
-    <button (click)="atualizarMovimentacaoClick()" ion-fab color="cushman-2">
+    <button (click)="atualizarMovimentacaoClick()" color="cushman-2" ion-fab tappable>
       <ion-icon name="checkmark"></ion-icon>
     </button>
   </ion-fab>

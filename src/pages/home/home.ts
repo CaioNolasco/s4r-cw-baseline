@@ -1,4 +1,4 @@
-import { NavController, App, Events } from 'ionic-angular';
+import { NavController, App, Events, IonicPage } from 'ionic-angular';
 import { Component, Renderer } from '@angular/core';
 import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { InAppBrowser } from '@ionic-native/in-app-browser';
@@ -11,13 +11,7 @@ import { UteisProvider } from './../../providers/uteis/uteis';
 import { OfflineProvider } from './../../providers/offline/offline';
 import { ConstantesProvider } from './../../providers/constantes/constantes';
 
-import { LoginPage } from './../login/login';
-import { ChamadoHistoricoPage } from './../chamado-historico/chamado-historico';
-import { ChamadoDetalhesPage } from './../chamado-detalhes/chamado-detalhes';
-import { ChamadosEquipamentoPage } from './../chamados-equipamento/chamados-equipamento';
-import { ChamadoNovoPage } from './../chamado-novo/chamado-novo';
-import { HomeOfflinePage } from './../home-offline/home-offline';
-
+@IonicPage()
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -38,6 +32,7 @@ export class HomePage {
   username: string;
   portal: string;
   nomePortal: string;
+  idioma: string;
   msgNenhumItem: string;
   filtroEquipamento: string;
   filtroNomeEquipamento: string;
@@ -77,22 +72,24 @@ export class HomePage {
   carregarDados() {
     try {
       if (this.offlineProvider.validarInternetOffline()) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.nomePortal = _configLoginProvider.nomePortal;
           this.portal = _configLoginProvider.portal;
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.idioma = _configLoginIdiomasProvider.valor;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.carregarPermissoesChamado();
         }
         else {
-          this.navCtrl.setRoot(LoginPage);
+          this.navCtrl.setRoot("LoginPage");
         }
       }
     }
@@ -124,7 +121,7 @@ export class HomePage {
   carregarChamados(novaPagina: boolean = false) {
     try {
       if (!this.isRefreshing && !novaPagina) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.exibirMsg = false;
@@ -152,27 +149,27 @@ export class HomePage {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else if(!novaPagina) {
+            else if (!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.exibirMsg = true;
             this.chamados = null;
-      
+
             if (this.isRefreshing) {
               this.refresher.complete();
               this.isRefreshing = false;
             }
-            else if(!novaPagina) {
+            else if (!novaPagina) {
               this.alertsProvider.fecharCarregando();
             }
           });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.chamados = null;
 
@@ -197,20 +194,22 @@ export class HomePage {
           this.chamado = _objetoRetorno;
 
           if (this.chamado) {
-            this.navCtrl.push(ChamadoDetalhesPage, { ChamadoID: this.chamado.ChamadoID,
-              AlterarChamado: this.alterarChamado });
+            this.navCtrl.push("ChamadoDetalhesPage", {
+              ChamadoID: this.chamado.ChamadoID,
+              AlterarChamado: this.alterarChamado
+            });
           }
           else {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
           }
         }, e => {
           console.log(e);
 
           if (e.status == 404) {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
           }
           else {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
         }
       )
@@ -226,7 +225,11 @@ export class HomePage {
       this.filtroNomeEquipamento = null;
       this.qrCodeUrl = null;
 
-      this.barcodeScanner.scan().then(barcodeData => {
+      let _opcoesQrCode: any = {
+        formats: "QR_CODE"
+      }
+
+      this.barcodeScanner.scan(_opcoesQrCode).then(barcodeData => {
 
         let _valor = barcodeData.text;
 
@@ -235,20 +238,27 @@ export class HomePage {
           this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
           this.qrCodeUrl = _valor;
 
-          let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
-          { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick },
+          let _botoes: any = [{
+            text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNavegar),
+            handler: this.navegarClick
+          },
+          {
+            text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveFiltrar),
+            handler: this.filtrarClick
+          },
           { text: "Cancelar" }]
 
-          this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
+          this.alertsProvider.exibirAlertaConfirmacaoHandler(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta),
+            this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgEscolhaAcao), _botoes);
         }
       }).catch(e => {
         console.log(e);
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
@@ -258,7 +268,7 @@ export class HomePage {
         this.inAppBrowser.create(this.qrCodeUrl, '_system')
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
     catch (e) {
@@ -269,10 +279,14 @@ export class HomePage {
   filtrarQrCode() {
     try {
       if (this.filtroEquipamento) {
-        this.navCtrl.push(ChamadosEquipamentoPage, { EquipamentoID: this.filtroEquipamento, NomeEquipamento: this.filtroNomeEquipamento });
+        this.navCtrl.push("ChamadosEquipamentoPage", {
+          EquipamentoID: this.filtroEquipamento,
+          NomeEquipamento: this.filtroNomeEquipamento,
+          AlterarChamado: this.alterarChamado
+        });
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
     catch (e) {
@@ -284,11 +298,11 @@ export class HomePage {
     try {
       if (this.offlineProvider.retornarConfigEstruturaSQLite()) {
 
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
 
-        this.offlineProvider.salvarChamadoOffline(this.portal, this.nomePortal, this.username, chamado).then(data => {
+        this.offlineProvider.salvarChamadoOffline(this.portal, this.nomePortal, this.username, chamado, this.idioma).then(data => {
           if (data) {
-            this.chamadosProvider.salvarOffline(this.username, this.portal, chamado.ChamadoID, true).subscribe(
+            this.chamadosProvider.salvarOffline(this.username, this.portal, chamado.ChamadoID, true, this.idioma).subscribe(
               data => {
                 let _resposta = (data as any);
                 let _objetoRetorno = JSON.parse(_resposta._body);
@@ -298,7 +312,6 @@ export class HomePage {
                 if (this.respostaApi) {
                   if (this.respostaApi.sucesso) {
                     chamado.HabilitarChamado = false;
-                    //chamado.Offline = true;
                     this.offlineProvider.salvarConfigBadgesOffline();
                     this.events.publish('badge:exibir');
                     this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
@@ -310,54 +323,58 @@ export class HomePage {
                 }
                 else {
                   this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
-                  this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                  this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                 }
 
                 this.alertsProvider.fecharCarregando();
               }, e => {
                 console.log(e);
                 this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
-                this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                 this.alertsProvider.fecharCarregando();
               });
           }
           else {
             this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
         });
       }
       else {
-        let _titulo = this.alertsProvider.msgTituloPadrao;
+        let _titulo = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta);
 
-        let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-        { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarDownloadClick }]
+        let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+        {
+          text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+          handler: this.confirmarDownloadClick
+        }]
 
-        this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacaoEstrutura, _botoes);
+        this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacaoEstrutura), _botoes);
       }
     }
     catch (e) {
       console.log(e);
       this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
 
   salvarEstruturaOffline() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.offlineProvider.removerConfigEstruturaSQLite();
       let _sqlite = this.offlineProvider.salvarBancoSQLite();
       this.offlineProvider.salvarEstruturaSQLite(_sqlite);
 
-      this.alertsProvider.exibirToast(this.alertsProvider.msgSucesso, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso),
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       this.alertsProvider.fecharCarregando();
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
@@ -377,18 +394,18 @@ export class HomePage {
   }
 
   abrirDetalhesClick(chamado) {
-    this.navCtrl.push(ChamadoDetalhesPage, {
+    this.navCtrl.push("ChamadoDetalhesPage", {
       ChamadoID: chamado.ChamadoID,
       AlterarChamado: this.alterarChamado
     });
   }
 
   historicoClick(chamado) {
-    this.navCtrl.push(ChamadoHistoricoPage, { ChamadoID: chamado.ChamadoID });
+    this.navCtrl.push("ChamadoHistoricoPage", { ChamadoID: chamado.ChamadoID });
   }
 
   novoChamadoClick() {
-    this.navCtrl.push(ChamadoNovoPage, { "HomePage": this });
+    this.navCtrl.push("ChamadoNovoPage", { "HomePage": this });
   }
 
   qrCodeClick() {
@@ -434,39 +451,9 @@ export class HomePage {
   }
 
   doInfinite(infiniteScroll) {
-    this.pagina++;
-    this.infiniteScroll = infiniteScroll;
+      this.pagina++;
+      this.infiniteScroll = infiniteScroll;
 
-    this.carregarChamados(true);
+      this.carregarChamados(true);
   }
-
-  // qrCodeClick() {
-  //   let qrCode = 'https://cushwake1.sharepoint.com/:f:/r/sites/SAGE-AGUABRANCA/Shared%20Documents/SAGE%20-%20%C3%81GUA%20BRANCA/El%C3%A9trica/002QDF0203ELEAGB?v=2&v1=Ar Condicionado';
-  //   this.filtroEquipamento = null;
-  //   this.filtroNomeEquipamento = null;
-  //   this.qrCodeUrl = null;
-
-  //   try {
-  //     if (qrCode) {
-  //       this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", qrCode);
-  //       this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", qrCode);
-  //       this.qrCodeUrl = qrCode;
-
-  //       let _botoes: any = [{ text: this.alertsProvider.msgBotaoNavegar, handler: this.navegarClick },
-  //       { text: this.alertsProvider.msgBotaoFiltrar, handler: this.filtrarClick },
-  //       { text: "Cancelar" }]
-
-  //       this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgEscolhaAcao, _botoes);
-  //     }
-  //     else {
-  //       this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //     }
-  //   }
-  //   catch (e) {
-  //     this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-  //   }
-  // }
-
 }
-
-

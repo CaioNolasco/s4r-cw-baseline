@@ -6,16 +6,7 @@ import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { OfflineProvider } from '../../providers/offline/offline';
 import { ConstantesProvider } from './../../providers/constantes/constantes';
-
-import { ChamadoAnexosPage } from './../chamado-anexos/chamado-anexos';
-import { ChamadoMapaPage } from './../chamado-mapa/chamado-mapa';
-import { LoginPage } from '../login/login';
-import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
-import { ChamadoMateriaisPage } from './../chamado-materiais/chamado-materiais';
-import { ChamadoMovimentacaoPage } from './../chamado-movimentacao/chamado-movimentacao';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-import { ChamadoRotinaPage } from './../chamado-rotina/chamado-rotina';
-import { ChamadoDetalhesPopoverPage } from './../chamado-detalhes-popover/chamado-detalhes-popover';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
 @IonicPage()
 @Component({
@@ -26,13 +17,15 @@ import { ChamadoDetalhesPopoverPage } from './../chamado-detalhes-popover/chamad
     ConfigLoginProvider,
     ChamadosProvider,
     OfflineProvider,
-    ConstantesProvider]
+    ConstantesProvider,
+    UteisProvider]
 })
 export class ChamadoDetalhesPage {
   //Propriedades
   username: string;
   portal: string;
   nomePortal: string;
+  idioma: string;
   msgNenhumItem: string;
   chamadoId: string;
   tipoChamadoPreventivo: number;
@@ -49,7 +42,7 @@ export class ChamadoDetalhesPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public configLoginProvider: ConfigLoginProvider,
     public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App, 
-    public constantesProvider: ConstantesProvider, public popoverController: PopoverController) {
+    public constantesProvider: ConstantesProvider, public popoverController: PopoverController, public uteisProvider: UteisProvider) {
     this.carregarDados();
   }
 
@@ -68,7 +61,7 @@ export class ChamadoDetalhesPage {
       this.tipoChamadoPreventivo = this.constantesProvider.tipoChamadoPreventivo;
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -80,18 +73,20 @@ export class ChamadoDetalhesPage {
         }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.username = _configLoginProvider.username;
           this.portal = _configLoginProvider.portal;
           this.nomePortal = _configLoginProvider.nomePortal;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.habilitarChamado = false;
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -102,7 +97,7 @@ export class ChamadoDetalhesPage {
 
   carregarDetalhesChamado() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
       this.exibirMsg = false;
 
@@ -115,7 +110,8 @@ export class ChamadoDetalhesPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.chamado = null;
       this.alertsProvider.fecharCarregando();
@@ -123,7 +119,7 @@ export class ChamadoDetalhesPage {
   }
 
   carregarDetalhesChamadoOnline() {
-    this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId).subscribe(
+    this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -165,7 +161,7 @@ export class ChamadoDetalhesPage {
 
   carregarMapa(chamado: any) {
     try {
-      let modal = this.modalCtrl.create(ChamadoMapaPage,
+      let modal = this.modalCtrl.create("ChamadoMapaPage",
         { Endereco: chamado.Endereco, Cidade: chamado.Cidade, Estado: chamado.Estado });
       modal.present();
     }
@@ -180,7 +176,7 @@ export class ChamadoDetalhesPage {
   }
 
   anexosClick() {
-    this.navCtrl.push(ChamadoAnexosPage, {
+    this.navCtrl.push("ChamadoAnexosPage", {
       ChamadoID: this.chamadoId,
       HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
@@ -189,7 +185,7 @@ export class ChamadoDetalhesPage {
   }
 
   movimentacaoClick() {
-    this.navCtrl.push(ChamadoMovimentacaoPage, {
+    this.navCtrl.push("ChamadoMovimentacaoPage", {
       ChamadoID: this.chamadoId,
       TipoServicoID: this.tipoServicoId,
       "ChamadoDetalhesPage": this,
@@ -199,7 +195,7 @@ export class ChamadoDetalhesPage {
   }
 
   rotinaClick() {
-    this.navCtrl.push(ChamadoRotinaPage, {
+    this.navCtrl.push("ChamadoRotinaPage", {
       ChamadoID: this.chamadoId,
       OrigemOffline: this.origemOffline,
       HabilitarChamado: this.habilitarChamado,
@@ -208,7 +204,7 @@ export class ChamadoDetalhesPage {
   }
 
   materiaisClick() {
-    this.navCtrl.push(ChamadoMateriaisPage, {
+    this.navCtrl.push("ChamadoMateriaisPage", {
       ChamadoID: this.chamadoId,
       HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
@@ -217,7 +213,7 @@ export class ChamadoDetalhesPage {
   }
 
   historicoClick() {
-    this.navCtrl.push(ChamadoHistoricoPage, { 
+    this.navCtrl.push("ChamadoHistoricoPage", { 
       ChamadoID: this.chamadoId, 
       OrigemOffline: this.origemOffline 
     });
@@ -228,7 +224,7 @@ export class ChamadoDetalhesPage {
   }
 
   popoverClick(evento) {
-    let _popover = this.popoverController.create(ChamadoDetalhesPopoverPage, 
+    let _popover = this.popoverController.create("ChamadoDetalhesPopoverPage", 
       { ChamadoID: this.chamadoId,
         HabilitarChamado: this.habilitarChamado,
         OrigemOffline: this.origemOffline,

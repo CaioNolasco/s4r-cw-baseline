@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ChamadoRotinaPage } from './chamado-rotina';
+import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { ChamadoRotinaPage } from './chamado-rotina';
   ],
   imports: [
     IonicPageModule.forChild(ChamadoRotinaPage),
+    TranslateModule
   ],
 })
 export class ChamadoRotinaPageModule {}

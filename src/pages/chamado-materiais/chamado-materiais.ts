@@ -5,12 +5,10 @@ import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ChamadosProvider } from '../../providers/chamados/chamados';
 import { OfflineProvider } from './../../providers/offline/offline';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { LoginPage } from '../login/login';
-import { ChamadoMateriaisNovoPage } from './../chamado-materiais-novo/chamado-materiais-novo';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoMateriaisPage'})
 @Component({
   selector: 'page-chamado-materiais',
   templateUrl: 'chamado-materiais.html',
@@ -18,11 +16,14 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     ConfigLoginProvider,
     AlertsProvider,
     ChamadosProvider,
-    OfflineProvider]
+    OfflineProvider,
+    ConstantesProvider,
+    UteisProvider]
 })
 export class ChamadoMateriaisPage {
   //Propriedades
   portal: string;
+  idioma: string;
   msgNenhumItem: string;
   refresher: any;
   materiais: any;
@@ -41,7 +42,8 @@ export class ChamadoMateriaisPage {
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider,
-    public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App) {
+    public chamadosProvider: ChamadosProvider, public offlineProvider: OfflineProvider, public app: App,
+    public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -59,7 +61,7 @@ export class ChamadoMateriaisPage {
       this.origemOffline = this.navParams.get("OrigemOffline");
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
         this.homeOffline = true;
       }
       else {
@@ -71,17 +73,19 @@ export class ChamadoMateriaisPage {
         }
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -93,7 +97,7 @@ export class ChamadoMateriaisPage {
   carregarMateriais() {
     try {
       if (!this.isRefreshing) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
       }
 
       this.exibirMsg = false;
@@ -107,7 +111,8 @@ export class ChamadoMateriaisPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.exibirMsg = true;
       this.materiais = null;
 
@@ -179,12 +184,13 @@ export class ChamadoMateriaisPage {
       this.index = this.materiais.indexOf(material);
       this.materialChamadoId = material.MaterialChamadoID;
 
-      let _titulo = `Excluir ${material.TipoServico} - ${material.Marca} - ${material.Modelo}`;
+      let _titulo = `${material.TipoServico} - ${material.Marca} - ${material.Modelo}`;
 
-      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirClick }]
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
+        handler: this.confirmarExcluirClick }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -193,9 +199,9 @@ export class ChamadoMateriaisPage {
   
   excluirMaterial() {
     try {
-      this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+      this.alertsProvider.exibirCarregando('');
 
-      this.chamadosProvider.excluirMaterial(this.username, this.portal, this.chamadoId, this.materialChamadoId).subscribe(
+      this.chamadosProvider.excluirMaterial(this.username, this.portal, this.chamadoId, this.materialChamadoId, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -220,7 +226,7 @@ export class ChamadoMateriaisPage {
             }
           }
           else {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }
 
           this.index = null;
@@ -230,7 +236,8 @@ export class ChamadoMateriaisPage {
           console.log(e);
           this.index = null;
           this.materialChamadoId = null;
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.alertsProvider.fecharCarregando();
         });
     }
@@ -238,7 +245,8 @@ export class ChamadoMateriaisPage {
       console.log(e);
       this.index = null;
       this.materialChamadoId = null;
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
@@ -257,7 +265,7 @@ export class ChamadoMateriaisPage {
   }
 
   novoMaterialClick() {
-    this.navCtrl.push(ChamadoMateriaisNovoPage, { ChamadoID: this.chamadoId, "ChamadoMateriaisNovoPage": this });
+    this.navCtrl.push("ChamadoMateriaisNovoPage", { ChamadoID: this.chamadoId, "ChamadoMateriaisNovoPage": this });
   }
 
   doRefresh(refresher) {

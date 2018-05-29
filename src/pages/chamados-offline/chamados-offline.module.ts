@@ -10,4 +10,4 @@ import { ChamadosOfflinePage } from './chamados-offline';
     IonicPageModule.forChild(ChamadosOfflinePage),
   ],
 })
-export class ChamadosOfflinePageModule {}
+export class ChamadosOfflinePageModule { }

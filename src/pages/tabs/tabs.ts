@@ -6,10 +6,6 @@ import { UsuariosProvider } from './../../providers/usuarios/usuarios';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 
-import { HomePage } from '../home/home';
-import { RelatoriosPage } from './../relatorios/relatorios';
-import { ChamadosOfflinePage } from './../chamados-offline/chamados-offline';
-
 @Component({
   templateUrl: 'tabs.html',
   providers: [
@@ -22,12 +18,14 @@ import { ChamadosOfflinePage } from './../chamados-offline/chamados-offline';
 export class TabsPage {
 
   //Propriedades
-  tab1Root = HomePage;
-  tab2Root = RelatoriosPage;
-  tab3Root = ChamadosOfflinePage
+  tab1Root = "HomePage";
+  tab2Root = "RelatoriosPage";
+  tab3Root = "ChamadosOfflinePage";
   badgesOffline: string;
   username: string;
   portal: string;
+  relatorios: string;
+  sincronizacao: string;
   index: number;
   permissoesChamado: any;
   alterarChamado: boolean = false;
@@ -44,25 +42,12 @@ export class TabsPage {
       this.carregarBadge();
 
       let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
-
+    
       if (_configLoginProvider) {
         this.username = _configLoginProvider.username;
         this.portal = _configLoginProvider.portal;
 
-        this.carregarPermissoesChamado();
-      }
-
-      //Index (Side Menu)
-      this.index = 0;
-      if (this.navParams.get("Index")){
-        this.index = this.navParams.get("Index");
-      }
-
-      if (this.index == 1) {
-        let _componenteTabs = this.navParams.get("ComponenteTabs");
-        if (_componenteTabs) {
-          this.tab2Root = _componenteTabs;
-        }
+        this.carregarPermissoesChamado();        
       }
     }
     catch (e) {

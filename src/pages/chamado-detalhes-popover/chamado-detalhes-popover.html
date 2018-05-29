@@ -1,25 +1,27 @@
 <ion-list>
-  <ion-list-header color="cushman-2">Opções</ion-list-header>
+  <ion-list-header color="cushman-2">
+      {{ "opcoes" | translate }}
+  </ion-list-header>
   <div class="menu-popover">
-    <ion-item (click)="anexosClick()">
+    <ion-item (click)="anexosClick()" tappable>
       <ion-icon name="attach" item-start></ion-icon>
-      Anexos
+      {{ "anexos" | translate }}
     </ion-item>
-    <ion-item (click)="movimentacaoClick()">
+    <ion-item (click)="movimentacaoClick()" tappable>
       <ion-icon ios="ios-hammer-outline" name="hammer" item-start></ion-icon>
-      Movimentações
+      {{ "movimentacoes" | translate }}
     </ion-item>
-    <ion-item (click)="materiaisClick()">
+    <ion-item (click)="materiaisClick()" tappable>
       <ion-icon ios="ios-briefcase-outline" name="briefcase" item-start></ion-icon>
-      Materiais
+      {{ "materiais" | translate }}
     </ion-item>
-    <ion-item (click)="rotinaClick()" *ngIf="tipoChamado == tipoChamadoPreventivo">
+    <ion-item (click)="rotinaClick()" *ngIf="tipoChamado == tipoChamadoPreventivo" tappable>
       <ion-icon ios="ios-paper-outline" name="paper" item-start></ion-icon>
-      Rotina
+      {{ "rotina" | translate }}
     </ion-item>
-    <ion-item (click)="historicoClick()">
+    <ion-item (click)="historicoClick()" tappable>
       <ion-icon ios="ios-timer-outline" name="timer" item-start></ion-icon>
-      Histórico
+      {{ "historico" | translate }}
     </ion-item>
   </div>
 </ion-list>

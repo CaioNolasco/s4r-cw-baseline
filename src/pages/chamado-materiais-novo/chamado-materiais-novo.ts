@@ -6,12 +6,10 @@ import { ChamadosProvider } from '../../providers/chamados/chamados';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
 import { OfflineProvider } from './../../providers/offline/offline';
+import { ConstantesProvider } from './../../providers/constantes/constantes';
+import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { LoginPage } from '../login/login';
-import { HomeOfflinePage } from '../home-offline/home-offline';
-
-
-@IonicPage()
+@IonicPage({name: 'ChamadoMateriaisNovoPage'})
 @Component({
   selector: 'page-chamado-materiais-novo',
   templateUrl: 'chamado-materiais-novo.html',
@@ -19,13 +17,16 @@ import { HomeOfflinePage } from '../home-offline/home-offline';
     ChamadosProvider,
     ConfigLoginProvider,
     AlertsProvider,
-    OfflineProvider]
+    OfflineProvider,
+    ConstantesProvider,
+    UteisProvider]
 })
 export class ChamadoMateriaisNovoPage {
   //Propriedades
   chamadoId: string;
   username: string;
   portal: string;
+  idioma: string;
   opcoesTiposServico: any;
   opcoesMarcasMaterial: any;
   opcoesModelosMaterial: any;
@@ -41,7 +42,7 @@ export class ChamadoMateriaisNovoPage {
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public chamadosProvider: ChamadosProvider, public configLoginProvider: ConfigLoginProvider, public formBuilder: FormBuilder,
     public alertsProvider: AlertsProvider, public renderer: Renderer, public offlineProvider: OfflineProvider,
-    public app: App) {
+    public app: App, public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider) {
     this.carregarDados();
   }
 
@@ -53,10 +54,11 @@ export class ChamadoMateriaisNovoPage {
   carregarDados() {
     try {
       if (this.offlineProvider.validarInternetOffline()) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
       }
       else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.materiaisForm = this.formBuilder.group({
@@ -73,13 +75,14 @@ export class ChamadoMateriaisNovoPage {
 
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
 
           this.carregarTiposServico();
           this.carregarMarcasMaterial();
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -140,13 +143,15 @@ export class ChamadoMateriaisNovoPage {
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           this.opcoesModelosMaterial = null;
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.opcoesModelosMaterial = null;
     }
   }
@@ -167,14 +172,16 @@ export class ChamadoMateriaisNovoPage {
             }
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+            this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.modelo = null;
           });
       }
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.modelo = null;
     }
   }
@@ -182,7 +189,7 @@ export class ChamadoMateriaisNovoPage {
   salvarMaterial() {
     try {
       if (this.materiaisForm.valid) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
 
         let _parametros = {
           ChamadoID: this.chamadoId,
@@ -191,7 +198,7 @@ export class ChamadoMateriaisNovoPage {
           TipoServicoID: this.aplicacoes.value
         };
 
-        this.chamadosProvider.salvarMaterial(this.username, this.portal, this.chamadoId, _parametros).subscribe(
+        this.chamadosProvider.salvarMaterial(this.username, this.portal, this.chamadoId, this.idioma, _parametros).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
@@ -209,23 +216,26 @@ export class ChamadoMateriaisNovoPage {
               }
             }
             else {
-              this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+              this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
             this.alertsProvider.fecharCarregando();
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+            this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.alertsProvider.fecharCarregando();
           });
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErroCampos, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroCampos), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
+      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }

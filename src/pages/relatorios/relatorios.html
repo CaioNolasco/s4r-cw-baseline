@@ -2,22 +2,22 @@
 
   <ion-navbar color="cushman-1">
     <ion-buttons start>
-     <button ion-button icon-only menuToggle>
+      <button ion-button icon-only menuToggle>
         <ion-icon name="menu"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-title>Corretivos</ion-title>
+    <ion-title>{{ "corretivos" | translate }}</ion-title>
   </ion-navbar>
   <ion-toolbar color="cushman-1">
     <ion-segment [(ngModel)]="tipoCorretivo" color="cushman-4">
       <ion-segment-button value="mes">
-        Mês
+        {{ "mes" | translate }}
       </ion-segment-button>
       <ion-segment-button value="pendentes">
-        Pendentes
+        {{ "pendentes" | translate }}
       </ion-segment-button>
       <ion-segment-button value="evolucao">
-        Evolução
+        {{ "evolucao" | translate }}
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
@@ -30,34 +30,23 @@
     <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-    <!-- <ion-slides pager>
-
-    <ion-slide> -->
-    <div [hidden]="tipoCorretivo != 'mes'">
-      <h6>Chamados Corretivos {{ nomeMes }}/{{ ano }} (%)</h6>
-      <div style="display: block">
-        <canvas #corretivosMes baseChart height="400"></canvas>
-      </div>
+  <div [hidden]="tipoCorretivo != 'mes'">
+    <!-- {{ nomeMes }}/{{ ano }} -->
+    <h6>{{ "chamadosCorretivosMes" | translate }} (%)</h6>
+    <div style="display: block">
+      <canvas #corretivosMes baseChart height="400"></canvas>
     </div>
-    <!-- </ion-slide>
-
-    <ion-slide> -->
-    <div [hidden]="tipoCorretivo != 'pendentes'">
-      <h6>Corretivos Pendentes: Atrasados / Dentro Prazo (%)</h6>
-      <div style="display: block">
-        <canvas #corretivosPendentes baseChart height="400"></canvas>
-      </div>
+  </div>
+  <div [hidden]="tipoCorretivo != 'pendentes'">
+    <h6>{{ "corretivosPendentesAtrasados" | translate }}</h6>
+    <div style="display: block">
+      <canvas #corretivosPendentes baseChart height="400"></canvas>
     </div>
-    <!-- </ion-slide>
-
-    <ion-slide> -->
-    <div [hidden]="tipoCorretivo != 'evolucao'">
-      <h6>Evolução de Chamados Corretivos</h6>
-      <div style="display: block">
-        <canvas #evolucao baseChart height="400"></canvas>
-      </div>
+  </div>
+  <div [hidden]="tipoCorretivo != 'evolucao'">
+    <h6>{{ "evolucaoChamadosCorretivos" | translate }}</h6>
+    <div style="display: block">
+      <canvas #evolucao baseChart height="400"></canvas>
     </div>
-    <!-- </ion-slide>
-
-  </ion-slides> -->
+  </div>
 </ion-content>

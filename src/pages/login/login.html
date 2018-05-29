@@ -1,5 +1,18 @@
 <ion-content padding class="animated fadeIn login auth-page">
+
     <div class="login-content">
+        
+        <!-- Idiomas -->
+        <div class="login-idioma">
+            <ion-buttons end>
+                <ion-icon name="{{iconeIdioma}}">
+                    <ion-select [(ngModel)]="idiomas" (ionChange)="idiomasChange($event)" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesIdiomas"
+                        interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
+                        <ion-option value="{{idioma.valor}}" *ngFor="let idioma of opcoesIdiomas">{{idioma.texto}}</ion-option>
+                    </ion-select>
+                </ion-icon>
+            </ion-buttons>
+        </div>
 
         <!-- Logo -->
         <div padding-horizontal text-center class="animated fadeInDown">
@@ -11,7 +24,7 @@
             <ion-item [ngClass]="{'error-border':!loginForm.controls.username.valid && loginForm.controls.username.touched}">
                 <ion-label floating>
                     <ion-icon name="person" item-start></ion-icon>
-                    Usuário
+                    {{ "usuario" | translate }}
                 </ion-label>
                 <ion-input formControlName="username" (keyup.enter)="redimencionarPagina()" type="text"></ion-input>
             </ion-item>
@@ -19,21 +32,21 @@
             <ion-item [ngClass]="{'error-border':!loginForm.controls.password.valid && loginForm.controls.password.touched}">
                 <ion-label floating>
                     <ion-icon name="lock" item-start></ion-icon>
-                    Senha
+                    {{ "senha" | translate }}
                 </ion-label>
                 <ion-input formControlName="password" (keyup.enter)="redimencionarPagina()" type="password"></ion-input>
             </ion-item>
 
             <div text-center margin-top>
-                <span ion-text tappable (click)="qrCodeClick()">
+                <span (click)="qrCodeClick()" ion-text tappable>
                     <strong>
-                        <u>Ler QR Code</u>
+                        <u> {{ "lerQrCode" | translate }}</u>
                     </strong>
                 </span>
-                <span> ou </span>
-                <span ion-text tappable (click)="limparClick()">
+                <span> {{ "ou" | translate }} </span>
+                <span (click)="limparClick()" ion-text tappable>
                     <strong>
-                        <u>Limpar Portais</u>
+                        <u>{{ "limparPortais" | translate }}</u>
                     </strong>
                 </span>
             </div>
@@ -41,19 +54,20 @@
             <ion-item>
                 <ion-label>
                     <ion-icon name="key" item-start></ion-icon>
-                    Portais
+                    {{ "portais" | translate }}
                 </ion-label>
                 <ion-select [(ngModel)]="portais" [ngModelOptions]="{standalone: true}" [disabled]="!opcoesPortais" interface="action-sheet"
-                    cancelText="Cancelar">
+                    cancelText="{{ 'cancelar' | translate }}">
                     <ion-option value="{{portal.valor}}" *ngFor="let portal of opcoesPortais">{{portal.texto}}</ion-option>
                 </ion-select>
             </ion-item>
         </form>
 
         <div class="btn-login">
-            <button [disabled]="!loginForm.valid || !opcoesPortais" (click)="loginClick()" ion-button icon-start block tappable color="cushman-1">
+            <button [disabled]="!loginForm.valid || !opcoesPortais || desabilitarLogin" (click)="loginClick()" color="cushman-1" ion-button
+                icon-start block tappable>
                 <ion-icon></ion-icon>
-                Entrar
+                {{ "login" | translate }}
             </button>
         </div>
     </div>

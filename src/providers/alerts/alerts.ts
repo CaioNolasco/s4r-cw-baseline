@@ -8,30 +8,7 @@ export class AlertsProvider {
   alertaClasses: any = ["toast-danger", "toast-success", "toast-warning"];
   loader: any;
 
-  msgTituloPadrao: string = "Alerta";
-  msgTituloAtualizar: string = "Atualizar";
   msgBotaoPadrao: string = "OK";
-  msgBotaoConfirmar: string = "Confirmar";
-  msgBotaoCancelar: string = "Cancelar";
-  msgBotaoNavegar: string = "Navegar";
-  msgBotaoFiltrar: string = "Filtrar";
-  msgValorExistente: string = "O valor preenchido está em uso!";
-  msgSucesso: string = "Ação executada com sucesso!";
-  msgErro: string = "Não foi possível executar a ação!";
-  msgErroAcesso: string = "Acesso negado!";
-  msgErroAcessoConfig: string = "Acesso negado, ";
-  msgErroCampos: string = "Campos preenchidos incorretamente!";
-  msgErroCampo: string = "Campo preenchido incorretamente: ";
-  msgErroPortal: string = "Você não está vínculado a nenhum contexto de portal!";
-  msgErroRotina: string = "Adicione ao menos uma foto e preencha todos os campos obrigatórios!";
-  msgAguarde: string = "Por favor, aguarde...";
-  msgNenhumItem: string = "Nenhum item localizado!";
-  msgConfirmacao: string = "Deseja realmente executar essa ação?";
-  msgConfirmacaoEstrutura: string = "Download de estrutura necessária, caso confirme marque offline novamente!";
-  msgConfirmarAtualizarEstrutura: string = "Atualização de estrutura offline!"
-  msgEscolhaAcao: string = "Escolha a ação que deseja executar:";
-  msgOffline: string = "Você está offline!";
-  msgPortal: string = "Você está no contexto do portal: ";
   
   //Load
   constructor(public alertCtrl: AlertController, public toastCtrl: ToastController, 
@@ -94,7 +71,7 @@ export class AlertsProvider {
 
   exibirCarregando(mensagem: string) {
     this.loader = this.loadingCtrl.create({
-      content: mensagem,
+      content: mensagem
     });
     this.loader.present();
   }
@@ -102,5 +79,4 @@ export class AlertsProvider {
   fecharCarregando() {
     this.loader.dismiss();
   }
-
 }

@@ -6,7 +6,6 @@
 
 </ion-header>
 
-
 <ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
@@ -15,12 +14,12 @@
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
   <ion-list *ngIf="chamados">
     <ion-item-sliding *ngFor="let chamado of chamados">
-      <button ion-item (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado">
+      <button (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado" ion-item tappable>
         <ion-grid>
           <ion-row>
             <ion-col col-8>
@@ -59,7 +58,12 @@
       </button>
 
       <ion-item-options side="left">
-        <button (click)="historicoClick(chamado)" ion-button color="cushman-2">
+        <button (click)="offlineClick(chamado)" *ngIf="alterarChamado" [disabled]="!chamado.HabilitarChamado" color="cushman-1" ion-button
+          tappable>
+          <ion-icon name="wifi"></ion-icon>
+          Offline
+        </button>
+        <button (click)="historicoClick(chamado)" color="cushman-2" ion-button tappable>
           <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
           Hist.
         </button>
@@ -67,7 +71,7 @@
     </ion-item-sliding>
   </ion-list>
 
-  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+  <ion-infinite-scroll *ngIf="chamados" (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 </ion-content>

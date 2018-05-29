@@ -1,16 +1,16 @@
 <ion-header>
   <ion-navbar color="cushman-1">
     <ion-buttons start>
-      <button (click)="searchClick()" ion-button icon-only>
+      <button (click)="searchClick()" ion-button icon-only tappable>
         <ion-icon name="search"></ion-icon>
       </button>
     </ion-buttons>
     <ion-title>{{nomePortal}}</ion-title>
     <ion-buttons end>
-      <button (click)="qrCodeClick()" ion-button icon-only>
+      <button (click)="qrCodeClick()" ion-button icon-only tappable>
         <ion-icon name="custom-qrcode"></ion-icon>
       </button>
-      <button (click)="logoutClick()" ion-button icon-only>
+      <button (click)="logoutClick()" ion-button icon-only tappable>
         <ion-icon name="log-out"></ion-icon>
       </button>
     </ion-buttons>
@@ -20,13 +20,13 @@
 <ion-header>
   <ion-toolbar *ngIf="exibirSearch" color="cushman-1">
     <ion-buttons start>
-      <button (click)="searchClick()" ion-button icon-only>
+      <button (click)="searchClick()" ion-button icon-only tappable>
         <ion-icon name="arrow-back"></ion-icon>
       </button>
     </ion-buttons>
-    <ion-searchbar [(ngModel)]="search" (search)="buscarChamados($event)" placeholder="Nº Chamado"></ion-searchbar>
+    <ion-searchbar [(ngModel)]="search" (search)="buscarChamados($event)" placeholder="{{ 'numeroChamado' | translate }}"></ion-searchbar>
     <ion-buttons end>
-      <button (click)="buscarChamadosClick()" ion-button icon-only>
+      <button (click)="buscarChamadosClick()" ion-button icon-only tappable>
         <ion-icon name="eye"></ion-icon>
       </button>
     </ion-buttons>
@@ -41,12 +41,12 @@
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end></ion-icon>
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
   <ion-list *ngIf="chamados">
     <ion-item-sliding *ngFor="let chamado of chamados">
-      <button ion-item (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado">
+      <button (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado" ion-item tappable>
         <ion-grid>
           <ion-row>
             <ion-col col-8>
@@ -92,11 +92,12 @@
       </button>
 
       <ion-item-options side="left">
-        <button (click)="offlineClick(chamado)" *ngIf="alterarChamado" [disabled]="!chamado.HabilitarChamado" ion-button color="cushman-1">
+        <button (click)="offlineClick(chamado)" *ngIf="alterarChamado" [disabled]="!chamado.HabilitarChamado" color="cushman-1" ion-button
+          tappable>
           <ion-icon name="wifi"></ion-icon>
           Offline
         </button>
-        <button (click)="historicoClick(chamado)" ion-button color="cushman-2">
+        <button (click)="historicoClick(chamado)" color="cushman-2" ion-button tappable>
           <ion-icon ios="ios-timer-outline" name="timer"></ion-icon>
           Hist.
         </button>
@@ -104,14 +105,14 @@
     </ion-item-sliding>
   </ion-list>
 
-  <ion-infinite-scroll (ionInfinite)="doInfinite($event)">
+  <ion-infinite-scroll *ngIf="chamados" (ionInfinite)="doInfinite($event)">
     <ion-infinite-scroll-content></ion-infinite-scroll-content>
   </ion-infinite-scroll>
 
   <div class="item-altura-fab"></div>
 
   <ion-fab *ngIf="adicionarChamado" bottom right>
-    <button (click)="novoChamadoClick()" ion-fab color="cushman-2">
+    <button (click)="novoChamadoClick()" color="cushman-2" ion-fab tappable>
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>

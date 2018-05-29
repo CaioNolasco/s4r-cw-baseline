@@ -3,13 +3,7 @@ import { IonicPage, NavController, NavParams, App, ViewController } from 'ionic-
 
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 
-import { ChamadoAnexosPage } from '../chamado-anexos/chamado-anexos';
-import { ChamadoMovimentacaoPage } from '../chamado-movimentacao/chamado-movimentacao';
-import { ChamadoMateriaisPage } from '../chamado-materiais/chamado-materiais';
-import { ChamadoRotinaPage } from '../chamado-rotina/chamado-rotina';
-import { ChamadoHistoricoPage } from '../chamado-historico/chamado-historico';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoDetalhesPopoverPage'})
 @Component({
   selector: 'page-chamado-detalhes-popover',
   templateUrl: 'chamado-detalhes-popover.html',
@@ -54,7 +48,7 @@ export class ChamadoDetalhesPopoverPage {
   //Eventos
   anexosClick() {
     this.viewCtrl.dismiss();
-    this.app.getRootNav().push(ChamadoAnexosPage, {
+    this.app.getActiveNav().push("ChamadoAnexosPage", {
       ChamadoID: this.chamadoId,
       HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
@@ -64,7 +58,7 @@ export class ChamadoDetalhesPopoverPage {
 
   movimentacaoClick() {
     this.viewCtrl.dismiss();
-    this.app.getRootNav().push(ChamadoMovimentacaoPage, {
+    this.app.getActiveNav().push("ChamadoMovimentacaoPage", {
       ChamadoID: this.chamadoId,
       TipoServicoID: this.tipoServicoId,
       "ChamadoDetalhesPage": this.chamadoDetalhesPage,
@@ -75,7 +69,7 @@ export class ChamadoDetalhesPopoverPage {
 
   materiaisClick() {
     this.viewCtrl.dismiss();
-    this.app.getRootNav().push(ChamadoMateriaisPage, {
+    this.app.getActiveNav().push("ChamadoMateriaisPage", {
       ChamadoID: this.chamadoId,
       HabilitarChamado: this.habilitarChamado,
       OrigemOffline: this.origemOffline,
@@ -85,7 +79,7 @@ export class ChamadoDetalhesPopoverPage {
 
   rotinaClick() {
     this.viewCtrl.dismiss();
-    this.app.getRootNav().push(ChamadoRotinaPage, {
+    this.app.getActiveNav().push("ChamadoRotinaPage", {
       ChamadoID: this.chamadoId,
       OrigemOffline: this.origemOffline,
       HabilitarChamado: this.habilitarChamado,
@@ -95,7 +89,7 @@ export class ChamadoDetalhesPopoverPage {
 
   historicoClick() {
     this.viewCtrl.dismiss();
-    this.app.getRootNav().push(ChamadoHistoricoPage, { 
+    this.app.getActiveNav().push("ChamadoHistoricoPage", { 
       ChamadoID: this.chamadoId, 
       OrigemOffline: this.origemOffline 
     });

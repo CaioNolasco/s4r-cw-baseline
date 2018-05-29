@@ -11,12 +11,7 @@ import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from './../../providers/alerts/alerts';
 import { UteisProvider } from './../../providers/uteis/uteis';
 
-import { HomeOfflinePage } from '../home-offline/home-offline';
-import { LoginPage } from './../login/login';
-import { ChamadoMapaPage } from '../chamado-mapa/chamado-mapa';
-import { HomePage } from './../home/home';
-
-@IonicPage()
+@IonicPage({name: 'ChamadoNovoPage'})
 @Component({
   selector: 'page-chamado-novo',
   templateUrl: 'chamado-novo.html',
@@ -34,6 +29,7 @@ export class ChamadoNovoPage {
   //Propriedades
   portal: string;
   username: string;
+  idioma: string;
   tipoChamado: any;
   pontoVenda: any;
   valorSla: any;
@@ -84,10 +80,11 @@ export class ChamadoNovoPage {
   carregarDados() {
     try {
       if (this.offlineProvider.validarInternetOffline()) {
-        this.app.getRootNav().setRoot(HomeOfflinePage);
+        this.app.getRootNav().setRoot("HomeOfflinePage");
       }
       else {
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
+        let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
           this.chamadoForm = this.formBuilder.group({
@@ -118,12 +115,13 @@ export class ChamadoNovoPage {
 
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
+          this.idioma = _configLoginIdiomasProvider.valor;
           this.tipoChamado = this.constantesProvider.tituloDadosBasicos;
-          this.msgNenhumItem = this.alertsProvider.msgNenhumItem;
+          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
         else {
-          this.app.getRootNav().setRoot(LoginPage);
+          this.app.getRootNav().setRoot("LoginPage");
         }
       }
     }
@@ -159,17 +157,17 @@ export class ChamadoNovoPage {
           this.opcoesPontosVenda = _objetoRetorno;
 
           if (!this.opcoesPontosVenda[0]) {
-            this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
             this.opcoesPontosVenda = null
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
@@ -234,7 +232,7 @@ export class ChamadoNovoPage {
       this.opcoesCriticidades = null;
       this.sla.setValue('');
 
-      this.chamadosProvider.retornarCriticidades(this.portal).subscribe(
+      this.chamadosProvider.retornarCriticidades(this.portal, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -346,21 +344,21 @@ export class ChamadoNovoPage {
             }
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.pontoVenda = null;
           });
       }
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.pontoVenda = null;
     }
   }
 
   carregarMapa(pontoVenda: any) {
     try {
-      let modal = this.modalCtrl.create(ChamadoMapaPage,
+      let modal = this.modalCtrl.create("ChamadoMapaPage",
         { Endereco: pontoVenda.Endereco, Cidade: pontoVenda.Cidade, Estado: pontoVenda.Estado });
       modal.present();
     }
@@ -373,10 +371,12 @@ export class ChamadoNovoPage {
     try {
       this.index = index;
 
-      let _botoes: any = [{ text: this.alertsProvider.msgBotaoCancelar },
-      { text: this.alertsProvider.msgBotaoConfirmar, handler: this.confirmarExcluirClick }]
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
+        handler: this.confirmarExcluirClick }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(this.alertsProvider.msgTituloPadrao, this.alertsProvider.msgConfirmacao, _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(
+       this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta), this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -413,9 +413,9 @@ export class ChamadoNovoPage {
       this.valorSla = null;
 
       if (sla) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
 
-        this.chamadosProvider.retornarValoresSla(this.portal, this.tiposServico.value, this.postosAtendimento.value, sla).subscribe(
+        this.chamadosProvider.retornarValoresSla(this.portal, this.tiposServico.value, this.postosAtendimento.value, sla, this.idioma).subscribe(
           data => {
             let _resposta = (data as any);
 
@@ -424,14 +424,14 @@ export class ChamadoNovoPage {
             this.valorSla = _objetoRetorno;
 
             if (!this.valorSla) {
-              this.alertsProvider.exibirToast(this.alertsProvider.msgNenhumItem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
               this.valorSla = null;
             }
 
             this.alertsProvider.fecharCarregando();
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.pontoVenda = null;
             this.alertsProvider.fecharCarregando();
           });
@@ -439,7 +439,7 @@ export class ChamadoNovoPage {
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.pontoVenda = null;
       this.alertsProvider.fecharCarregando();
     }
@@ -451,7 +451,7 @@ export class ChamadoNovoPage {
       this.chamadoId = chamadoId;
       this.viewCtrl.showBackButton(true);
 
-      this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, chamadoId).subscribe(
+      this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, chamadoId, this.idioma).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
@@ -463,19 +463,19 @@ export class ChamadoNovoPage {
           }
         }, e => {
           console.log(e);
-          this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
   salvarChamado() {
     try {
       if (this.chamadoForm.valid && this.valorSla && this.pontoVenda) {
-        this.alertsProvider.exibirCarregando(this.alertsProvider.msgAguarde);
+        this.alertsProvider.exibirCarregando('');
 
         let _dataPrevistaAtendimento = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaAtendimento);
         let _dataPrevistaSolucao = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaSolucao);
@@ -500,7 +500,7 @@ export class ChamadoNovoPage {
           Anexos: this.fotos
         };
 
-        this.chamadosProvider.salvarChamado(this.username, this.portal, this.constantesProvider.tipoAnexos, _parametros).subscribe(
+        this.chamadosProvider.salvarChamado(this.username, this.portal, this.constantesProvider.tipoAnexos, this.idioma, _parametros).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
@@ -519,23 +519,23 @@ export class ChamadoNovoPage {
             }
             else {
               console.log(this.respostaApi.mensagem);
-              this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
             this.alertsProvider.fecharCarregando();
           }, e => {
             console.log(e);
-            this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             this.alertsProvider.fecharCarregando();
           });
       }
       else {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErroCampos, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroCampos), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
     }
   }
@@ -556,16 +556,15 @@ export class ChamadoNovoPage {
         }
 
         this.fotos.push({ Base64: this.base64Image, url: this.base64Image });
-        //this.fotos.reverse();
         this.exibirMsg = false;
       }, (e) => {
         console.log(e);
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.alertsProvider.msgErro, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
     }
   }
 
@@ -586,7 +585,7 @@ export class ChamadoNovoPage {
   validarEmail() {
     try {
       if (this.email.hasError('pattern')) {
-        this.alertsProvider.exibirToast(this.alertsProvider.msgErroCampo + this.constantesProvider.campoEmailSolicitante,
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroCampo) + this.constantesProvider.campoEmailSolicitante,
           this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       }
     }
@@ -627,7 +626,7 @@ export class ChamadoNovoPage {
   }
 
   homeClick() {
-    this.navCtrl.setRoot(HomePage);
+    this.navCtrl.setRoot("HomePage");
   }
 
   centroCustoChange(centroCusto: any) {

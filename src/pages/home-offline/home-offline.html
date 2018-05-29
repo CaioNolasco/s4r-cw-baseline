@@ -11,9 +11,9 @@
 
         <div class="conteudo-offline">
             <h4 ion-text color="cushman-3">
-                    <ion-icon name="wifi" color="cushman-1"></ion-icon> Você está offline...
+                <ion-icon name="wifi" color="cushman-1"></ion-icon> {{ "msgOffline" | translate }}
             </h4>
-            <h6 ion-text color="cushman-3">Para continuar use uma das opções a seguir:</h6>
+            <h6 ion-text color="cushman-3">{{ "msgOpcoesOffline" | translate }}</h6>
         </div>
 
         <div class="botoes-offline">
@@ -23,33 +23,23 @@
                     <ion-icon name="swap"></ion-icon>
                 </button>
                 <ion-fab-list side="left">
-                    <ion-chip (click)="chamadosOfflineClick()">
-                        <ion-label>Chamados</ion-label>
+                    <ion-chip (click)="chamadosOfflineClick()" tappable>
+                        <ion-label>{{ "chamados" | translate }}</ion-label>
                         <ion-icon ios="ios-book-outline" name="book" color="cushman-3"></ion-icon>
                     </ion-chip>
                 </ion-fab-list>
                 <ion-fab-list side="right">
-                    <ion-chip (click)="onlineClick()">
-                        <ion-label>Atualizar</ion-label>
+                    <ion-chip (click)="onlineClick()" tappable>
+                        <ion-label>Online</ion-label>
                         <ion-icon name="refresh" color="cushman-3"></ion-icon>
                     </ion-chip>
                 </ion-fab-list>
                 <ion-fab-list side="bottom">
-                    <ion-chip (click)="infoClick()">
+                    <ion-chip (click)="infoClick()" tappable>
                         <ion-icon name="information" color="cushman-3" class="icone-info"></ion-icon>
                     </ion-chip>
                 </ion-fab-list>
             </ion-fab>
-
-            <!-- <button ion-button icon-start block tappable color="cushman-1">
-                <ion-icon ios="ios-book-outline" name="book"></ion-icon>
-                Chamados Offline
-            </button>
-
-            <button (click)="chamadosOfflineClick()" ion-button icon-start block tappable color="cushman-1">
-                <ion-icon name="refresh"></ion-icon>
-                Tentar Novamente
-            </button> -->
         </div>
     </div>
 </ion-content>
