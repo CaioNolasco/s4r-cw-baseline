@@ -1,23 +1,47 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>{{ chamadoId }}</ion-title>
+    <ion-title>
+      <div *ngIf="chamado">
+        {{ "tipoChamado" + chamado.TipoChamado | translate }} {{ chamadoId }}
+      </div>
+    </ion-title>
     <ion-buttons *ngIf="chamadoId" end>
-      <button (click)="anexosClick()" ion-button icon-only tappable>
-        <ion-icon name="attach"></ion-icon>
-      </button>
-      <button (click)="movimentacaoClick()" ion-button icon-only tappable>
-        <ion-icon ios="ios-hammer-outline" name="hammer"></ion-icon>
-      </button>
-      <button (click)="rotinaClick()" *ngIf="chamado && chamado.TipoChamado == tipoChamadoPreventivo" ion-button icon-only tappable>
-        <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
-      </button>
-      <button (click)="popoverClick($event)" ion-button icon-only tappable>
-        <ion-icon name="more"></ion-icon>
-      </button>
+      <div [hidden]="tipoDados != 'dadosBasicos'">
+        <button (click)="anexosClick()" *ngIf="exibirChamadoCorretivo || exibirChamadoPreventivo" ion-button icon-only tappable>
+          <ion-icon name="attach"></ion-icon>
+        </button>
+        <button (click)="movimentacaoClick()" *ngIf="exibirChamadoCorretivo || exibirChamadoPreventivo" ion-button icon-only tappable>
+          <ion-icon ios="ios-hammer-outline" name="hammer"></ion-icon>
+        </button>
+        <button (click)="rotinaClick()" *ngIf="exibirChamadoPreventivo" ion-button icon-only tappable>
+          <ion-icon ios="ios-paper-outline" name="paper"></ion-icon>
+        </button>
+        <button (click)="consumivelClick()" *ngIf="exibirChamadoConsumivel" ion-button icon-only tappable>
+          <ion-icon ios="ios-clipboard-outline" name="clipboard"></ion-icon>
+        </button>
+        <button (click)="popoverClick($event)" ion-button icon-only tappable>
+          <ion-icon name="more"></ion-icon>
+        </button>
+      </div>
+      <div [hidden]="!habilitarChamado || tipoDados != 'aprovacao' || !perfilAprovacao || !aprovacaoOperadorCushman">
+        <button (click)="atualizarClick()" [disabled]="!mantenedores || !vinculoMantenedor" ion-button icon-only tappable>
+          <ion-icon name="checkmark-circle"></ion-icon>
+        </button>
+      </div>
     </ion-buttons>
   </ion-navbar>
 
+  <ion-toolbar *ngIf="exibirChamadoCorretivo && perfilAprovacao && aprovacaoOperadorCushman" color="cushman-1">
+    <ion-segment [(ngModel)]="tipoDados" color="cushman-4">
+      <ion-segment-button value="dadosBasicos">
+        {{ "dadosBasicos" | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="aprovacao">
+        {{ "aprovacao" | translate }}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
 
@@ -29,209 +53,290 @@
   </ion-item>
 
   <div *ngIf="chamado">
-    <ion-card *ngIf="chamado">
-      <ion-card-header class="card-header-chamado">
-        <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon>
-        {{ "tempos" | translate }}
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col col-12>
-              <h1 ion-text>
-                <!-- {{chamado.Criticidade}} -->
-                SLA - {{chamado.Nivel}}
-              </h1>
-            </ion-col>
+    <div [hidden]="tipoDados != 'dadosBasicos'">
 
-            <ion-col col-6>
-              <p ion-text>
-                <b>
-                  {{ "dataAbertura" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.DataAbertura | date : "dd/MM/yyyy HH:mm" }}
-              </p>
-            </ion-col>
-            <ion-col col-6>
-              <p ion-text>
-                <b>
-                  {{ "previsaoAtendimento" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
-              </p>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col>
-              <ion-note class="card-note">
-                <!-- {{ chamado.StatusChamado }} -->
-              </ion-note>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
+      <ion-card *ngIf="chamado">
+        <ion-card-header class="card-header-chamado">
+          <ion-icon ios="ios-alarm-outline" name="alarm" class="card-icone" item-start></ion-icon>
+          {{ "tempos" | translate }}
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12>
+                <h1 *ngIf="exibirChamadoCorretivo || exibirChamadoPreventivo" ion-text>
+                  <!-- {{chamado.Criticidade}} -->
+                  SLA - {{chamado.Nivel}}
+                </h1>
+              </ion-col>
 
-    <ion-card>
-      <ion-card-header class="card-header-chamado">
-        <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon>
-        {{ "localizacao" | translate }}
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col col-12>
-              <h1 ion-text>
-                {{ nomePortal }}
-              </h1>
-            </ion-col>
+              <ion-col col-6>
+                <p ion-text>
+                  <b>
+                    {{ "dataAbertura" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.DataAbertura | date : "dd/MM/yyyy HH:mm" }}
+                </p>
+              </ion-col>
+              <ion-col col-6>
+                <p ion-text>
+                  <b>
+                    {{ "previsaoAtendimento" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+                </p>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col>
+                <ion-note class="card-note">
+                  <!-- {{ chamado.StatusChamado }} -->
+                </ion-note>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
 
-            <ion-col col-10>
-              <p ion-text>
-                {{ chamado.NomePontoVenda }}
-              </p>
-              <p ion-text>
-                {{ chamado.Endereco }}
-              </p>
-              <p ion-text>
-                {{ chamado.Cidade }} / {{ chamado.Estado }}
-              </p>
-              <p ion-text>
-                {{ chamado.CEP }}
-              </p>
+      <ion-card>
+        <ion-card-header class="card-header-chamado">
+          <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon>
+          {{ "localizacao" | translate }}
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12>
+                <h1 ion-text>
+                  {{ nomePortal }}
+                </h1>
+              </ion-col>
 
-            </ion-col>
-            <ion-col col-2>
-              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
-                <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto" tappable></ion-icon>
-              </h1>
-            </ion-col>
+              <ion-col col-12>
+                <p ion-text>
+                  {{chamado.CodigoPontoVenda}} - {{ chamado.NomePontoVenda }}
+                </p>
+                <p ion-text>
+                  {{ chamado.Endereco }}
+                </p>
+                <p ion-text>
+                  {{ chamado.Cidade }} / {{ chamado.Estado }}
+                </p>
+                <p ion-text>
+                  {{ chamado.CEP }}
+                </p>
+              </ion-col>
 
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "diretoriaRegional" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.NomeGrupoPontoVenda }}
+                </p>
+              </ion-col>
 
-    <ion-card>
-      <ion-card-header class="card-header-chamado">
-        <ion-icon name="contact" class="card-icone" item-start></ion-icon>
-        {{ "contato" | translate }}
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col col-12>
-              <p ion-text>
-                <b>
-                  {{ "solicitante" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.NomeUsuarioSolicitante }}
-              </p>
-            </ion-col>
+              <ion-col col-10>
+                <p ion-text>
+                  <b>
+                    {{ "regiao" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.NomeSubGrupoPontoVenda }}
+                </p>
+              </ion-col>
 
-          </ion-row>
+              <ion-col col-2>
+                <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
+                  <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto" tappable></ion-icon>
+                </h1>
+              </ion-col>
 
-          <ion-row>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
 
-            <ion-col col-10>
-              <p ion-text>
-                <b>
-                  E-mail
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.EmailSolicitante }}
-              </p>
-            </ion-col>
-            <ion-col col-2>
-              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
-                <a href="mailto:{{ chamado.EmailSolicitante }}">
-                  <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
-                </a>
-              </h1>
-            </ion-col>
-          </ion-row>
+      <ion-card *ngIf="exibirChamadoCorretivo || exibirChamadoPreventivo">
+        <ion-card-header class="card-header-chamado">
+          <ion-icon name="contact" class="card-icone" item-start></ion-icon>
+          {{ "contato" | translate }}
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "solicitante" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.NomeDoSolicitanteOperador }}
+                </p>
 
-          <ion-row>
+                <ion-col *ngIf="chamado.EmailDoSolicitanteOperador" col-10 class="item-card-contato">
+                  <p ion-text>
+                    {{ chamado.EmailDoSolicitanteOperador }}
+                  </p>
+                </ion-col>
+                <ion-col *ngIf="chamado.EmailDoSolicitanteOperador && !origemOffline" col-2 class="item-card-contato">
+                  <h1 ion-text class="card-icone-h1">
+                    <a href="mailto:{{ chamado.EmailDoSolicitanteOperador }}">
+                      <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
+                    </a>
+                  </h1>
+                </ion-col>
+              </ion-col>
+            </ion-row>
 
-            <ion-col col-10>
-              <p ion-text>
-                <b>
-                  Fone
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.TelefoneSolicitante }}
-              </p>
-            </ion-col>
-            <ion-col col-2>
-              <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
-                <a href="tel:{{ chamado.TelefoneSolicitante }}">
-                  <ion-icon name="call" color="cushman-2" class="card-icone-texto"></ion-icon>
-                </a>
-              </h1>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
+            <ion-row>
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "gerente" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.NomeUsuarioSolicitante }}
+                </p>
 
-    <ion-card>
-      <ion-card-header class="card-header-chamado">
-        <ion-icon name="build" class="card-icone" item-start></ion-icon>
-        {{ "manutencao" | translate }}
-      </ion-card-header>
-      <ion-card-content>
-        <ion-grid>
-          <ion-row>
-            <ion-col col-12>
-              <h2 ion-text>
-                {{ chamado.TipoServico }} / {{ chamado.Causa }} / {{ chamado.Mantenedor }}
-              </h2>
-            </ion-col>
+                <ion-col *ngIf="chamado.EmailSolicitante" col-10 class="item-card-contato">
+                  <p ion-text>
+                    {{ chamado.EmailSolicitante }}
+                  </p>
+                </ion-col>
+                <ion-col *ngIf="chamado.EmailSolicitante && !origemOffline" col-2 class="item-card-contato">
+                  <h1 ion-text class="card-icone-h1">
+                    <a href="mailto:{{ chamado.EmailSolicitante }}">
+                      <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
+                    </a>
+                  </h1>
+                </ion-col>
 
-            <ion-col col-12>
-              <p ion-text>
-                <b>
-                  {{ "causa" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.DescricaoOcorrencia }}
-              </p>
-            </ion-col>
 
-            <ion-col col-12>
-              <p ion-text>
-                <b>
-                  {{ "localizacao" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.LocalizacaoEquipamento }}
-              </p>
-            </ion-col>
+                <ion-col *ngIf="chamado.TelefoneSolicitante" col-10 class="item-card-contato">
+                  <p ion-text>
+                    {{ chamado.TelefoneSolicitante }}
+                  </p>
+                </ion-col>
+                <ion-col *ngIf="chamado.TelefoneSolicitante && !origemOffline" col-2 class="item-card-contato">
+                  <h1 ion-text class="card-icone-h1 icone-contato-telefone">
+                    <a href="tel:{{ chamado.TelefoneSolicitante }}">
+                      <ion-icon name="call" color="cushman-2" class="card-icone-texto"></ion-icon>
+                    </a>
+                  </h1>
+                </ion-col>
+              </ion-col>
 
-            <ion-col col-12>
-              <p ion-text>
-                <b>
-                  {{ "equipamento" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ chamado.Equipamento }}
-              </p>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-card-content>
-    </ion-card>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+
+      <ion-card>
+        <ion-card-header class="card-header-chamado">
+          <ion-icon name="build" class="card-icone" item-start></ion-icon>
+          {{ "manutencao" | translate }}
+        </ion-card-header>
+        <ion-card-content>
+          <ion-grid>
+            <ion-row>
+              <ion-col col-12>
+                <h2 ion-text>
+                  {{ chamado.TipoServico }} / {{ chamado.Causa }} / {{ chamado.Mantenedor }}
+                </h2>
+              </ion-col>
+
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "descricaoProblema" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.DescricaoOcorrencia }}
+                </p>
+              </ion-col>
+
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "localizacao" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.LocalizacaoEquipamento }}
+                </p>
+              </ion-col>
+
+              <ion-col col-12>
+                <p ion-text>
+                  <b>
+                    {{ "equipamento" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ chamado.Equipamento }}
+                </p>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+    <div [hidden]="tipoDados != 'aprovacao'">
+      <ion-grid>
+        <ion-row>
+          <ion-col col>
+            <ion-item class="item-aprovacao">
+              <ion-label stacked color="cushman-3">
+                <div class="texto-obrigatorio"> * </div>
+                {{ "aprovadoOperador" | translate }}
+              </ion-label>
+              <ion-toggle [(ngModel)]="aprovado" (ionChange)="aprovadoChange($event)" [disabled]="!perfilAprovacao || !habilitarChamado || !aprovacaoOperadorCushman" color="cushman-2"></ion-toggle>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+
+        <ion-row>
+          <ion-col col>
+            <ion-item class="item-aprovacao">
+              <ion-label stacked color="cushman-3">
+                <div class="texto-obrigatorio"> * </div>
+                {{ "mantenedor" | translate }}
+              </ion-label>
+              <ion-select [(ngModel)]="mantenedores" (ionChange)="mantenedorChange($event)" [disabled]="!opcoesMantenedores || !perfilAprovacao || !aprovacaoOperadorCushman" interface="action-sheet"
+                cancelText="{{ 'cancelar' | translate }}">
+                <ion-option value="{{mantenedor.MantenedorID}}" *ngFor="let mantenedor of opcoesMantenedores">{{mantenedor.Nome}}</ion-option>
+              </ion-select>
+            </ion-item>
+          </ion-col>
+        </ion-row>
+      </ion-grid>
+    </div>
   </div>
+
+  <div *ngIf="excluirChamado && habilitarChamado && exibirChamadoCorretivo" class="item-altura-fab"></div>
+
+  <ion-fab *ngIf="excluirChamado && habilitarChamado && exibirChamadoCorretivo && tipoDados== 'dadosBasicos'" bottom right>
+    <button (click)="excluirClick()" ion-fab color="cushman-1" tappable>
+      <ion-icon name="trash"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-fab *ngIf="habilitarChamado && tipoDados == 'aprovacao' && perfilAprovacao && aprovacaoOperadorCushman" bottom right>
+    <button (click)="aprovarClick()" [disabled]="!mantenedores || !vinculoMantenedor" ion-fab color="cushman-2" tappable>
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
 
 </ion-content>

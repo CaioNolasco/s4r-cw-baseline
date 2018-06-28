@@ -47,4 +47,8 @@ export class UsuariosProvider {
   retornarPermissoesFuncionalidade(usuario: string, portal: string, funcionalidade: string){
     return this.http.get(this.urlApiUsuarios + `/RetornarPermissoesFuncionalidade/${usuario}/${portal}/${funcionalidade}`);
   }
+
+  retornarDadosUsuario(usuario: string, portal: string){
+    return this.http.get(this.urlApiUsuarios + `/RetornarDadosUsuario/${usuario}/${portal}`);
+  }
 }

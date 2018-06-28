@@ -54,7 +54,7 @@
                 <h1 ion-text>
                   <b>{{ chamado.ChamadoID}}</b>
                 </h1>
-                <p ion-text>{{ chamado.Area }} / {{ chamado.Nome }} / {{ chamado.NomeCompleto }}</p>
+                <p ion-text>{{ chamado.Area }} / {{ chamado.NomeCompleto }}</p>
               </div>
             </ion-col>
 
@@ -81,8 +81,18 @@
               </p>
             </ion-col>
           </ion-row>
-          <ion-row *ngIf="chamado.Offline">
-            <ion-col>
+          <ion-row>
+            <ion-col col-6 *ngIf="chamado.AguardandoAprovacao">
+              <p ion-text end>
+                <ion-icon name="flag" color="cushman-1"></ion-icon> {{ "aguardandoAprovacao" | translate }}
+              </p>
+            </ion-col>
+            <ion-col col-6 *ngIf="!chamado.AguardandoAprovacao">
+              <p ion-text end>
+                <ion-icon name="build" color="cushman-2"></ion-icon> {{ chamado.Nome }}
+              </p>
+            </ion-col>
+            <ion-col col-6 *ngIf="chamado.Offline">
               <p ion-text end>
                 <ion-icon name="wifi" color="cushman-1"></ion-icon> {{ chamado.NomeUsuarioOffline }}
               </p>
@@ -92,8 +102,8 @@
       </button>
 
       <ion-item-options side="left">
-        <button (click)="offlineClick(chamado)" *ngIf="alterarChamado" [disabled]="!chamado.HabilitarChamado" color="cushman-1" ion-button
-          tappable>
+        <button (click)="offlineClick(chamado)" [disabled]="!alterarChamado || !chamado.HabilitarChamado || chamado.AguardandoAprovacao"
+          color="cushman-1" ion-button tappable>
           <ion-icon name="wifi"></ion-icon>
           Offline
         </button>
@@ -111,7 +121,7 @@
 
   <div class="item-altura-fab"></div>
 
-  <ion-fab *ngIf="adicionarChamado" bottom right>
+  <ion-fab *ngIf="adicionarChamado && perfilAdicionar" bottom right>
     <button (click)="novoChamadoClick()" color="cushman-2" ion-fab tappable>
       <ion-icon name="add"></ion-icon>
     </button>

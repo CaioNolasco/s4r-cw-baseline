@@ -117,6 +117,7 @@ export class LoginPage {
       else {
         this.iconeIdioma = this.opcoesIdiomas[0].icone;
         this.idiomas = this.opcoesIdiomas[0].valor;
+        this.carregarIdioma(this.idiomas);
       }
     }
     catch (e) {

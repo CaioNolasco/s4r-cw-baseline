@@ -10,8 +10,9 @@ import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { AlertsProvider } from './../../providers/alerts/alerts';
 import { UteisProvider } from './../../providers/uteis/uteis';
+import { UsuariosProvider } from '../../providers/usuarios/usuarios';
 
-@IonicPage({name: 'ChamadoNovoPage'})
+@IonicPage({ name: 'ChamadoNovoPage' })
 @Component({
   selector: 'page-chamado-novo',
   templateUrl: 'chamado-novo.html',
@@ -22,6 +23,7 @@ import { UteisProvider } from './../../providers/uteis/uteis';
     ChamadosProvider,
     AlertsProvider,
     UteisProvider,
+    UsuariosProvider,
     Camera
   ]
 })
@@ -48,6 +50,8 @@ export class ChamadoNovoPage {
   base64Image: string;
   msgNenhumItem: string;
   exibirMsg: boolean = false;
+  vinculoMantenedor: boolean = false;
+  perfilOperador: boolean = false;
   chamadoForm: FormGroup;
   centroCusto: AbstractControl;
   postosAtendimento: AbstractControl;
@@ -66,7 +70,7 @@ export class ChamadoNovoPage {
     public configLoginProvider: ConfigLoginProvider, public offlineProvider: OfflineProvider, public app: App,
     public constantesProvider: ConstantesProvider, public chamadosProvider: ChamadosProvider, public alertsProvider: AlertsProvider,
     public renderer: Renderer, public modalCtrl: ModalController, public formBuilder: FormBuilder, public camera: Camera,
-    public uteisProvider: UteisProvider) {
+    public uteisProvider: UteisProvider, public usuariosProvider: UsuariosProvider) {
     this.carregarDados();
   }
 
@@ -119,11 +123,54 @@ export class ChamadoNovoPage {
           this.tipoChamado = this.constantesProvider.tituloDadosBasicos;
           this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
+          this.carregarDadosUsuario();
         }
         else {
           this.app.getRootNav().setRoot("LoginPage");
         }
       }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarDadosUsuario() {
+    try {
+      this.usuariosProvider.retornarDadosUsuario(this.username, this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          let _dadosUsuario = _objetoRetorno;
+
+          if (_dadosUsuario) {
+
+            this.perfilOperador = _dadosUsuario.PerfilAcessoID == this.constantesProvider.perfilOperador;
+            
+            if(this.perfilOperador){
+              //Criticidade
+              this.chamadoForm.get('sla').clearValidators();
+              this.chamadoForm.get('sla').updateValueAndValidity();
+
+              //Mantenedor
+              this.chamadoForm.get('mantenedores').clearValidators();
+              this.chamadoForm.get('mantenedores').updateValueAndValidity();
+
+              //Email
+              this.chamadoForm.get('email').clearValidators();
+              this.chamadoForm.get('email').updateValueAndValidity();
+
+              this.chamadoForm.controls['solicitante'].setValue(_dadosUsuario.NomeCompleto);
+              this.chamadoForm.controls['email'].setValue(_dadosUsuario.Email);
+            }
+          }
+          else {
+            this.perfilOperador = false;
+          }
+        }, e => {
+          console.log(e);
+        });
     }
     catch (e) {
       console.log(e);
@@ -148,6 +195,7 @@ export class ChamadoNovoPage {
       this.mantenedores.setValue('');
       this.localizacoes.setValue('');
       this.equipamentos.setValue('');
+      this.vinculoMantenedor = false;
 
       this.chamadosProvider.retornarPontosVenda(this.portal, centroCusto).subscribe(
         data => {
@@ -182,6 +230,7 @@ export class ChamadoNovoPage {
       this.causas.setValue('');
       this.sla.setValue('');
       this.mantenedores.setValue('');
+      this.vinculoMantenedor = false;
 
       this.chamadosProvider.retornarTiposServico(this.portal).subscribe(
         data => {
@@ -256,6 +305,7 @@ export class ChamadoNovoPage {
     try {
       this.opcoesMantenedores = null;
       this.mantenedores.setValue('');
+      this.vinculoMantenedor = false;
 
       this.chamadosProvider.retornarMantenedores(this.portal, tipoServico, this.postosAtendimento.value).subscribe(
         data => {
@@ -372,11 +422,13 @@ export class ChamadoNovoPage {
       this.index = index;
 
       let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
-      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
-        handler: this.confirmarExcluirClick }]
+      {
+        text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+        handler: this.confirmarExcluirClick
+      }]
 
       this.alertsProvider.exibirAlertaConfirmacaoHandler(
-       this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta), this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
+        this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta), this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -408,6 +460,41 @@ export class ChamadoNovoPage {
     }
   }
 
+  carregarValoresSlaPrioridade(tipoServico: any) {
+    try {
+      this.valorSla = null;
+      this.sla.setValue('');
+
+      if (tipoServico) {
+        this.chamadosProvider.retornarValoresSlaPrioridade(this.portal, tipoServico, this.postosAtendimento.value, this.idioma).subscribe(
+          data => {
+            let _resposta = (data as any);
+
+            let _objetoRetorno = JSON.parse(_resposta._body);
+
+            this.valorSla = _objetoRetorno;
+
+            if (!this.valorSla) {
+              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+              this.valorSla = null;
+            }
+            else{
+              this.sla.setValue(this.valorSla.CriticidadeID);
+            };
+          }, e => {
+            console.log(e);
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.valorSla = null;
+          });
+      }
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.valorSla = null;
+    }
+  }
+
   carregarValoresSla(sla: any) {
     try {
       this.valorSla = null;
@@ -432,7 +519,7 @@ export class ChamadoNovoPage {
           }, e => {
             console.log(e);
             this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-            this.pontoVenda = null;
+            this.valorSla = null;
             this.alertsProvider.fecharCarregando();
           });
       }
@@ -440,7 +527,7 @@ export class ChamadoNovoPage {
     catch (e) {
       console.log(e);
       this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      this.pontoVenda = null;
+      this.valorSla = null;
       this.alertsProvider.fecharCarregando();
     }
   }
@@ -472,13 +559,58 @@ export class ChamadoNovoPage {
     }
   }
 
+  carregarCentroCusto(centroCusto: any) {
+    let _centroCusto = centroCusto;
+
+    try {
+      while (_centroCusto.length < 4)
+        _centroCusto = "0" + _centroCusto;
+    }
+    catch (e) {
+      console.log(e);
+    }
+
+    return _centroCusto;
+  }
+
+  carregarVinculoMantenedor(mantenedor: any) {
+    try {
+      this.vinculoMantenedor = false;
+
+      this.chamadosProvider.retornarVinculoMantenedor(this.username, this.portal, mantenedor, this.idioma).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          if (_objetoRetorno.sucesso) {
+            this.vinculoMantenedor = _objetoRetorno.sucesso;
+          }
+          else {
+            this.alertsProvider.exibirToast(_objetoRetorno.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
   salvarChamado() {
     try {
-      if (this.chamadoForm.valid && this.valorSla && this.pontoVenda) {
+      if (this.chamadoForm.valid && this.pontoVenda && this.valorSla && (this.vinculoMantenedor || this.perfilOperador)) {
         this.alertsProvider.exibirCarregando('');
 
-        let _dataPrevistaAtendimento = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaAtendimento);
-        let _dataPrevistaSolucao = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaSolucao);
+        let _dataPrevistaAtendimento: any;
+        let _dataPrevistaSolucao: any;
+
+        if(this.valorSla){
+          _dataPrevistaAtendimento = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaAtendimento);
+          _dataPrevistaSolucao = this.uteisProvider.retornarDataHoraApi(this.valorSla.DataPrevistaSolucao);
+        }
 
         let _parametros = {
           MantenedorID: this.mantenedores.value,
@@ -509,7 +641,7 @@ export class ChamadoNovoPage {
 
             if (this.respostaApi) {
               if (this.respostaApi.sucesso) {
-                this.navParams.get("HomePage").carregarChamados();
+                //this.navParams.get("HomePage").carregarChamados();
                 this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
                 this.carregarChamado(this.respostaApi.ChamadoID);
               }
@@ -518,7 +650,6 @@ export class ChamadoNovoPage {
               }
             }
             else {
-              console.log(this.respostaApi.mensagem);
               this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
             }
 
@@ -626,11 +757,13 @@ export class ChamadoNovoPage {
   }
 
   homeClick() {
-    this.navCtrl.setRoot("HomePage");
+    this.app.getActiveNav().setRoot("HomePage");
   }
 
   centroCustoChange(centroCusto: any) {
-    this.carregarPontosVenda(centroCusto.target.value);
+    let _centroCusto = this.carregarCentroCusto(centroCusto.target.value);
+    centroCusto.target.value = _centroCusto;
+    this.carregarPontosVenda(_centroCusto);
     this.redimencionarPagina();
   }
 
@@ -649,6 +782,11 @@ export class ChamadoNovoPage {
     this.carregarSubtipos(tipoServico);
     this.carregarMantenedores(tipoServico);
     this.carregarCriticidades();
+    this.carregarValoresSlaPrioridade(tipoServico);
+  }
+
+  mantenedorChange(mantenedor: any) {
+    this.carregarVinculoMantenedor(mantenedor);
   }
 
   localizacoesChange(localizacao: any) {

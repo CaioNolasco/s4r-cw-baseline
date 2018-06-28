@@ -19,16 +19,20 @@ export class TabsPage {
 
   //Propriedades
   tab1Root = "HomePage";
-  tab2Root = "RelatoriosPage";
-  tab3Root = "ChamadosOfflinePage";
+  tab2Root = "ChamadosConsumiveisPage";
+  tab3Root = "RelatoriosPage";
+  tab4Root = "ChamadosOfflinePage";
   badgesOffline: string;
   username: string;
   portal: string;
-  relatorios: string;
-  sincronizacao: string;
+  // relatorios: string;
+  // sincronizacao: string;
   index: number;
   permissoesChamado: any;
   alterarChamado: boolean = false;
+  exibirRelatorios: boolean = false;
+  perfilSincronizacao: boolean = false;
+  perfilConsumiveis: boolean = false;
 
   //Load
   constructor(public offlineProvider: OfflineProvider, public events: Events, public usuariosProvider: UsuariosProvider,
@@ -47,7 +51,7 @@ export class TabsPage {
         this.username = _configLoginProvider.username;
         this.portal = _configLoginProvider.portal;
 
-        this.carregarPermissoesChamado();        
+        this.carregarDadosUsuario();   
       }
     }
     catch (e) {
@@ -60,7 +64,7 @@ export class TabsPage {
       this.badgesOffline = this.offlineProvider.retornarConfigBadgesOffline();
     }, e => {
       console.log(e);
-    });;
+    });
 
     this.badgesOffline = this.offlineProvider.retornarConfigBadgesOffline();
   }
@@ -73,8 +77,40 @@ export class TabsPage {
           let _objetoRetorno = JSON.parse(_resposta._body);
 
           this.permissoesChamado = _objetoRetorno;
-
+         
           this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);
+          this.exibirRelatorios = true;
+        }, e => {
+          console.log(e);
+          this.exibirRelatorios = true;
+        });
+    }
+    catch (e) {
+      console.log(e);
+      this.exibirRelatorios = true;
+    }
+  }
+
+  carregarDadosUsuario() {
+    try {
+      this.usuariosProvider.retornarDadosUsuario(this.username, this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          let _dadosUsuario = _objetoRetorno;
+
+          if (_dadosUsuario) {
+
+            this.perfilSincronizacao = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
+            this.perfilConsumiveis = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilOperador;
+          }
+          else {
+            this.perfilSincronizacao = false;
+            this.perfilConsumiveis = false;
+          }
+
+          this.carregarPermissoesChamado();   
         }, e => {
           console.log(e);
         });

@@ -18,6 +18,10 @@ export class ChamadoDetalhesPopoverPage {
   tipoChamado: any;
   origemOffline: boolean = false;
   alterarChamado: boolean = false;
+  exibirChamadoCorretivo: boolean = false;
+  exibirChamadoPreventivo: boolean = false;
+  exibirChamadoConsumivel: boolean = false;
+
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public app: App, public viewCtrl: ViewController,
@@ -31,7 +35,6 @@ export class ChamadoDetalhesPopoverPage {
   //Ações
   carregarDados() {
     try{
-      this.tipoChamadoPreventivo = this.constantesProvider.tipoChamadoPreventivo;
       this.chamadoId = this.navParams.get("ChamadoID");
       this.habilitarChamado = this.navParams.get("HabilitarChamado");
       this.origemOffline = this.navParams.get("OrigemOffline");
@@ -39,6 +42,16 @@ export class ChamadoDetalhesPopoverPage {
       this.tipoServicoId = this.navParams.get("TipoServicoID");
       this.tipoChamado = this.navParams.get("TipoChamado");
       this.chamadoDetalhesPage = this.navParams.get("ChamadoDetalhesPage");
+
+      if(this.tipoChamado == this.constantesProvider.tipoChamadoCorretivo){
+        this.exibirChamadoCorretivo = true;
+      }
+      else if(this.tipoChamado == this.constantesProvider.tipoChamadoPreventivo){
+        this.exibirChamadoPreventivo = true;
+      }
+      else if(this.tipoChamado == this.constantesProvider.tipoChamadoConsumivel){
+        this.exibirChamadoConsumivel = true;
+      }
     }
     catch (e) {
       console.log(e);
@@ -92,6 +105,16 @@ export class ChamadoDetalhesPopoverPage {
     this.app.getActiveNav().push("ChamadoHistoricoPage", { 
       ChamadoID: this.chamadoId, 
       OrigemOffline: this.origemOffline 
+    });
+  }
+
+  consumivelClick() {
+    this.viewCtrl.dismiss();
+    this.app.getActiveNav().push("ChamadoConsumivelPage", {
+      ChamadoID: this.chamadoId,
+      OrigemOffline: this.origemOffline,
+      HabilitarChamado: this.habilitarChamado,
+      AlterarChamado: this.alterarChamado
     });
   }
 }

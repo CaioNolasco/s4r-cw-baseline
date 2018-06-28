@@ -1,0 +1,128 @@
+<ion-header>
+
+  <ion-navbar color="cushman-1">
+    <ion-title> {{ "consumivel" | translate }} {{ chamadoId }}</ion-title>
+
+    <ion-buttons end>
+      <button (click)="atualizarConsumivelClick()" *ngIf="habilitarChamado && alterarChamado && tipoConsumivel == 'consumivel'" [disabled]="!consumivelForm.valid || !leituraEquipamento"
+        ion-button icon-only tappable>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>
+      <button (click)="fotoClick()" *ngIf="habilitarChamado && alterarChamado && tipoConsumivel == 'fotos'" ion-button icon-only
+        tappable>
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-buttons>
+  </ion-navbar>
+  <ion-toolbar color="cushman-1">
+    <ion-segment [(ngModel)]="tipoConsumivel" color="cushman-4">
+      <ion-segment-button value="consumivel">
+        {{ "consumivel" | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="fotos">
+        {{ "fotos" | translate }}
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <ion-refresher *ngIf="tipoConsumivel == 'fotos'" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <ion-item *ngIf="tipoConsumivel == 'consumivel' && exibirMsgConsumivel">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
+  </ion-item>
+
+  <form *ngIf="tipoConsumivel == 'consumivel'" [formGroup]="consumivelForm">
+    <ion-grid *ngIf="consumivel">
+
+      <ion-row *ngIf="alterarChamado">
+        <ion-col col>
+          <ion-item class="item-consumivel">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="!leituraEquipamento" class="texto-obrigatorio"> * </div>
+              {{ "leituraEquipamento" | translate }}
+            </ion-label>
+
+            <button (click)="qrCodeClick()" *ngIf="!leituraEquipamento" [disabled]="!habilitarChamado || !alterarChamado" color="cushman-2" class="btn-consumivel-qrcode" ion-button icon-only
+              item-end tappable>
+              <ion-icon name="custom-qrcode"></ion-icon>
+            </button>
+            
+            <ion-icon (click)="infoClick()" *ngIf="leituraEquipamento" name="information-circle" color="cushman-2" item-end tappable></ion-icon>
+
+          </ion-item>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngFor="let input of inputs">
+         <ion-col col>
+           <ion-item *ngIf="input.TipoCampo == 'Boleano'" class="item-consumivel">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-toggle formControlName="{{ input.ChamadoConsumivelID }}" [disabled]="!habilitarChamado || !alterarChamado" color="cushman-2"></ion-toggle>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Texto'" class="item-consumivel">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-input formControlName="{{ input.ChamadoConsumivelID }}" (keyup.enter)="redimencionarPagina()" placeholder="Texto" [disabled]="!habilitarChamado || !alterarChamado"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Numerico'" class="item-consumivel">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-input type="number" formControlName="{{ input.ChamadoConsumivelID }}" (keyup.enter)="redimencionarPagina()" placeholder="Número"
+              [disabled]="!habilitarChamado || !alterarChamado"></ion-input>
+          </ion-item>
+          <ion-item *ngIf="input.TipoCampo == 'Opcao'" class="item-consumivel">
+            <ion-label stacked color="cushman-3">
+              <div *ngIf="input.Obrigatorio" class="texto-obrigatorio"> * </div>
+              {{ input.NomeProcedimento }}
+            </ion-label>
+            <ion-select formControlName="{{ input.ChamadoConsumivelID }}" placeholder="Seleção" [disabled]="!habilitarChamado || !alterarChamado || !input.Opcoes"
+              interface="action-sheet" cancelText="Cancelar">
+              <ion-option value="{{opcao.Valor}}" *ngFor="let opcao of input.Opcoes">{{opcao.Texto}}</ion-option>
+            </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </form>
+
+  <ion-item *ngIf="tipoConsumivel == 'fotos' && exibirMsgFotos">
+    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+    {{ msgNenhumItem }}
+    <ion-icon (click)="atualizarFotosClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
+  </ion-item>
+
+  <ion-grid *ngIf="tipoConsumivel == 'fotos' && fotos">
+    <ion-row>
+      <ion-col col-6 col-md-4 col-xl-3 *ngFor="let foto of fotos">
+        <div (click)="abrirFotoClick(foto.sequencia)" class="thumb-fotos" [style.background-image]="'url('+ foto.url +')'" tappable></div>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+
+  <div *ngIf="habilitarChamado && alterarChamado" class="item-altura-fab"></div>
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && tipoConsumivel == 'consumivel'" bottom right>
+    <button (click)="atualizarConsumivelClick()" [disabled]="!consumivelForm.valid || !leituraEquipamento" ion-fab color="cushman-2" tappable>
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
+
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && tipoConsumivel == 'fotos'" bottom right>
+      <button (click)="fotoClick()" ion-fab color="cushman-2" tappable>
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-fab>
+</ion-content>

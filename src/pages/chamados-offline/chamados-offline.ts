@@ -9,7 +9,7 @@ import { UteisProvider } from './../../providers/uteis/uteis';
 import { ChamadosProvider } from './../../providers/chamados/chamados';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 
-@IonicPage({name: 'ChamadosOfflinePage'})
+@IonicPage({ name: 'ChamadosOfflinePage' })
 @Component({
   selector: 'page-chamados-offline',
   templateUrl: 'chamados-offline.html',
@@ -30,6 +30,7 @@ export class ChamadosOfflinePage {
   nomePortal: string;
   idioma: string;
   msgNenhumItem: string;
+  tipoChamadoConsumivel: number;
   chamados: any;
   chamado: any;
   refresher: any;
@@ -46,7 +47,7 @@ export class ChamadosOfflinePage {
     public events: Events, public configLoginProvider: ConfigLoginProvider, public alertsProvider: AlertsProvider,
     public viewCtrl: ViewController, public uteisProvider: UteisProvider, public chamadosProvider: ChamadosProvider,
     public app: App, public constantesProvider: ConstantesProvider, public device: Device) {
-      this.carregarDados();
+    this.carregarDados();
   }
 
   ionViewDidLoad() {
@@ -79,7 +80,7 @@ export class ChamadosOfflinePage {
       else {
         if (!this.origemOffline) {
           this.geolocalizacao = this.uteisProvider.retornarGeolocalizacao();
-          this.geolocalizacao.then((data)=>{
+          this.geolocalizacao.then((data) => {
             this.geolocalizacao = data;
           });
         }
@@ -96,6 +97,8 @@ export class ChamadosOfflinePage {
           this.portal = _configLoginProvider.portal;
           this.idioma = _configLoginIdiomasProvider.valor;
         }
+
+        this.tipoChamadoConsumivel = this.constantesProvider.tipoChamadoConsumivel;
       }
     }
     catch (e) {
@@ -159,13 +162,31 @@ export class ChamadosOfflinePage {
 
   carregarEstruturaOffline() {
     try {
-      let _titulo = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta);;
+      let _titulo = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta);
+
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      {
+        text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+        handler: this.confirmarDownloadClick
+      }]
+
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmarAtualizarEstrutura), _botoes);
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  carregarSincronizarChamado(chamado: any) {
+    try {
+      let _titulo = this.origemOffline ? `` : `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID}`;
 
       let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
       { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
-        handler: this.confirmarDownloadClick }]
+        handler: () => {this.sincronizarChamado(chamado)} }]
 
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmarAtualizarEstrutura), _botoes);
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -179,31 +200,82 @@ export class ChamadosOfflinePage {
       let _fotos;
       let _fotosRotina;
       let _rotina;
+      let _fotosConsumivel;
+      let _consumivel;
+      let _consumivelAtualizado: any = { Atualizado: true }
 
-      //Fotos
-      this.offlineProvider.retornarFotosOffline(this.portal, chamado.ChamadoID, true).then(data => {
-        _fotos = data;
-      }).catch((e) => {
-        _fotos = null;
-        console.log(e);
-      });
+      if (chamado.TipoChamado == this.constantesProvider.tipoChamadoCorretivo || chamado.TipoChamado == this.constantesProvider.tipoChamadoPreventivo) {
+        //Fotos
+        this.offlineProvider.retornarFotosOffline(this.portal, chamado.ChamadoID, true).then(data => {
+          _fotos = data;
 
-      //Fotos Rotinas
-      this.offlineProvider.retornarFotosRotinaOffline(this.portal, chamado.ChamadoID, true).then(data => {
-        _fotosRotina = data;
-      }).catch((e) => {
-        _fotosRotina = null;
-        console.log(e);
-      });
+          //Fotos Rotinas
+          this.offlineProvider.retornarFotosRotinaOffline(this.portal, chamado.ChamadoID, true).then(data => {
+            _fotosRotina = data;
 
-      //Rotinas
-      this.offlineProvider.retornarRotinaOffline(this.portal, chamado.ChamadoID).then(data => {
-        _rotina = data;
-      }).catch((e) => {
-        _rotina = null;
-        console.log(e);
-      });
+            //Rotinas
+            this.offlineProvider.retornarRotinaOffline(this.portal, chamado.ChamadoID).then(data => {
+              _rotina = data;
 
+              this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel);
+            }).catch((e) => {
+              _rotina = null;
+              console.log(e);
+            });
+          }).catch((e) => {
+            _fotosRotina = null;
+            console.log(e);
+          });
+        }).catch((e) => {
+          _fotos = null;
+          console.log(e);
+        });
+      }
+      else if (chamado.TipoChamado == this.constantesProvider.tipoChamadoConsumivel) {
+      
+        this.offlineProvider.retornarConsumivelAtualizadoOffline(this.portal, chamado.ChamadoID).then(data => {
+          _consumivelAtualizado = data;
+
+          _consumivelAtualizado.Atualizado = _consumivelAtualizado.Atualizado;
+
+          if (_consumivelAtualizado.Atualizado) {
+            //Fotos Consumível
+            this.offlineProvider.retornarFotosConsumivelOffline(this.portal, chamado.ChamadoID, true).then(data => {
+              _fotosConsumivel = data;
+
+              //Consumiveis
+              this.offlineProvider.retornarConsumivelOffline(this.portal, chamado.ChamadoID).then(data => {
+                _consumivel = data;
+
+                this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel);
+              }).catch((e) => {
+                _consumivel = null;
+                console.log(e);
+              });
+            }).catch((e) => {
+              _fotosConsumivel = null;
+              console.log(e);
+            });
+          }
+          else {
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroSincronizacaoConsumivel), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.alertsProvider.fecharCarregando();
+          }
+        }).catch((e) => {
+          _consumivelAtualizado = null;
+          console.log(e);
+        });
+      }
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
+  salvarSincronizarChamado(chamado: any, fotos: any, fotosRotina: any, rotina: any, fotosConsumivel: any, consumivel: any) {
+    try {
       this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
         this.chamado = data;
 
@@ -222,58 +294,62 @@ export class ChamadosOfflinePage {
             DataProgramacao: this.uteisProvider.retornarDataApi(this.chamado.DataProgramacaoAtendimento, true),
             Justificativa: this.chamado.TextoJustificativa,
             DescricaoAtendimento: this.chamado.DescricaoAtendimento,
-            Anexos: _fotos,
-            AnexosRotina: _fotosRotina,
-            Rotina: _rotina,
-            Rastreabilidade: {ChamadoID: this.chamado.ChamadoID, 
-              StatusChamadoID: this.chamado.StatusChamadoID, 
+            valorTotal: this.chamado.valorTotal,
+            Anexos: fotos,
+            AnexosRotina: fotosRotina,
+            Rotina: rotina,
+            AnexosConsumivel: fotosConsumivel,
+            Consumivel: consumivel,
+            Rastreabilidade: {
+              ChamadoID: this.chamado.ChamadoID,
+              StatusChamadoID: this.chamado.StatusChamadoID,
               Tipo: this.constantesProvider.acaoSincronizacao,
               UUID: this.device.uuid,
               Plataforma: this.device.platform,
               Modelo: this.device.model,
               Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
               Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
-             }
+            }
           };
 
-          this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID, 
-           this.constantesProvider.tipoAnexos, this.constantesProvider.tipoRotinas, false, this.idioma, _parametros).subscribe(
-            data => {
-              let _resposta = (data as any);
-              let _objetoRetorno = JSON.parse(_resposta._body);
+          this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID,
+            this.constantesProvider.tipoAnexos, this.constantesProvider.tipoConsumiveis, false, this.idioma, _parametros).subscribe(
+              data => {
+                let _resposta = (data as any);
+                let _objetoRetorno = JSON.parse(_resposta._body);
 
-              this.respostaApi = _objetoRetorno;
+                this.respostaApi = _objetoRetorno;
 
-              if (this.respostaApi) {
-                if (this.respostaApi.sucesso) {
-                  let _index = this.chamados.indexOf(chamado);
+                if (this.respostaApi) {
+                  if (this.respostaApi.sucesso) {
+                    let _index = this.chamados.indexOf(chamado);
 
-                  if (_index > -1) {
-                    this.chamados.splice(_index, 1);
+                    if (_index > -1) {
+                      this.chamados.splice(_index, 1);
+                    }
+
+                    if (!this.chamados[0]) {
+                      this.exibirMsg = true;
+                      this.chamados = null;
+                    }
+
+                    this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+                    this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
                   }
-
-                  if (!this.chamados[0]) {
-                    this.exibirMsg = true;
-                    this.chamados = null;
+                  else {
+                    this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                   }
-
-                  this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
-                  this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
                 }
                 else {
-                  this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                  this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
                 }
-              }
-              else {
-                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-              }
 
-              this.alertsProvider.fecharCarregando();
-            }, e => {
-              console.log(e);
-              this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-              this.alertsProvider.fecharCarregando();
-            });
+                this.alertsProvider.fecharCarregando();
+              }, e => {
+                console.log(e);
+                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                this.alertsProvider.fecharCarregando();
+              });
         }
       }).catch((e) => {
         this.exibirMsg = true;
@@ -288,19 +364,21 @@ export class ChamadosOfflinePage {
     }
   }
 
-  salvarEstruturaOffline(){
-    try{
+  salvarEstruturaOffline() {
+    try {
       this.alertsProvider.exibirCarregando('');
+      
+      this.offlineProvider.excluirBancoSQLite();
 
       this.offlineProvider.removerConfigEstruturaSQLite();
       let _sqlite = this.offlineProvider.salvarBancoSQLite();
       this.offlineProvider.salvarEstruturaSQLite(_sqlite);
 
       this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso),
-       this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       this.alertsProvider.fecharCarregando();
     }
-    catch(e){
+    catch (e) {
       console.log(e);
       this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
       this.alertsProvider.fecharCarregando();
@@ -329,7 +407,8 @@ export class ChamadosOfflinePage {
   }
 
   sincronizarClick(chamado) {
-    this.sincronizarChamado(chamado);
+    this.carregarSincronizarChamado(chamado);
+    //this.sincronizarChamado(chamado);
   }
 
   doRefresh(refresher) {

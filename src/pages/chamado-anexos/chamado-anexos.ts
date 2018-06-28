@@ -10,6 +10,7 @@ import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { OfflineProvider } from './../../providers/offline/offline';
 import { ConstantesProvider } from './../../providers/constantes/constantes';
 import { UteisProvider } from './../../providers/uteis/uteis';
+import { UsuariosProvider } from '../../providers/usuarios/usuarios';
 
 @IonicPage({name: 'ChamadoAnexosPage'})
 @Component({
@@ -23,7 +24,8 @@ import { UteisProvider } from './../../providers/uteis/uteis';
     OfflineProvider,
     ConstantesProvider,
     Camera,
-    UteisProvider]
+    UteisProvider,
+    UsuariosProvider]
 })
 export class ChamadoAnexosPage {
   //Propriedades
@@ -49,13 +51,14 @@ export class ChamadoAnexosPage {
   origemOffline: boolean = false;
   homeOffline: boolean = false;
   ios: boolean = false;
+  perfilExclusao: boolean = false; 
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public modalCtrl: ModalController, public alertsProvider: AlertsProvider, public chamadosProvider: ChamadosProvider,
     public configLoginProvider: ConfigLoginProvider, public inAppBrowser: InAppBrowser, public offlineProvider: OfflineProvider,
     public app: App, public camera: Camera, public platform: Platform, public constantesProvider: ConstantesProvider,
-    public uteisProvider: UteisProvider) {
+    public uteisProvider: UteisProvider, public usuariosProvider: UsuariosProvider) {
     this.carregarDados();
   }
 
@@ -144,6 +147,8 @@ export class ChamadoAnexosPage {
               this.alertsProvider.fecharCarregando();
             }
           }
+
+          this.carregarDadosUsuario();
         }, e => {
           console.log(e);
           this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
@@ -266,6 +271,32 @@ export class ChamadoAnexosPage {
       else {
         this.alertsProvider.fecharCarregando();
       }
+    }
+  }
+
+  carregarDadosUsuario() {
+    try {
+      this.usuariosProvider.retornarDadosUsuario(this.username, this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          let _dadosUsuario = _objetoRetorno;
+
+          if (_dadosUsuario) {
+
+            this.perfilExclusao = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilMantenedor &&
+              _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
+          }
+          else {
+            this.perfilExclusao = false;
+          }
+        }, e => {
+          console.log(e);
+        });
+    }
+    catch (e) {
+      console.log(e);
     }
   }
 
@@ -557,7 +588,6 @@ export class ChamadoAnexosPage {
             }
           }
           else {
-            console.log(this.respostaApi.mensagem);
             this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), 
             this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
           }

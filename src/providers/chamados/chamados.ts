@@ -68,6 +68,26 @@ export class ChamadosProvider {
     return this.http.post(this.urlApiChamados + `/SalvarChamado/${usuario}/${portal}/${tipo}/${idioma}`, parametros, _opcoes);
   }
 
+  salvarAprovacao(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
+    let _headers = new Headers();
+    _headers.append("Accept", 'application/json');
+    _headers.append('Content-Type', 'application/json');
+
+    let _opcoes = new RequestOptions({ headers: _headers });
+
+    return this.http.post(this.urlApiChamados + `/SalvarAprovacao/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
+  }
+
+  salvarOs(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
+    let _headers = new Headers();
+    _headers.append("Accept", 'application/json');
+    _headers.append('Content-Type', 'application/json');
+
+    let _opcoes = new RequestOptions({ headers: _headers });
+
+    return this.http.post(this.urlApiChamados + `/SalvarOs/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
+  }
+
   salvarAnexo(usuario: string, portal: string, numero: string, tipo: string, idioma: string, parametros: any) {
     let _headers = new Headers();
     _headers.append("Accept", 'application/json');
@@ -88,6 +108,16 @@ export class ChamadosProvider {
     return this.http.post(this.urlApiChamados + `/SalvarRotina/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
   }
 
+  salvarConsumivel(usuario: string, portal: string, numero: string, idioma: string, parametros: any) {
+    let _headers = new Headers();
+    _headers.append("Accept", 'application/json');
+    _headers.append('Content-Type', 'application/json');
+
+    let _opcoes = new RequestOptions({ headers: _headers });
+
+    return this.http.post(this.urlApiChamados + `/SalvarConsumivel/${usuario}/${portal}/${numero}/${idioma}`, parametros, _opcoes);
+  }
+
   excluirMaterial(usuario: string, portal: string, numero: string, material: string, idioma: string) {
     return this.http.delete(this.urlApiChamados + `/ExcluirMaterial/${usuario}/${portal}/${numero}/${material}/${idioma}`);
   }
@@ -96,9 +126,17 @@ export class ChamadosProvider {
     return this.http.delete(this.urlApiChamados + `/ExcluirAnexo/${usuario}/${portal}/${numero}/${anexo}/${tipo}/${idioma}`);
   }
 
+  excluirChamado(usuario: string, portal: string, numero: string, idioma: string) {
+    return this.http.delete(this.urlApiChamados + `/ExcluirChamado/${usuario}/${portal}/${numero}/${idioma}`);
+  }
+
   //Retornos
   retornarChamadosAbertos(usuario: string, portal: string, pagina = 1, tamanhoPagina = 10) {
     return this.http.get(this.urlApiChamados + `/RetornarChamadosAbertos/${usuario}/${portal}/${pagina}/${tamanhoPagina}`);
+  }
+
+  retornarChamadosConsumiveis(usuario: string, portal: string, pagina = 1, tamanhoPagina = 10) {
+    return this.http.get(this.urlApiChamados + `/RetornarChamadosConsumiveis/${usuario}/${portal}/${pagina}/${tamanhoPagina}`);
   }
 
   retornarChamadoPorNumeroUsuario(usuario: string, portal: string, numero: string) {
@@ -133,8 +171,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarSubtipos/${portal}/${tipoServico}/${tipo}`);
   }
 
-  retornarStatus(portal: string, idioma: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarStatus/${portal}/${idioma}`);
+  retornarStatus(usuario: string, portal: string, numero: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarStatus/${usuario}/${portal}/${numero}/${idioma}`);
   }
 
   retornarTiposServico(portal: string) {
@@ -152,6 +190,15 @@ export class ChamadosProvider {
   retornarValoresModelo(portal: string, modeloMaterial: string) {
     return this.http.get(this.urlApiChamados + `/RetornarValoresModelo/${portal}/${modeloMaterial}`);
   }
+
+  retornarValoresOs(portal: string, numero: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarValoresOs/${portal}/${numero}`);
+  }
+
+  retornarPrazoSlaStatus(portal: string, numero: string, status: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarPrazoSlaStatus/${portal}/${numero}/${status}/${idioma}`);
+  }
+
 
   retornarBytesAnexo(nomeAnexo: string, portal: string, numero: string, tipo: string) {
     return this.http.get(this.urlApiChamados + `/RetornarBytesAnexo/${nomeAnexo}/${portal}/${numero}/${tipo}`);
@@ -185,7 +232,20 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarValoresSla/${portal}/${tipoServico}/${prioridadePontoVenda}/${criticidade}/${idioma}`);
   }
 
+  retornarValoresSlaPrioridade(portal: string, tipoServico: string, prioridadePontoVenda: string, idioma: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarValoresSlaPrioridade/${portal}/${tipoServico}/${prioridadePontoVenda}/${idioma}`);
+  }
+
   retornarRotinaChamado(portal: string, numero: string) {
     return this.http.get(this.urlApiChamados + `/RetornarRotinaChamado/${portal}/${numero}`);
   }
+
+  retornarVinculoMantenedor(usuario: string, portal: string, mantenedor: string, idioma: string){
+    return this.http.get(this.urlApiChamados + `/RetornarVinculoMantenedor/${usuario}/${portal}/${mantenedor}/${idioma}`);
+  }
+
+  retornarConsumivel(portal: string, numero: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarConsumivel/${portal}/${numero}`);
+  }
+
 }

@@ -63,7 +63,7 @@ export class AlertsProvider {
       showCloseButton: true,
       closeButtonText: botao,
       cssClass: cssClass,
-      duration: 6000,
+      duration: 10000,
       position: "top",
     });
     toast.present();

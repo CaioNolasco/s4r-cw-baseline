@@ -8,6 +8,7 @@ import { AlertsProvider } from '../../providers/alerts/alerts';
 import { UteisProvider } from './../../providers/uteis/uteis';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { OfflineProvider } from '../../providers/offline/offline';
+import { UsuariosProvider } from '../../providers/usuarios/usuarios';
 
 @IonicPage({name: 'ChamadoMovimentacaoPage'})
 @Component({
@@ -20,7 +21,8 @@ import { OfflineProvider } from '../../providers/offline/offline';
     UteisProvider,
     ConstantesProvider,
     OfflineProvider,
-    Device]
+    Device,
+    UsuariosProvider]
 })
 export class ChamadoMovimentacaoPage {
   //Propriedades
@@ -46,17 +48,20 @@ export class ChamadoMovimentacaoPage {
   status: any;
   tipoChamado: any;
   tipoServicoId: any;
-  geolocalizacao: any;
+  geolocalizacao: any;  
+  prazoSlaStatus: any;
   habilitarChamado: boolean;
   origemOffline: boolean = false;
   alterarChamado: boolean = false;
   homeOffline: boolean = false;
+  perfilMantenedor: boolean = false;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
     public configLoginProvider: ConfigLoginProvider, public chamadosProvider: ChamadosProvider,
     public alertsProvider: AlertsProvider, public uteisProvider: UteisProvider, public constantesProvider: ConstantesProvider,
-    public renderer: Renderer, public offlineProvider: OfflineProvider, public app: App, public device: Device) {
+    public renderer: Renderer, public offlineProvider: OfflineProvider, public app: App, public device: Device,
+    public usuariosProvider: UsuariosProvider) {
     this.carregarDados();
   }
 
@@ -161,7 +166,7 @@ export class ChamadoMovimentacaoPage {
   }
 
   carregarStatusOnline() {
-    this.chamadosProvider.retornarStatus(this.portal, this.idioma).subscribe(
+    this.chamadosProvider.retornarStatus(this.username, this.portal, this.chamadoId, this.idioma).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -227,6 +232,9 @@ export class ChamadoMovimentacaoPage {
           this.habilitarChamado = this.chamado.HabilitarChamado;
           this.tipoChamado = this.chamado.TipoChamado;
           this.tipoServicoId = this.chamado.TipoServicoID;
+
+          this.carregarPrazoSlaStatus(this.status);
+          this.carregarDadosUsuario();
         }
 
         this.alertsProvider.fecharCarregando();
@@ -268,6 +276,47 @@ export class ChamadoMovimentacaoPage {
     });
   }
 
+  carregarDadosUsuario() {
+    try {
+      this.usuariosProvider.retornarDadosUsuario(this.username, this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          let _dadosUsuario = _objetoRetorno;
+
+          if (_dadosUsuario) {
+            this.perfilMantenedor = _dadosUsuario.PerfilAcessoID == this.constantesProvider.perfilMantenedor;
+          }
+          else {
+            this.perfilMantenedor = false;
+          }
+        }, e => {
+          console.log(e);
+        });
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarPrazoSlaStatus(status: any) {
+    this.chamadosProvider.retornarPrazoSlaStatus(this.portal, this.chamadoId, status, this.idioma).subscribe(
+      data => {
+        let _resposta = (data as any);
+        let _objetoRetorno = JSON.parse(_resposta._body);
+
+        this.prazoSlaStatus = _objetoRetorno;
+
+        if (!this.prazoSlaStatus) {
+          this.prazoSlaStatus = null;
+        }
+      }, e => {
+        console.log(e);
+        this.prazoSlaStatus = null;
+      });
+  }
+
   carregarHabilitarChamado() {
     try {
       this.chamadosProvider.retornarChamadoDetalhes(this.username, this.portal, this.chamadoId, this.idioma).subscribe(
@@ -291,7 +340,7 @@ export class ChamadoMovimentacaoPage {
 
   carregarAtualizarMovimentacao() {
     try {
-      let _titulo = `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAtualizar)} ${this.chamadoId}`;
+      let _titulo = this.origemOffline ? `` : `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${this.chamadoId}`;
 
       let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
       { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
@@ -357,7 +406,7 @@ export class ChamadoMovimentacaoPage {
 
         if (this.respostaApi) {
           if (this.respostaApi.sucesso) {
-            //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
+            this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
             this.carregarHabilitarChamado();
             this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
           }
@@ -373,6 +422,7 @@ export class ChamadoMovimentacaoPage {
 
       }, e => {
         console.log(e);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
         this.alertsProvider.fecharCarregando();
       });
   }
@@ -391,13 +441,21 @@ export class ChamadoMovimentacaoPage {
       this.alertsProvider.fecharCarregando();
     });
   }
+  
   //Eventos
   atualizarMovimentacaoClick() {
-    this.atualizarMovimentacao();
+    this.carregarAtualizarMovimentacao();
+    //this.atualizarMovimentacao();
   }
 
   confirmarMovimentacaoClick = () => {
     this.atualizarMovimentacao();
+  }
+
+  statusChange(status: any) {
+    if (!this.origemOffline) {
+    this.carregarPrazoSlaStatus(status);
+    }
   }
 
   redimencionarPagina() {

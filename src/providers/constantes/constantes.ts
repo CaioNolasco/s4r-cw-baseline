@@ -5,7 +5,7 @@ import { Injectable } from '@angular/core';
 export class ConstantesProvider {
   //Url
   urlApiBaseline: string = "http://cwfacilities6377.cloudapp.net:9999";
-  //urlApiBaseline: string = "http://192.168.100.208:49608/";
+  //urlApiBaseline: string = "http://192.168.1.104:49608/";
 
   //Subtipos
   subtipoAcao: string = "Ações";
@@ -31,11 +31,21 @@ export class ConstantesProvider {
   //Chamados
   tipoChamadoCorretivo: number = 0;
   tipoChamadoPreventivo: number = 1;
+  tipoChamadoConsumivel: number = 2;
 
   //Chaves
   tipoAnexos = "Anexos";
   tipoRotinas = "Rotinas";
+  tipoConsumiveis = "Consumiveis";
   
+  //Perfis 
+  perfilOperadorCushman = 1;
+  perfilAdministradorCushman = 2;
+  perfilAdministradorTI = 3;
+  perfilCliente = 4;
+  perfilMantenedor = 5;
+  perfilOperador = 6;
+
   //Relatórios
   nomesMeses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
@@ -54,6 +64,7 @@ export class ConstantesProvider {
   chaveCancelar = "cancelar";
   chaveNavegar = "navegar";
   chaveFiltrar = "filtrar";
+  chaveNumeroChamado = "numeroChamado";
   chaveMsgValorExistente = "msgValorExistente";
   chaveMsgSucesso = "msgSucesso";
   chaveMsgErro = "msgErro";
@@ -71,6 +82,10 @@ export class ConstantesProvider {
   chaveMsgEscolhaAcao = "msgEscolhaAcao";
   chaveMsgOffline = "msgOffline";
   chaveMsgPortal = "msgPortal";
+  chaveMsgErroEquipamento = "msgErroEquipamento";
+  chaveMsgSucessoLeituraEquipamento = "msgSucessoLeituraEquipamento";
+  chaveMsgSucessoLeituraSemEquipamento = "msgSucessoLeituraSemEquipamento";
+  chaveMsgErroSincronizacaoConsumivel = "msgErroSincronizacaoConsumivel";
 
   constructor() {
   }

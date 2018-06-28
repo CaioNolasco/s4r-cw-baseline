@@ -1,62 +1,69 @@
 import { Component, Renderer } from '@angular/core';
-import { IonicPage, NavController, NavParams, ViewController, App, ModalController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App, ViewController, ModalController } from 'ionic-angular';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Camera, CameraOptions } from '@ionic-native/camera';
 import { GalleryModal } from 'ionic-gallery-modal';
+import { Camera, CameraOptions } from '@ionic-native/camera';
+import { BarcodeScanner } from '@ionic-native/barcode-scanner';
 import { Device } from '@ionic-native/device';
 
 import { OfflineProvider } from '../../providers/offline/offline';
 import { UteisProvider } from '../../providers/uteis/uteis';
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
-import { ChamadosProvider } from '../../providers/chamados/chamados';
-import { AlertsProvider } from '../../providers/alerts/alerts';
 import { ConstantesProvider } from '../../providers/constantes/constantes';
+import { AlertsProvider } from '../../providers/alerts/alerts';
+import { ChamadosProvider } from '../../providers/chamados/chamados';
 
-@IonicPage({name: 'ChamadoRotinaPage'})
+
+@IonicPage()
 @Component({
-  selector: 'page-chamado-rotina',
-  templateUrl: 'chamado-rotina.html',
+  selector: 'page-chamado-consumivel',
+  templateUrl: 'chamado-consumivel.html',
   providers: [
+    BarcodeScanner,
     OfflineProvider,
     UteisProvider,
     ConfigLoginProvider,
-    ChamadosProvider,
-    AlertsProvider,
     ConstantesProvider,
+    AlertsProvider,
+    ChamadosProvider,
     Camera,
     Device]
 })
-
-export class ChamadoRotinaPage {
+export class ChamadoConsumivelPage {
   //Propriedades
   chamadoId: string;
   username: string;
   portal: string;
   idioma: string;
   msgNenhumItem: string;
+  filtroEquipamento: string;
+  filtroNomeEquipamento: string;
+  equipamentoId: string;
+  tipoConsumivel: any;
   geolocalizacao: any;
-  tipoRotina: any;
+  consumivel: any;
   inputs: any;
   fotos: any;
   respostaApi: any;
   refresher: any;
-  index: any;
-  anexoId: any;
-  sequenciaFotos: any;
-  isRefreshing: boolean = false;
-  alterarChamado: boolean = false;
+  chamado: any;
   origemOffline: boolean = false;
   homeOffline: boolean = false;
-  exibirMsgRotina: boolean = false;
-  exibirMsgFotos: boolean = false;
+  alterarChamado: boolean = false;
   habilitarChamado: boolean;
-  rotinaForm: FormGroup;
+  exibirMsgConsumivel: boolean = false;
+  exibirMsgFotos: boolean = false;
+  isRefreshing: boolean = false;
+  leituraEquipamento: boolean = false;
+  fotoObrigatoria: boolean = false;
+  consumivelForm: FormGroup;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
-    public offlineProvider: OfflineProvider, public app: App, public uteisProvider: UteisProvider,
-    public configLoginProvider: ConfigLoginProvider, public formBuilder: FormBuilder, public chamadosProvider: ChamadosProvider,
-    public alertsProvider: AlertsProvider, public camera: Camera, public constantesProvider: ConstantesProvider,
-    public modalCtrl: ModalController, public renderer: Renderer, public device: Device) {
+  //Load
+  constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController, 
+    public offlineProvider: OfflineProvider, public app: App, public uteisProvider: UteisProvider, public configLoginProvider: ConfigLoginProvider,
+    public formBuilder: FormBuilder, public chamadosProvider: ChamadosProvider, public alertsProvider: AlertsProvider,
+    public camera: Camera, public constantesProvider: ConstantesProvider, public modalCtrl: ModalController,
+    public renderer: Renderer, public device: Device, public barcodeScanner: BarcodeScanner) {
     this.carregarDados();
   }
 
@@ -64,7 +71,7 @@ export class ChamadoRotinaPage {
     this.viewCtrl.setBackButtonText('');
 
     if (!this.homeOffline) {
-      this.carregarRotina();
+      this.carregarConsumivel();
       this.carregarFotos();
     }
   }
@@ -73,7 +80,7 @@ export class ChamadoRotinaPage {
   carregarDados() {
     try {
       this.origemOffline = this.navParams.get("OrigemOffline");
-      this.tipoRotina = 'rotina'
+      this.tipoConsumivel = 'consumivel'
 
       if (this.offlineProvider.validarInternetOffline() && !this.origemOffline) {
         this.app.getRootNav().setRoot("HomeOfflinePage");
@@ -101,10 +108,10 @@ export class ChamadoRotinaPage {
           this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
-          this.exibirMsgRotina = false;
+          this.exibirMsgConsumivel = false;
 
           //Carregar forms
-          this.rotinaForm = this.formBuilder.group({});
+          this.consumivelForm = this.formBuilder.group({});
 
         }
         else {
@@ -118,58 +125,65 @@ export class ChamadoRotinaPage {
     }
   }
 
-  carregarRotina() {
+  carregarConsumivel() {
     try {
       this.alertsProvider.exibirCarregando('');
 
-      this.exibirMsgRotina = false;
+      this.exibirMsgConsumivel = false;
 
       if (!this.origemOffline) {
-        this.carregarRotinaOnline();
+        this.carregarConsumivelOnline();
       }
       else {
-        this.carregarRotinaOffline();
+        this.carregarConsumivelOffline();
       }
     }
     catch (e) {
       console.log(e);
       this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      this.exibirMsgRotina = true;
+      this.exibirMsgConsumivel = true;
+      this.consumivel = null;
       this.inputs = null;
 
       this.alertsProvider.fecharCarregando();
     }
   }
 
-  carregarRotinaOnline() {
+  carregarConsumivelOnline() {
     try {
-      this.chamadosProvider.retornarRotinaChamado(this.portal, this.chamadoId).subscribe(
+      this.chamadosProvider.retornarConsumivel(this.portal, this.chamadoId).subscribe(
         data => {
           let _resposta = (data as any);
           let _objetoRetorno = JSON.parse(_resposta._body);
 
-          this.inputs = _objetoRetorno;
+          this.consumivel = _objetoRetorno;
 
-          if (!this.inputs[0]) {
-            this.exibirMsgRotina = true;
+          if (!this.consumivel.ChamadoConsumivel) {
+            this.exibirMsgConsumivel = true;
+            this.consumivel = null;
             this.inputs = null;
           }
           else {
             //Carregar Form
+            this.equipamentoId = this.consumivel.EquipamentoID;
+            this.fotoObrigatoria = this.consumivel.FotoObrigatoria;
+            //this.habilitarChamado = this.consumivel.HabilitarChamado;
+            this.inputs = this.consumivel.ChamadoConsumivel;
+
             let _group = {};
 
             for (let input of this.inputs) {
-              _group[input.ChamadoRotinaID] = input.Obrigatorio ? ['', Validators.compose([Validators.required])] : [''];
+              _group[input.ChamadoConsumivelID] = input.Obrigatorio ? ['', Validators.compose([Validators.required])] : [''];
             }
 
-            this.rotinaForm = this.formBuilder.group(_group);
+            this.consumivelForm = this.formBuilder.group(_group);
 
             for (let input of this.inputs) {
               if (input.TipoCampo == "Boleano") {
-                this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta == 1);
+                this.consumivelForm.controls[input.ChamadoConsumivelID].setValue(input.Resposta == 1);
               }
               else {
-                this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta);
+                this.consumivelForm.controls[input.ChamadoConsumivelID].setValue(input.Resposta);
               }
             }
           }
@@ -187,34 +201,37 @@ export class ChamadoRotinaPage {
     }
   }
 
-  carregarRotinaOffline() {
-    this.offlineProvider.retornarRotinaOffline(this.portal, this.chamadoId).then(data => {
+  carregarConsumivelOffline() {
+    this.offlineProvider.retornarConsumivelOffline(this.portal, this.chamadoId).then(data => {
 
-      this.inputs = data;
+       this.consumivel = data;
 
-      if (!this.inputs[0]) {
-        this.exibirMsgRotina = true;
-        this.inputs = null;
+      if (!this.consumivel.ChamadoConsumivel) {
+        this.exibirMsgConsumivel = true;
+        this.consumivel = null;
       }
       else {
+         //Carregar Form
+        this.equipamentoId = this.consumivel.EquipamentoID;
+        this.fotoObrigatoria = this.consumivel.FotoObrigatoria;
         this.habilitarChamado = true;
+        this.inputs = this.consumivel.ChamadoConsumivel;
 
         //Carregar Form
         let _group = {};
 
-        for (let input of this.inputs) {
-          _group[input.ChamadoRotinaID] = input.Obrigatorio ? ['', Validators.compose([Validators.required])] : [''];
+        for (let input of  this.inputs) {
+          _group[input.ChamadoConsumivelID] = input.Obrigatorio ? ['', Validators.compose([Validators.required])] : [''];
         }
 
-        this.rotinaForm = this.formBuilder.group(_group);
+        this.consumivelForm = this.formBuilder.group(_group);
 
         for (let input of this.inputs) {
-
           if (input.TipoCampo == "Boleano") {
-            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta == 1 || input.Resposta == "true");
+            this.consumivelForm.controls[input.ChamadoConsumivelID].setValue(input.Resposta == 1 || input.Resposta == "true");
           }
           else {
-            this.rotinaForm.controls[input.ChamadoRotinaID].setValue(input.Resposta);
+            this.consumivelForm.controls[input.ChamadoConsumivelID].setValue(input.Resposta);
           }
         }
       }
@@ -248,7 +265,7 @@ export class ChamadoRotinaPage {
   }
 
   carregarFotosOnline() {
-    this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, this.constantesProvider.tipoRotinas, false).subscribe(
+    this.chamadosProvider.retornarFotosChamado(this.portal, this.chamadoId, this.constantesProvider.tipoConsumiveis, false).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -276,7 +293,7 @@ export class ChamadoRotinaPage {
 
   carregarFotosOffline() {
     try {
-      this.offlineProvider.retornarFotosRotinaOffline(this.portal, this.chamadoId, false).then(data => {
+      this.offlineProvider.retornarFotosConsumivelOffline(this.portal, this.chamadoId, false).then(data => {
         this.fotos = data;
 
         if (!this.fotos[0]) {
@@ -306,6 +323,71 @@ export class ChamadoRotinaPage {
     }
   }
 
+  carregarQrCode() {
+    try {
+      // this.leituraEquipamento = true;
+      this.filtroEquipamento = null;
+      this.filtroNomeEquipamento = null;
+
+      let _opcoesQrCode: any = {
+        formats: "QR_CODE"
+      }
+
+      this.barcodeScanner.scan(_opcoesQrCode).then(barcodeData => {
+
+        let _valor = barcodeData.text;
+
+        if (_valor) {
+          this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", _valor);
+          this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
+          
+          if (this.filtroEquipamento) {
+              if(this.filtroEquipamento == this.equipamentoId){
+                this.leituraEquipamento = true;
+                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+              }
+              else{
+                this.leituraEquipamento = false;
+                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroEquipamento), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+              }    
+          }
+          else {
+            this.leituraEquipamento = false;
+            this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+          }
+        }
+      }).catch(e => {
+        console.log(e);
+        this.leituraEquipamento = false;
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      });
+    }
+    catch (e) {
+      console.log(e);
+      this.leituraEquipamento = false;
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  carregarInfo(){
+    try{
+      let _msg: string;
+    
+      if(this.filtroNomeEquipamento){
+        _msg = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucessoLeituraEquipamento) + this.filtroNomeEquipamento;
+      }
+      else{
+        _msg = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucessoLeituraSemEquipamento);
+      }
+
+      this.alertsProvider.exibirAlerta(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta), 
+      _msg, this.alertsProvider.msgBotaoPadrao);
+    }
+    catch(e){
+      console.log(e);
+    }
+  }
+
   carregarAbrirFoto(sequencia: number) {
     try {
       let _modal = this.modalCtrl.create(GalleryModal, {
@@ -313,25 +395,6 @@ export class ChamadoRotinaPage {
         initialSlide: sequencia
       });
       _modal.present();
-    }
-    catch (e) {
-      console.log(e);
-    }
-  }
-
-  carregarExcluirAnexo(anexo: any) {
-    try {
-      this.index = this.fotos.indexOf(anexo);
-      this.anexoId = anexo.AnexoID;
-      this.sequenciaFotos = anexo.sequencia;
-
-      let _titulo = this.origemOffline ? `` : `${anexo.NomeAnexo}`;
-
-      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
-      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
-        handler: this.confirmarExcluirFotoClick }]
-
-      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
     catch (e) {
       console.log(e);
@@ -396,7 +459,7 @@ export class ChamadoRotinaPage {
       this.alertsProvider.exibirCarregando('');
 
       this.chamadosProvider.salvarAnexo(this.username, this.portal, this.chamadoId,
-        this.constantesProvider.tipoRotinas, this.idioma, parametros).subscribe(
+        this.constantesProvider.tipoConsumiveis, this.idioma, parametros).subscribe(
           data => {
             let _resposta = (data as any);
             let _objetoRetorno = JSON.parse(_resposta._body);
@@ -435,7 +498,7 @@ export class ChamadoRotinaPage {
     try{
       this.alertsProvider.exibirCarregando('');
 
-      this.offlineProvider.salvarFotoRotinaOffline(this.portal, this.chamadoId, parametros).then(data => {
+      this.offlineProvider.salvarFotoConsumivelOffline(this.portal, this.chamadoId, parametros).then(data => {
         if (data) {
   
           if (!this.fotos) {
@@ -460,108 +523,46 @@ export class ChamadoRotinaPage {
     }
   }
 
-  excluirFoto() {
+  atualizarConsumivel() {
     try {
-      this.alertsProvider.exibirCarregando('');
+      if (this.consumivelForm.valid && this.leituraEquipamento && 
+        ((this.fotoObrigatoria && this.fotos) || !this.fotoObrigatoria)) {
+          this.alertsProvider.exibirCarregando('');
 
-      if (!this.origemOffline) {
-        this.excluirFotoOnline();
-      }
-      else {
-        this.excluirFotoOffline();
-      }
-    }
-    catch (e) {
-      console.log(e);
-      this.index = null;
-      this.anexoId = null;
-      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      this.alertsProvider.fecharCarregando();
-    }
-  }
+          let _parametrosConsumivel = [];
 
-  excluirFotoOnline() {
-    this.chamadosProvider.excluirAnexo(this.username, this.portal, this.chamadoId, this.anexoId, this.constantesProvider.tipoRotinas, this.idioma).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
+          for (let input of  this.inputs) {
+            _parametrosConsumivel.push({
+              ChamadoConsumivelID: input.ChamadoConsumivelID,
+              ConsumivelID: input.ConsumivelID,
+              NomeProcedimento: input.NomeProcedimento,
+              OrdemProcedimento: input.OrdemProcedimento,
+              TipoCampo: input.TipoCampo,
+              Obrigatorio: input.Obrigatorio,
+              Resposta: this.consumivelForm.controls[input.ChamadoConsumivelID].value,
+            });
+          }
 
-        this.respostaApi = _objetoRetorno;
-
-        if (this.respostaApi) {
-          if (this.respostaApi.sucesso) {
-            if (this.index > -1) {
-              this.fotos.splice(this.index, 1);
+          let _parametros = {
+            Consumivel: _parametrosConsumivel,
+            Rastreabilidade: {
+              ChamadoID: this.chamadoId,
+              StatusChamadoID: 0,
+              Tipo: this.constantesProvider.acaoMovimentacao,
+              UUID: this.device.uuid,
+              Plataforma: this.device.platform,
+              Modelo: this.device.model,
+              Latitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.latitude : null,
+              Longitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.longitude : null
             }
+          }
 
-            if (!this.fotos[0]) {
-              this.exibirMsgFotos = true;
-              this.fotos = null;
-            }
-
-            this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+          if (!this.origemOffline) {
+            this.atualizarConsumivelOnline(_parametros);
           }
           else {
-            this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+            this.atualizarConsumivelOffline(_parametros);
           }
-        }
-        else {
-          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        }
-
-        this.index = null;
-        this.anexoId = null;
-        this.alertsProvider.fecharCarregando();
-      }, e => {
-        console.log(e);
-        this.index = null;
-        this.anexoId = null;
-        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-        this.alertsProvider.fecharCarregando();
-      });
-  }
-
-  excluirFotoOffline() {
-  }
-
-  atualizarRotina() {
-    try {
-      if (this.rotinaForm.valid && this.fotos && this.inputs) {
-        this.alertsProvider.exibirCarregando('');
-
-        let _parametrosRotina = [];
-
-        for (let input of this.inputs) {
-          _parametrosRotina.push({
-            ChamadoRotinaID: input.ChamadoRotinaID,
-            NomeProcedimento: input.NomeProcedimento,
-            OrdemProcedimento: input.OrdemProcedimento,
-            TipoCampo: input.TipoCampo,
-            Obrigatorio: input.Obrigatorio,
-            Resposta: this.rotinaForm.controls[input.ChamadoRotinaID].value,
-          });
-        }
-
-        let _parametros = {
-          Rotina: _parametrosRotina,
-          Rastreabilidade: {
-            ChamadoID: this.chamadoId,
-            StatusChamadoID: 0,
-            Tipo: this.constantesProvider.acaoMovimentacao,
-            UUID: this.device.uuid,
-            Plataforma: this.device.platform,
-            Modelo: this.device.model,
-            Latitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.latitude : null,
-            Longitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.longitude : null
-          }
-        }
-
-        if (!this.origemOffline) {
-          this.atualizarRotinaOnline(_parametros);
-        }
-        else {
-          this.atualizarRotinaOffline(_parametros);
-        }
       }
       else {
         this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroRotina), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
@@ -574,8 +575,8 @@ export class ChamadoRotinaPage {
     }
   }
 
-  atualizarRotinaOnline(_parametros: any) {
-    this.chamadosProvider.salvarRotina(this.username, this.portal, this.chamadoId, this.idioma, _parametros).subscribe(
+  atualizarConsumivelOnline(_parametros: any) {
+    this.chamadosProvider.salvarConsumivel(this.username, this.portal, this.chamadoId, this.idioma, _parametros).subscribe(
       data => {
         let _resposta = (data as any);
         let _objetoRetorno = JSON.parse(_resposta._body);
@@ -584,6 +585,7 @@ export class ChamadoRotinaPage {
 
         if (this.respostaApi) {
           if (this.respostaApi.sucesso) {
+            this.habilitarChamado = false;
             this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
           }
           else {
@@ -602,8 +604,8 @@ export class ChamadoRotinaPage {
       });
   }
 
-  atualizarRotinaOffline(_parametros: any) {
-    this.offlineProvider.salvarRotinaOffline(this.portal, this.chamadoId, _parametros).then(data => {
+  atualizarConsumivelOffline(_parametros: any) {
+    this.offlineProvider.salvarConsumivelOffline(this.portal, this.chamadoId, _parametros).then(data => {
 
       if (data) {
         this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
@@ -619,7 +621,7 @@ export class ChamadoRotinaPage {
 
   //Eventos
   atualizarClick() {
-    this.carregarRotina();
+    this.carregarConsumivel();
   }
 
   atualizarFotosClick(){
@@ -634,16 +636,16 @@ export class ChamadoRotinaPage {
     this.carregarAbrirFoto(sequencia);
   }
 
-  excluirClick(anexo: any) {
-    this.carregarExcluirAnexo(anexo);
+  atualizarConsumivelClick() {
+    this.atualizarConsumivel();
   }
 
-  confirmarExcluirFotoClick = () => {
-    this.excluirFoto();
+  qrCodeClick() {
+    this.carregarQrCode();
   }
 
-  atualizarRotinaClick() {
-    this.atualizarRotina();
+  infoClick(){
+    this.carregarInfo();
   }
 
   redimencionarPagina() {

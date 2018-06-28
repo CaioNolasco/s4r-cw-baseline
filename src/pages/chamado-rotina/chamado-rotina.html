@@ -3,10 +3,13 @@
   <ion-navbar color="cushman-1">
     <ion-title> {{ "rotina" | translate }} {{ chamadoId }}</ion-title>
     <ion-buttons end>
-      <button (click)="atualizarRotinaClick()" *ngIf="habilitarChamado && alterarChamado" [disabled]="!rotinaForm.valid" ion-button
+      <button (click)="atualizarRotinaClick()" *ngIf="habilitarChamado && alterarChamado && tipoRotina == 'rotina'" [disabled]="!rotinaForm.valid" ion-button
         icon-only tappable>
         <ion-icon name="checkmark-circle"></ion-icon>
       </button>
+      <button (click)="fotoClick()" *ngIf="habilitarChamado && alterarChamado && tipoRotina == 'fotos'" ion-button icon-only tappable>
+          <ion-icon name="camera"></ion-icon>
+        </button>
     </ion-buttons>
   </ion-navbar>
   <ion-toolbar color="cushman-1">
@@ -18,11 +21,6 @@
         {{ "fotos" | translate }}
       </ion-segment-button>
     </ion-segment>
-    <ion-buttons end>
-      <button (click)="fotoClick()" *ngIf="tipoRotina == 'fotos' && habilitarChamado && alterarChamado" ion-button icon-only tappable>
-        <ion-icon name="camera"></ion-icon>
-      </button>
-    </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
@@ -81,7 +79,7 @@
   <ion-item *ngIf="tipoRotina == 'fotos' && exibirMsgFotos">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
     {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
+    <ion-icon (click)="atualizarFotosClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
   <ion-grid *ngIf="tipoRotina == 'fotos' && fotos">
@@ -92,10 +90,16 @@
     </ion-row>
   </ion-grid>
 
-  <div class="item-altura-fab"></div>
-  <ion-fab *ngIf="habilitarChamado && alterarChamado" bottom right>
+  <div *ngIf="habilitarChamado && alterarChamado" class="item-altura-fab"></div>
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && tipoRotina == 'rotina'" bottom right>
     <button (click)="atualizarRotinaClick()" [disabled]="!rotinaForm.valid" ion-fab color="cushman-2" tappable>
       <ion-icon name="checkmark"></ion-icon>
     </button>
   </ion-fab>
+
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && tipoRotina == 'fotos'" bottom right>
+      <button (click)="fotoClick()" ion-fab color="cushman-2" tappable>
+        <ion-icon name="camera"></ion-icon>
+      </button>
+    </ion-fab>
 </ion-content>

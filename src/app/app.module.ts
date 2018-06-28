@@ -9,6 +9,7 @@ import { Network } from '@ionic-native/network';
 import { Geolocation } from '@ionic-native/geolocation';
 import { SQLite } from '@ionic-native/sqlite';
 //Desenvolvimento
+
 import { ChartsModule } from 'ng2-charts';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -29,7 +30,7 @@ import { HomeOfflinePageModule } from './../pages/home-offline/home-offline.modu
 import * as GalleryModal from 'ionic-gallery-modal';
 
 export function HttpLoaderFactory(httpClient: HttpClient) {
-  return new TranslateHttpLoader(httpClient, "../assets/i18n/", ".json");
+  return new TranslateHttpLoader(httpClient, "assets/i18n/", ".json");
 }
 
 //Desenvolvimento

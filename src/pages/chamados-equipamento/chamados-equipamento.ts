@@ -39,6 +39,7 @@ export class ChamadosEquipamentoPage {
   isRefreshing: boolean = false;
   homeOffline: boolean = false;
   alterarChamado: boolean = false;
+  excluirChamado: boolean = false;
   pagina = 1;
   tamanhoPagina = 20;
 
@@ -77,6 +78,7 @@ export class ChamadosEquipamentoPage {
           this.equipamentoId = this.navParams.get("EquipamentoID");
           this.nomeEquipamento = this.navParams.get("NomeEquipamento");
           this.alterarChamado = this.navParams.get("AlterarChamado");
+          this.excluirChamado = this.navParams.get("ExcluirChamado");
           this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
@@ -247,7 +249,8 @@ export class ChamadosEquipamentoPage {
   abrirDetalhesClick(chamado) {
     this.navCtrl.push("ChamadoDetalhesPage", { 
       ChamadoID: chamado.ChamadoID,
-      AlterarChamado: this.alterarChamado });
+      AlterarChamado: this.alterarChamado,
+      ExcluirChamado:  this.excluirChamado });
   }
 
   historicoClick(chamado) {

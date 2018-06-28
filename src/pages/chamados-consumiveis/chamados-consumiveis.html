@@ -1,10 +1,11 @@
 <ion-header>
 
   <ion-navbar color="cushman-1">
-    <ion-title>{{ nomeEquipamento }}</ion-title>
+    <ion-title>{{ "consumiveis" | translate }}</ion-title>
   </ion-navbar>
 
 </ion-header>
+
 
 <ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)">
@@ -17,24 +18,19 @@
     <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
+
   <ion-list *ngIf="chamados">
     <ion-item-sliding *ngFor="let chamado of chamados">
       <button (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado" ion-item tappable>
         <ion-grid>
           <ion-row>
-            <ion-col col-8>
+            <ion-col col-12>
               <div start class="item-lista-dados">
                 <h1 ion-text>
                   <b>{{ chamado.ChamadoID}}</b>
                 </h1>
                 <p ion-text>{{ chamado.Area }} / {{ chamado.Nome }} / {{ chamado.NomeCompleto }}</p>
               </div>
-            </ion-col>
-
-            <ion-col col-4>
-              <p ion-text>
-                <ion-icon ios="ios-alarm-outline" name="alarm"></ion-icon> {{ chamado.Nivel }}
-              </p>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -48,9 +44,8 @@
               </p>
             </ion-col>
             <ion-col col-6>
-              <p ion-text>
-                <ion-icon ios="ios-calendar-outline" name="calendar"></ion-icon>
-                {{ chamado.DataPrevistaAtendimento | date : "dd/MM/yyyy HH:mm" }}
+              <p *ngIf="chamado.Offline" ion-text end>
+                <ion-icon name="wifi" color="cushman-1"></ion-icon> {{ chamado.NomeUsuarioOffline }}
               </p>
             </ion-col>
           </ion-row>
@@ -70,8 +65,4 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
-
-  <ion-infinite-scroll *ngIf="chamados" (ionInfinite)="doInfinite($event)">
-    <ion-infinite-scroll-content></ion-infinite-scroll-content>
-  </ion-infinite-scroll>
 </ion-content>

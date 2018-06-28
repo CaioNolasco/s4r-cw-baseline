@@ -1,5 +1,6 @@
 <ion-tabs [selectedIndex]="index">
   <ion-tab [root]="tab1Root" tabTitle="Home" tabIcon="home"></ion-tab>
-  <ion-tab [root]="tab2Root" tabTitle=" {{ 'relatorios' | translate }}" tabIcon="pie"></ion-tab>
-  <ion-tab [root]="tab3Root" *ngIf="alterarChamado" tabTitle=" {{ 'sincronizacao' | translate }}" tabIcon="sync" tabBadge="{{ badgesOffline }}" tabBadgeStyle="cushman-1"></ion-tab>
+  <ion-tab [root]="tab2Root" *ngIf="alterarChamado && perfilConsumiveis" tabTitle=" {{ 'consumiveis' | translate }}" tabIcon="analytics"></ion-tab>
+  <ion-tab [root]="tab3Root" *ngIf="exibirRelatorios" tabTitle=" {{ 'relatorios' | translate }}" tabIcon="pie"></ion-tab>
+  <ion-tab [root]="tab4Root" *ngIf="alterarChamado && perfilSincronizacao" tabTitle=" {{ 'sincronizacao' | translate }}" tabIcon="sync" tabBadge="{{ badgesOffline }}" tabBadgeStyle="cushman-1"></ion-tab>
 </ion-tabs>

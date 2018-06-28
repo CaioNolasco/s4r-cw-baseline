@@ -6,6 +6,15 @@
         <ion-icon name="camera"></ion-icon>
       </button>
     </ion-buttons>
+    <ion-buttons end>
+        <button (click)="fileInput.click()" *ngIf="tipoAnexos == 'anexos' && habilitarChamado && alterarChamado" ion-button icon-only
+          tappable>
+          <ion-icon name="add"></ion-icon>
+        </button>
+        <button (click)="fotoClick()" *ngIf="tipoAnexos == 'fotos' && habilitarChamado && alterarChamado" ion-button icon-only tappable>
+          <ion-icon name="camera"></ion-icon>
+        </button>
+      </ion-buttons>
   </ion-navbar>
   <ion-toolbar *ngIf="!origemOffline" color="cushman-1">
     <ion-segment [(ngModel)]="tipoAnexos" color="cushman-4">
@@ -16,19 +25,8 @@
         {{ "fotos" | translate }}
       </ion-segment-button>
     </ion-segment>
-    <ion-buttons end>
-      <button (click)="fileInput.click()" *ngIf="tipoAnexos == 'anexos' && habilitarChamado && alterarChamado" ion-button icon-only
-        tappable>
-        <ion-icon name="add"></ion-icon>
-      </button>
-      <button (click)="fotoClick()" *ngIf="tipoAnexos == 'fotos' && habilitarChamado && alterarChamado" ion-button icon-only tappable>
-        <ion-icon name="camera"></ion-icon>
-      </button>
-    </ion-buttons>
-
   </ion-toolbar>
 </ion-header>
-
 <ion-content>
   <ion-refresher (ionRefresh)="doRefresh($event)">
     <ion-refresher-content></ion-refresher-content>
@@ -46,12 +44,12 @@
         <h2>{{ anexo.NomeAnexo }}</h2>
         <p>{{ anexo.Comentarios}}</p>
         <ion-icon (click)="acessarClick(anexo)" name="link" color="cushman-2" item-end tappable></ion-icon>
-        <ion-icon (click)="excluirClick(anexo, false)" *ngIf="habilitarChamado && alterarChamado" name="trash" color="cushman-1"
+        <ion-icon (click)="excluirClick(anexo, false)" *ngIf="habilitarChamado && alterarChamado && perfilExclusao" name="trash" color="cushman-1"
           item-end tappable></ion-icon>
       </ion-item>
 
       <ion-item-options side="left">
-        <button (click)="excluirClick(anexo, false)" *ngIf="habilitarChamado && alterarChamado" color="cushman-1" ion-button tappable>
+        <button (click)="excluirClick(anexo, false)" *ngIf="habilitarChamado && alterarChamado && perfilExclusao" color="cushman-1" ion-button tappable>
           <ion-icon name="trash"></ion-icon>
           {{ "excluir" | translate }}
         </button>
@@ -75,7 +73,7 @@
       <ion-col col-6 col-md-4 col-xl-3 *ngFor="let foto of fotos">
         <div (click)="abrirFotoClick(foto.sequencia)" class="thumb-fotos" [style.background-image]="'url('+ foto.url +')'" tappable></div>
 
-        <ion-fab *ngIf="(habilitarChamado && alterarChamado) || (origemOffline && !foto.AnexoID)" right top>
+        <ion-fab *ngIf="(habilitarChamado && alterarChamado && perfilExclusao) || (origemOffline && !foto.AnexoID)" right top>
           <button (click)="excluirClick(foto, true)" mini ion-fab color="cushman-1" class="icone-excluir-foto" tappable>
             <ion-icon name="close"></ion-icon>
           </button>

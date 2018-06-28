@@ -2,110 +2,157 @@
 
   <ion-navbar color="cushman-1">
     <ion-title>{{ "materiais" | translate }} {{ chamadoId }}</ion-title>
+    <ion-buttons end>
+      <button (click)="atualizarOsClick()" *ngIf="habilitarChamado && alterarChamado && tipoDados == 'os'" [disabled]="!valorTotalOs" ion-button icon-only
+        tappable>
+        <ion-icon name="checkmark-circle"></ion-icon>
+      </button>
+      <button (click)="novoMaterialClick()" *ngIf="habilitarChamado && alterarChamado && !origemOffline && tipoDados == 'materiais'"
+        ion-button icon-only tappable>
+        <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-buttons>
+
   </ion-navbar>
+
+  <ion-toolbar color="cushman-1">
+    <ion-segment [(ngModel)]="tipoDados" color="cushman-4">
+      <ion-segment-button value="materiais">
+        {{ "materiais" | translate }}
+      </ion-segment-button>
+      <ion-segment-button value="os">
+        OS
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 
 </ion-header>
 
 
 <ion-content>
-  <ion-refresher (ionRefresh)="doRefresh($event)">
-    <ion-refresher-content></ion-refresher-content>
-  </ion-refresher>
+  <div [hidden]="tipoDados != 'materiais'">
+    <ion-refresher (ionRefresh)="doRefresh($event)">
+      <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
 
-  <ion-fab *ngIf="habilitarChamado && alterarChamado && !origemOffline" bottom right>
+    <ion-item *ngIf="exibirMsg">
+      <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
+      {{ msgNenhumItem }}
+      <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
+    </ion-item>
+
+    <ion-list *ngIf="materiais">
+      <ion-item-sliding *ngFor="let material of materiais">
+        <ion-item class="item-lista-material">
+          <ion-grid>
+            <ion-row>
+              <ion-col col-10>
+                <p ion-text>
+                  <b>
+                    {{ "aplicacao" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ material.TipoServico }}
+                </p>
+              </ion-col>
+              <ion-col col-2>
+                <h1>
+                  <ion-icon (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" name="trash" color="cushman-1"
+                    class="icone-material" tappable></ion-icon>
+                </h1>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col-3>
+                <p ion-text>
+                  <b>
+                    {{ "marca" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ material.Marca }}
+                </p>
+              </ion-col>
+              <ion-col col-3>
+                <p ion-text>
+                  <b>
+                    {{ "modelo" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ material.Modelo }}
+                </p>
+              </ion-col>
+              <ion-col col-3>
+                <p ion-text>
+                  <b>
+                    {{ "potencia" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ material.Potencia }}
+                </p>
+              </ion-col>
+              <ion-col col-3>
+                <p ion-text>
+                  <b>
+                    {{ "capacidade" | translate }}
+                  </b>
+                </p>
+                <p ion-text>
+                  {{ material.Capacidade }}
+                </p>
+              </ion-col>
+            </ion-row>
+            <ion-row>
+              <ion-col col>
+                <span>{{ material.Quantidade }} x {{ "moeda" | translate }} {{ material.ValorUnitario }}</span>
+              </ion-col>
+              <ion-col col>
+                <span class="item-valor-total">{{ "moeda" | translate }} {{ material.ValorTotal }}</span>
+              </ion-col>
+            </ion-row>
+          </ion-grid>
+        </ion-item>
+
+        <ion-item-options side="left">
+          <button (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" [disabled]="" color="cushman-1"
+            ion-button tappable>
+            <ion-icon name="trash"></ion-icon>
+            {{ "excluir" | translate }}
+          </button>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+  </div>
+
+  <div [hidden]="tipoDados != 'os'">
+    <ion-grid>
+      <ion-row>
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "valorTotalOs" | translate }}
+            </ion-label>
+            <ion-input type="number" [(ngModel)]="valorTotalOs" (keyup.enter)="redimencionarPagina()" [disabled]="!habilitarChamado || !alterarChamado" placeholder=" {{ 'valorTotal' | translate }}"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <div class="item-altura-fab"></div>
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && !origemOffline && tipoDados == 'materiais'" bottom right>
     <button (click)="novoMaterialClick()" color="cushman-2" ion-fab tappable>
       <ion-icon name="add"></ion-icon>
     </button>
   </ion-fab>
 
-  <ion-item *ngIf="exibirMsg">
-    <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-    {{ msgNenhumItem }}
-    <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
-  </ion-item>
-
-  <ion-list *ngIf="materiais">
-    <ion-item-sliding *ngFor="let material of materiais">
-      <ion-item class="item-lista-material">
-        <ion-grid>
-          <ion-row>
-            <ion-col col-10>
-              <p ion-text>
-                <b>
-                  {{ "aplicacao" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ material.TipoServico }}
-              </p>
-            </ion-col>
-            <ion-col col-2>
-              <h1>
-                <ion-icon (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" name="trash" color="cushman-1"
-                  class="icone-material" tappable></ion-icon>
-              </h1>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col col-3>
-              <p ion-text>
-                <b>
-                  {{ "marca" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ material.Marca }}
-              </p>
-            </ion-col>
-            <ion-col col-3>
-              <p ion-text>
-                <b>
-                  {{ "modelo" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ material.Modelo }}
-              </p>
-            </ion-col>
-            <ion-col col-3>
-              <p ion-text>
-                <b>
-                  {{ "potencia" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ material.Potencia }}
-              </p>
-            </ion-col>
-            <ion-col col-3>
-              <p ion-text>
-                <b>
-                  {{ "capacidade" | translate }}
-                </b>
-              </p>
-              <p ion-text>
-                {{ material.Capacidade }}
-              </p>
-            </ion-col>
-          </ion-row>
-          <ion-row>
-            <ion-col col>
-              <span>{{ material.Quantidade }} x {{ "moeda" | translate }} {{ material.ValorUnitario }}</span>
-            </ion-col>
-            <ion-col col>
-              <span class="item-valor-total">{{ "moeda" | translate }} {{ material.ValorTotal }}</span>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
-      </ion-item>
-
-      <ion-item-options side="left">
-        <button (click)="excluirClick(material)" *ngIf="habilitarChamado && alterarChamado && !origemOffline" [disabled]="" color="cushman-1"
-          ion-button tappable>
-          <ion-icon name="trash"></ion-icon>
-          {{ "excluir" | translate }}
-        </button>
-      </ion-item-options>
-    </ion-item-sliding>
-  </ion-list>
+  <ion-fab *ngIf="habilitarChamado && alterarChamado && tipoDados == 'os'" bottom right>
+    <button (click)="atualizarOsClick()" [disabled]="!valorTotalOs" color="cushman-2" ion-fab tappable>
+      <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

@@ -79,7 +79,7 @@
       <ion-col col>
         <ion-item class="item-movimentacao">
           <ion-label stacked color="cushman-3">{{ "programacaoAtendimento" | translate }}</ion-label>
-          <ion-datetime [(ngModel)]="dataProgramacao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY"
+          <ion-datetime [(ngModel)]="dataProgramacao" [disabled]="(!habilitarChamado || !alterarChamado) || (perfilMantenedor && dataProgramacao)" displayFormat="DD/MM/YYYY"
             cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
         </ion-item>
       </ion-col>
@@ -110,8 +110,12 @@
     <ion-row>
       <ion-col col>
         <ion-item class="item-movimentacao">
-          <ion-label stacked color="cushman-3">Status</ion-label>
-          <ion-select [(ngModel)]="status" [disabled]="!habilitarChamado || !alterarChamado || !opcoesStatus" [ngModelOptions]="{standalone: true}"
+          <ion-label stacked color="cushman-3">Status
+            <div class="item-status-sla">
+              <ion-badge *ngIf="prazoSlaStatus" color="{{ prazoSlaStatus.Cor }}">{{ prazoSlaStatus.Status }}</ion-badge>
+            </div>
+          </ion-label>
+          <ion-select [(ngModel)]="status" (ionChange)="statusChange($event)" [disabled]="!habilitarChamado || !alterarChamado || !opcoesStatus" [ngModelOptions]="{standalone: true}"
             interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
             <ion-option value="{{status.StatusChamadoID}}" *ngFor="let status of opcoesStatus">{{status.StatusChamado}}</ion-option>
           </ion-select>
@@ -120,7 +124,7 @@
     </ion-row>
   </ion-grid>
 
-  <div class="item-altura-fab"></div>
+  <div *ngIf="habilitarChamado && alterarChamado" class="item-altura-fab"></div>
 
   <ion-fab *ngIf="habilitarChamado && alterarChamado" bottom right>
     <button (click)="atualizarMovimentacaoClick()" color="cushman-2" ion-fab tappable>

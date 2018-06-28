@@ -40,7 +40,7 @@ export class MyApp {
   carregarDados() {
     try {
       //Desenvolvimento
-
+     
       if (this.offlineProvider.validarInternetOffline()) {
         this.rootPage = "HomeOfflinePage";
       }
