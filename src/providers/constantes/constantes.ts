@@ -4,8 +4,8 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class ConstantesProvider {
   //Url
-  urlApiBaseline: string = "http://cwfacilities6377.cloudapp.net:9999";
-  //urlApiBaseline: string = "http://192.168.1.104:49608/";
+  //urlApiBaseline: string = "http://cwfacilities6377.cloudapp.net:9999";
+  urlApiBaseline: string = "http://192.168.100.199:49608/";
 
   //Subtipos
   subtipoAcao: string = "Ações";
@@ -86,6 +86,20 @@ export class ConstantesProvider {
   chaveMsgSucessoLeituraEquipamento = "msgSucessoLeituraEquipamento";
   chaveMsgSucessoLeituraSemEquipamento = "msgSucessoLeituraSemEquipamento";
   chaveMsgErroSincronizacaoConsumivel = "msgErroSincronizacaoConsumivel";
+
+  //Portais
+  portalBaseline = "PortalBaseline";
+  portalBancoPan = "PortalBancoPan";
+  portalBankBoston = "PortalBankBoston";
+  portalNike = "PortalNike";
+  portalCushman = "PortalCushman";
+  portalDespegar = "PortalDespegar";
+  portalCarrefour = "PortalCarrefour";
+  portalItauPredial = "PortalItauPredial";
+  portalBradescoPredial = "PortalBradescoPredial";
+  portalSaoCarlos = "PortalSaoCarlos";
+  portalLMB = "PortalLMB";
+  portalBunge = "PortalBunge";
 
   constructor() {
   }

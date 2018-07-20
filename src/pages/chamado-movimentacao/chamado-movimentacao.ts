@@ -10,7 +10,7 @@ import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { OfflineProvider } from '../../providers/offline/offline';
 import { UsuariosProvider } from '../../providers/usuarios/usuarios';
 
-@IonicPage({name: 'ChamadoMovimentacaoPage'})
+@IonicPage({ name: 'ChamadoMovimentacaoPage' })
 @Component({
   selector: 'page-chamado-movimentacao',
   templateUrl: 'chamado-movimentacao.html',
@@ -48,7 +48,7 @@ export class ChamadoMovimentacaoPage {
   status: any;
   tipoChamado: any;
   tipoServicoId: any;
-  geolocalizacao: any;  
+  geolocalizacao: any;
   prazoSlaStatus: any;
   habilitarChamado: boolean;
   origemOffline: boolean = false;
@@ -86,7 +86,7 @@ export class ChamadoMovimentacaoPage {
         if (!this.origemOffline) {
           this.alterarChamado = this.navParams.get("AlterarChamado");
           this.geolocalizacao = this.uteisProvider.retornarGeolocalizacao();
-          this.geolocalizacao.then((data)=>{
+          this.geolocalizacao.then((data) => {
             this.geolocalizacao = data;
           });
         }
@@ -301,20 +301,23 @@ export class ChamadoMovimentacaoPage {
   }
 
   carregarPrazoSlaStatus(status: any) {
-    this.chamadosProvider.retornarPrazoSlaStatus(this.portal, this.chamadoId, status, this.idioma).subscribe(
-      data => {
-        let _resposta = (data as any);
-        let _objetoRetorno = JSON.parse(_resposta._body);
+    //Validação por Portais
+    if (this.portal == this.constantesProvider.portalBancoPan) {
+      this.chamadosProvider.retornarPrazoSlaStatus(this.portal, this.chamadoId, status, this.idioma).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
 
-        this.prazoSlaStatus = _objetoRetorno;
+          this.prazoSlaStatus = _objetoRetorno;
 
-        if (!this.prazoSlaStatus) {
+          if (!this.prazoSlaStatus) {
+            this.prazoSlaStatus = null;
+          }
+        }, e => {
+          console.log(e);
           this.prazoSlaStatus = null;
-        }
-      }, e => {
-        console.log(e);
-        this.prazoSlaStatus = null;
-      });
+        });
+    }
   }
 
   carregarHabilitarChamado() {
@@ -343,8 +346,10 @@ export class ChamadoMovimentacaoPage {
       let _titulo = this.origemOffline ? `` : `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${this.chamadoId}`;
 
       let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
-      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
-        handler: this.confirmarMovimentacaoClick }]
+      {
+        text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+        handler: this.confirmarMovimentacaoClick
+      }]
 
       this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
@@ -371,15 +376,16 @@ export class ChamadoMovimentacaoPage {
         DataProgramacao: this.uteisProvider.retornarDataApi(this.dataProgramacao),
         Justificativa: this.justificativa,
         DescricaoAtendimento: this.descricaoAtendimento,
-        Rastreabilidade: {ChamadoID: this.chamadoId, 
-          StatusChamadoID: this.status, 
+        Rastreabilidade: {
+          ChamadoID: this.chamadoId,
+          StatusChamadoID: this.status,
           Tipo: this.constantesProvider.acaoMovimentacao,
           UUID: this.device.uuid,
           Plataforma: this.device.platform,
           Modelo: this.device.model,
           Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
           Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
-         }
+        }
       };
 
       if (!this.origemOffline) {
@@ -431,8 +437,8 @@ export class ChamadoMovimentacaoPage {
     this.offlineProvider.salvarMovimentacaoOffline(this.portal, this.chamadoId, _parametros).then(data => {
       if (data) {
         //this.navParams.get("ChamadoDetalhesPage").carregarDetalhesChamado();
-        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso), 
-        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgSucesso),
+          this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
       }
       else {
         this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
@@ -441,7 +447,7 @@ export class ChamadoMovimentacaoPage {
       this.alertsProvider.fecharCarregando();
     });
   }
-  
+
   //Eventos
   atualizarMovimentacaoClick() {
     this.carregarAtualizarMovimentacao();
@@ -454,7 +460,7 @@ export class ChamadoMovimentacaoPage {
 
   statusChange(status: any) {
     if (!this.origemOffline) {
-    this.carregarPrazoSlaStatus(status);
+      this.carregarPrazoSlaStatus(status);
     }
   }
 

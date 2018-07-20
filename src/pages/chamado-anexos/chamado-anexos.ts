@@ -32,7 +32,6 @@ export class ChamadoAnexosPage {
   username: string;
   portal: string;
   idioma: string;
-  msgNenhumItem: string;
   chamadoId: any;
   tipoAnexos: any;
   anexos: any;
@@ -104,7 +103,6 @@ export class ChamadoAnexosPage {
           this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsgAnexos = false;
           this.exibirMsgFotos = false;
         }

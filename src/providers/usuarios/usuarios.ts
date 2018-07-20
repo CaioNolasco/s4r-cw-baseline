@@ -51,4 +51,8 @@ export class UsuariosProvider {
   retornarDadosUsuario(usuario: string, portal: string){
     return this.http.get(this.urlApiUsuarios + `/RetornarDadosUsuario/${usuario}/${portal}`);
   }
+
+  retornarPortalConsumivelAtivo(portal: string){
+    return this.http.get(this.urlApiUsuarios + `/RetornarPortalConsumivelAtivo/${portal}`);
+  }
 }

@@ -1,5 +1,5 @@
-import { Component, Renderer } from '@angular/core';
-import { IonicPage, NavController, NavParams, App, ViewController } from 'ionic-angular';
+import { Component, Renderer, ViewChild } from '@angular/core';
+import { IonicPage, NavController, NavParams, App, ViewController, Content } from 'ionic-angular';
 
 import { ConfigLoginProvider } from '../../providers/config-login/config-login';
 import { AlertsProvider } from '../../providers/alerts/alerts';
@@ -24,7 +24,6 @@ export class ChamadoMateriaisPage {
   //Propriedades
   portal: string;
   idioma: string;
-  msgNenhumItem: string;
   refresher: any;
   materiais: any;
   chamadoId: any;
@@ -41,6 +40,9 @@ export class ChamadoMateriaisPage {
   origemOffline: boolean = false;
   alterarChamado: boolean = false;
   homeOffline: boolean = false;
+  exibirValorOs: boolean = false;
+
+  @ViewChild(Content) content: Content;
 
   //Load
   constructor(public navCtrl: NavController, public navParams: NavParams, public viewCtrl: ViewController,
@@ -85,9 +87,14 @@ export class ChamadoMateriaisPage {
           this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.tipoDados = "materiais";
+
+          //Validações por Portal
+          if(this.portal == this.constantesProvider.portalBancoPan){
+            this.exibirValorOs = true;
+            this.content.resize();
+          }
         }
         else {
           this.app.getRootNav().setRoot("LoginPage");

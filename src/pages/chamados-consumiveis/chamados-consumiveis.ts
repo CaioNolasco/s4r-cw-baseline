@@ -26,7 +26,6 @@ export class ChamadosConsumiveisPage {
   username: string;
   nomePortal: string;
   portal: string;
-  msgNenhumItem: string;
   idioma: string;
   permissoesChamado: any;
   chamados: any;
@@ -70,7 +69,6 @@ export class ChamadosConsumiveisPage {
           this.nomePortal = _configLoginProvider.nomePortal;
           this.portal = _configLoginProvider.portal;
           this.idioma = _configLoginIdiomasProvider.valor;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.carregarPermissoesChamado();
         }

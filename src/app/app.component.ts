@@ -77,7 +77,8 @@ export class MyApp {
       //Menu
       this.menuController.enable(false, 'menu');
       this.paginas = [
-        { titulo: 'corretivos', pagina: 'RelatoriosPage', icone: 'stats' }
+        { titulo: 'corretivos', pagina: 'RelatoriosPage', icone: 'stats' },
+        { titulo: 'tipoServico', pagina: 'RelatoriosBarrasPage', icone: 'stats' }
       ];
     }
     catch (e) {

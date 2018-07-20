@@ -33,7 +33,6 @@ export class ChamadoRotinaPage {
   username: string;
   portal: string;
   idioma: string;
-  msgNenhumItem: string;
   geolocalizacao: any;
   tipoRotina: any;
   inputs: any;
@@ -98,7 +97,6 @@ export class ChamadoRotinaPage {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
           this.idioma = _configLoginIdiomasProvider.valor;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
           this.exibirMsgRotina = false;

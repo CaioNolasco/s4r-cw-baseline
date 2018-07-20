@@ -33,7 +33,6 @@ export class HomePage {
   portal: string;
   nomePortal: string;
   idioma: string;
-  msgNenhumItem: string;
   filtroEquipamento: string;
   filtroNomeEquipamento: string;
   qrCodeUrl: string;
@@ -87,7 +86,6 @@ export class HomePage {
           this.nomePortal = _configLoginProvider.nomePortal;
           this.portal = _configLoginProvider.portal;
           this.idioma = _configLoginIdiomasProvider.valor;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.carregarPermissoesChamado();
           this.carregarDadosUsuario();

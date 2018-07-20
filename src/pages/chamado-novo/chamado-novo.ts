@@ -32,6 +32,7 @@ export class ChamadoNovoPage {
   portal: string;
   username: string;
   idioma: string;
+  valorTraducao: string;
   tipoChamado: any;
   pontoVenda: any;
   valorSla: any;
@@ -43,26 +44,35 @@ export class ChamadoNovoPage {
   opcoesMantenedores: any;
   opcoesLocalizacoes: any;
   opcoesEquipamentos: any;
+  opcoesCentroCusto: any;
   fotos: any;
   index: any;
   respostaApi: any;
   chamadoId: any;
   base64Image: string;
-  msgNenhumItem: string;
   exibirMsg: boolean = false;
   vinculoMantenedor: boolean = false;
   perfilOperador: boolean = false;
+  exibirRamal: boolean = false;
+  exibirEmail: boolean = true;
+  exibirSolicitante: boolean = true;
+  exibirMantenedores: boolean = false;
+  exibirCentroCustoOpcoes: boolean = false;
+  exibirCodigoEstacao: boolean = false;
   chamadoForm: FormGroup;
   centroCusto: AbstractControl;
+  centroCustoOpcoes: AbstractControl;
   postosAtendimento: AbstractControl;
   solicitante: AbstractControl;
   email: AbstractControl;
+  ramal: AbstractControl;
   descricao: AbstractControl;
   tiposServico: AbstractControl;
   causas: AbstractControl;
   sla: AbstractControl;
   mantenedores: AbstractControl;
   localizacoes: AbstractControl;
+  codigoEstacao: AbstractControl;
   equipamentos: AbstractControl;
 
   //Load
@@ -91,37 +101,75 @@ export class ChamadoNovoPage {
         let _configLoginIdiomasProvider = JSON.parse(this.configLoginProvider.retornarConfigLoginIdiomas());
 
         if (_configLoginProvider) {
+          this.portal = _configLoginProvider.portal;
+          this.username = _configLoginProvider.username;
+          this.idioma = _configLoginIdiomasProvider.valor;
+
+          //Validações por Portal
+           if(this.portal == this.constantesProvider.portalBancoPan || this.portal == this.constantesProvider.portalBankBoston ||
+            this.portal == this.constantesProvider.portalNike ||  this.portal == this.constantesProvider.portalCushman || 
+            this.portal == this.constantesProvider.portalDespegar || this.portal == this.constantesProvider.portalCarrefour ||
+            this.portal == this.constantesProvider.portalItauPredial || this.portal == this.constantesProvider.portalBradescoPredial ||
+            this.portal == this.constantesProvider.portalSaoCarlos || this.portal == this.constantesProvider.portalLMB || 
+          this.portal == this.constantesProvider.portalBunge){
+              this.valorTraducao = this.portal;
+
+              this.exibirRamal = (this.portal == this.constantesProvider.portalBankBoston || 
+                this.portal == this.constantesProvider.portalCarrefour || this.portal == this.constantesProvider.portalSaoCarlos ||
+                this.portal == this.constantesProvider.portalLMB);
+              this.exibirCodigoEstacao = this.portal == this.constantesProvider.portalDespegar;
+              this.exibirMantenedores = this.portal == this.constantesProvider.portalDespegar;
+
+              if(this.portal == this.constantesProvider.portalNike || this.portal == this.constantesProvider.portalDespegar){
+                this.exibirEmail = this.portal != this.constantesProvider.portalNike;
+                this.exibirCentroCustoOpcoes = true;
+                this.carregarCentroCustoOpcoes();
+              }
+              else if(this.portal == this.constantesProvider.portalItauPredial || this.portal == this.constantesProvider.portalBradescoPredial){
+                this.exibirEmail = false;
+                this.exibirSolicitante = false;
+              }
+            }
+            else{
+              this.valorTraducao = this.constantesProvider.portalBaseline;
+            }
+
           this.chamadoForm = this.formBuilder.group({
-            centroCusto: ['', Validators.compose([Validators.required])],
+             //Validações por Portal
+            centroCusto: this.exibirCentroCustoOpcoes ? [''] : ['', Validators.compose([Validators.required])],
+            centroCustoOpcoes: this.exibirCentroCustoOpcoes ? ['', Validators.compose([Validators.required])] : [''],
             postosAtendimento: ['', Validators.compose([Validators.required])],
-            solicitante: ['', Validators.compose([Validators.required])],
-            email: ['', Validators.compose([Validators.pattern(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/), Validators.required])],
+            //Validações por Portal
+            solicitante: this.exibirSolicitante ? ['', Validators.compose([Validators.required])] : [''],
+            //Validações por Portal
+            email: this.exibirEmail ? ['', Validators.compose([Validators.pattern(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/), Validators.required])] : [''],
+            ramal: [''],
             tiposServico: ['', Validators.compose([Validators.required])],
             descricao: [''],
             causas: [''],
             sla: ['', Validators.compose([Validators.required])],
             mantenedores: ['', Validators.compose([Validators.required])],
             localizacoes: [''],
+            codigoEstacao: [''],
             equipamentos: ['']
           });
 
           this.centroCusto = this.chamadoForm.controls['centroCusto'];
+          this.centroCustoOpcoes = this.chamadoForm.controls['centroCustoOpcoes'];
           this.postosAtendimento = this.chamadoForm.controls['postosAtendimento'];
           this.solicitante = this.chamadoForm.controls['solicitante'];
           this.email = this.chamadoForm.controls['email'];
+          this.ramal = this.chamadoForm.controls['ramal'];
           this.descricao = this.chamadoForm.controls['descricao'];
           this.tiposServico = this.chamadoForm.controls['tiposServico'];
           this.causas = this.chamadoForm.controls['causas'];
           this.sla = this.chamadoForm.controls['sla'];
           this.mantenedores = this.chamadoForm.controls['mantenedores'];
           this.localizacoes = this.chamadoForm.controls['localizacoes'];
+          this.codigoEstacao = this.chamadoForm.controls['codigoEstacao'];
           this.equipamentos = this.chamadoForm.controls['equipamentos'];
 
-          this.portal = _configLoginProvider.portal;
-          this.username = _configLoginProvider.username;
-          this.idioma = _configLoginIdiomasProvider.valor;
           this.tipoChamado = this.constantesProvider.tituloDadosBasicos;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.carregarDadosUsuario();
         }
@@ -154,9 +202,12 @@ export class ChamadoNovoPage {
               this.chamadoForm.get('sla').updateValueAndValidity();
 
               //Mantenedor
-              this.chamadoForm.get('mantenedores').clearValidators();
-              this.chamadoForm.get('mantenedores').updateValueAndValidity();
-
+              //Validações por Portal
+              if(this.portal != this.constantesProvider.portalDespegar){
+                this.chamadoForm.get('mantenedores').clearValidators();
+                this.chamadoForm.get('mantenedores').updateValueAndValidity();
+              }
+             
               //Email
               this.chamadoForm.get('email').clearValidators();
               this.chamadoForm.get('email').updateValueAndValidity();
@@ -207,6 +258,29 @@ export class ChamadoNovoPage {
           if (!this.opcoesPontosVenda[0]) {
             this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
             this.opcoesPontosVenda = null
+          }
+        }, e => {
+          console.log(e);
+          this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        });
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  carregarCentroCustoOpcoes() {
+    try {
+      this.chamadosProvider.retornarTodosPontosVenda(this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.opcoesCentroCusto = _objetoRetorno;
+
+          if (!this.opcoesCentroCusto[0]) {
+            this.opcoesCentroCusto = null
           }
         }, e => {
           console.log(e);
@@ -618,6 +692,7 @@ export class ChamadoNovoPage {
           PontoVendaID: this.postosAtendimento.value,
           TipoServicoID: this.tiposServico.value,
           LocalizacaoPontoVendaID: this.localizacoes.value,
+          CodEstacaoTrabalho: this.codigoEstacao.value,
           EquipamentoID: this.equipamentos.value,
           Causa: this.causas.value,
           DescricaoOcorrencia: this.descricao.value,
@@ -627,6 +702,7 @@ export class ChamadoNovoPage {
           EmailSolicitante: this.pontoVenda.EmailGerente,
           NomeDoSolicitanteOperador: this.solicitante.value,
           EmailDoSolicitanteOperador: this.email.value,
+          RamalDoSolicitanteOperador: this.ramal.value,
           DataPrevistaAtendimento: _dataPrevistaAtendimento,
           DataPrevistaSolucao: _dataPrevistaSolucao,
           Anexos: this.fotos
@@ -761,9 +837,17 @@ export class ChamadoNovoPage {
   }
 
   centroCustoChange(centroCusto: any) {
-    let _centroCusto = this.carregarCentroCusto(centroCusto.target.value);
-    centroCusto.target.value = _centroCusto;
-    this.carregarPontosVenda(_centroCusto);
+    //Equalização dos portais
+    //let _centroCusto = this.carregarCentroCusto(centroCusto.target.value);
+    //centroCusto.target.value = _centroCusto;
+
+    if(this.exibirCentroCustoOpcoes){
+      this.carregarPontosVenda(centroCusto);
+    }
+    else{
+      this.carregarPontosVenda(centroCusto.target.value);
+    }
+    
     this.redimencionarPagina();
   }
 

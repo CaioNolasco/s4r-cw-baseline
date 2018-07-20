@@ -48,7 +48,7 @@
 <ion-content>
   <ion-item *ngIf="exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-    {{ msgNenhumItem }}
+    {{ 'msgNenhumItem' | translate }}
     <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
@@ -151,12 +151,26 @@
                 <p ion-text>
                   {{ chamado.NomeSubGrupoPontoVenda }}
                 </p>
+                <p *ngIf="chamado.CodEstacaoTrabalho" ion-text>
+                  {{ chamado.CodEstacaoTrabalho }}
+                </p>
               </ion-col>
 
               <ion-col col-2>
                 <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                   <ion-icon (click)="mapaClick(chamado)" name="pin" color="cushman-1" class="card-icone-texto" tappable></ion-icon>
                 </h1>
+              </ion-col>
+
+              <ion-col *ngIf="chamado.CodEstacaoTrabalho" col-12>
+                <p ion-text>
+                  <b>
+                    {{ "codigoEstacao" | translate }}
+                  </b>
+                </p>
+                <p  ion-text>
+                  {{ chamado.CodEstacaoTrabalho }}
+                </p>
               </ion-col>
 
             </ion-row>
@@ -172,7 +186,7 @@
         <ion-card-content>
           <ion-grid>
             <ion-row>
-              <ion-col col-12>
+              <ion-col *ngIf="chamado.NomeDoSolicitanteOperador" col-12>
                 <p ion-text>
                   <b>
                     {{ "solicitante" | translate }}
@@ -225,6 +239,9 @@
                 <ion-col *ngIf="chamado.TelefoneSolicitante" col-10 class="item-card-contato">
                   <p ion-text>
                     {{ chamado.TelefoneSolicitante }}
+                  </p>
+                  <p *ngIf="chamado.RamalSolicitante" ion-text>
+                    {{ chamado.RamalSolicitante }}
                   </p>
                 </ion-col>
                 <ion-col *ngIf="chamado.TelefoneSolicitante && !origemOffline" col-2 class="item-card-contato">
@@ -302,7 +319,8 @@
                 <div class="texto-obrigatorio"> * </div>
                 {{ "aprovadoOperador" | translate }}
               </ion-label>
-              <ion-toggle [(ngModel)]="aprovado" (ionChange)="aprovadoChange($event)" [disabled]="!perfilAprovacao || !habilitarChamado || !aprovacaoOperadorCushman" color="cushman-2"></ion-toggle>
+              <ion-toggle [(ngModel)]="aprovado" (ionChange)="aprovadoChange($event)" [disabled]="!perfilAprovacao || !habilitarChamado || !aprovacaoOperadorCushman"
+                color="cushman-2"></ion-toggle>
             </ion-item>
           </ion-col>
         </ion-row>
@@ -314,8 +332,8 @@
                 <div class="texto-obrigatorio"> * </div>
                 {{ "mantenedor" | translate }}
               </ion-label>
-              <ion-select [(ngModel)]="mantenedores" (ionChange)="mantenedorChange($event)" [disabled]="!opcoesMantenedores || !perfilAprovacao || !aprovacaoOperadorCushman" interface="action-sheet"
-                cancelText="{{ 'cancelar' | translate }}">
+              <ion-select [(ngModel)]="mantenedores" (ionChange)="mantenedorChange($event)" [disabled]="!opcoesMantenedores || !perfilAprovacao || !aprovacaoOperadorCushman"
+                interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
                 <ion-option value="{{mantenedor.MantenedorID}}" *ngFor="let mantenedor of opcoesMantenedores">{{mantenedor.Nome}}</ion-option>
               </ion-select>
             </ion-item>

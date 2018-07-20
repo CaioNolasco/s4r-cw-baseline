@@ -15,7 +15,7 @@
 
   </ion-navbar>
 
-  <ion-toolbar color="cushman-1">
+  <ion-toolbar *ngIf="exibirValorOs" color="cushman-1">
     <ion-segment [(ngModel)]="tipoDados" color="cushman-4">
       <ion-segment-button value="materiais">
         {{ "materiais" | translate }}
@@ -37,7 +37,7 @@
 
     <ion-item *ngIf="exibirMsg">
       <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-      {{ msgNenhumItem }}
+      {{ 'msgNenhumItem' | translate }}
       <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
     </ion-item>
 

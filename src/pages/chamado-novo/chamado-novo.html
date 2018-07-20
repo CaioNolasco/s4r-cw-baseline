@@ -22,7 +22,7 @@
 
   <ion-item *ngIf="tipoChamado == 'Fotos' && exibirMsg">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-    {{ msgNenhumItem }}
+    {{ 'msgNenhumItem' | translate }}
     <ion-icon (click)="fotoClick()" name="camera" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
@@ -30,13 +30,23 @@
     <ion-grid *ngIf="tipoChamado == 'Dados Básicos'">
       <ion-row>
         <ion-col col>
-          <ion-item class="item-novo-chamado">
+          <ion-item *ngIf="!exibirCentroCustoOpcoes" class="item-novo-chamado">
             <ion-label stacked color="cushman-3">
               <div class="texto-obrigatorio"> * </div>
-              {{ "centroCusto" | translate }}
+              {{ "centroCusto" + valorTraducao | translate }}
             </ion-label>
-            <ion-input type="number" formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)"
-              placeholder="{{ 'codigo' | translate }}"></ion-input>
+            <ion-input formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)" placeholder="{{ 'codigo' | translate }}"></ion-input>
+          </ion-item>
+
+          <ion-item *ngIf="exibirCentroCustoOpcoes" class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">
+              <div class="texto-obrigatorio"> * </div>
+              {{ "centroCusto" + valorTraducao | translate }}
+            </ion-label>
+            <ion-select formControlName="centroCustoOpcoes" (ionChange)="centroCustoChange($event)" [disabled]="!opcoesCentroCusto"
+              interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
+              <ion-option value="{{centroCusto.CodigoPontoVenda}}" *ngFor="let centroCusto of opcoesCentroCusto">{{centroCusto.CodigoPontoVenda}}</ion-option>
+            </ion-select>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -45,7 +55,7 @@
           <ion-item class="item-novo-chamado">
             <ion-label stacked color="cushman-3">
               <div class="texto-obrigatorio"> * </div>
-              {{ "postoAtendimento" | translate }}
+              {{ "postoAtendimento" + valorTraducao | translate }}
             </ion-label>
             <ion-select formControlName="postosAtendimento" (ionChange)="postoAtendimentoChange($event)" [disabled]="!opcoesPontosVenda"
               interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
@@ -59,7 +69,7 @@
           <ion-card>
             <ion-card-header class="card-header-chamado">
               <ion-icon ios="ios-locate-outline" name="locate" class="card-icone" item-start></ion-icon>
-              {{ "postoAtendimento" | translate }}
+              {{ "postoAtendimento" + valorTraducao | translate }}
             </ion-card-header>
             <ion-card-content>
               <ion-grid>
@@ -133,7 +143,7 @@
           </ion-card>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf="exibirSolicitante">
         <ion-col col>
           <ion-item class="item-novo-chamado">
             <ion-label stacked color="cushman-3">
@@ -144,7 +154,7 @@
           </ion-item>
         </ion-col>
       </ion-row>
-      <ion-row>
+      <ion-row *ngIf="exibirEmail">
         <ion-col col>
           <ion-item class="item-novo-chamado">
             <ion-label stacked color="cushman-3">
@@ -152,6 +162,16 @@
               {{ "emailSolicitante" | translate }}
             </ion-label>
             <ion-input formControlName="email" (keyup.enter)="emailChange()" (blur)="emailChange()" [disabled]="perfilOperador" placeholder="E-mail"></ion-input>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="exibirRamal">
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">
+              {{ "ramalSolicitante" | translate }}
+            </ion-label>
+            <ion-input formControlName="ramal" (keyup.enter)="redimencionarPagina()" [disabled]="perfilOperador" placeholder="{{ 'ramal' | translate }}"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -249,7 +269,7 @@
         </ion-col>
       </ion-row>
 
-      <ion-row *ngIf="!perfilOperador">
+      <ion-row *ngIf="!perfilOperador || exibirMantenedores">
         <ion-col col>
           <ion-item class="item-novo-chamado">
             <ion-label stacked color="cushman-3">
@@ -273,6 +293,16 @@
               cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{localizacao.LocalizacaoPontoVendaID}}" *ngFor="let localizacao of opcoesLocalizacoes">{{localizacao.DescricaoLocalizacao}}</ion-option>
             </ion-select>
+          </ion-item>
+        </ion-col>
+      </ion-row>
+      <ion-row *ngIf="exibirCodigoEstacao">
+        <ion-col col>
+          <ion-item class="item-novo-chamado">
+            <ion-label stacked color="cushman-3">
+              {{ "codigoEstacao" | translate }}
+            </ion-label>
+            <ion-input formControlName="codigoEstacao" (keyup.enter)="redimencionarPagina()" placeholder="{{ 'codigo' | translate }}"></ion-input>
           </ion-item>
         </ion-col>
       </ion-row>
@@ -416,7 +446,7 @@
                   {{ chamado.EmailDoSolicitanteOperador }}
                 </p>
               </ion-col>
-              <ion-col col-2 class="item-card-contato">
+              <ion-col *ngIf="chamado.EmailDoSolicitanteOperador" col-2 class="item-card-contato">
                 <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                   <a href="mailto:{{ chamado.EmailDoSolicitanteOperador }}">
                     <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
@@ -442,7 +472,7 @@
                   {{ chamado.EmailSolicitante }}
                 </p>
               </ion-col>
-              <ion-col col-2 class="item-card-contato">
+              <ion-col *ngIf="chamado.EmailSolicitante" col-2 class="item-card-contato">
                 <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1">
                   <a href="mailto:{{ chamado.EmailSolicitante }}">
                     <ion-icon name="at" color="cushman-2" class="card-icone-texto"></ion-icon>
@@ -455,9 +485,12 @@
                 <p ion-text>
                   {{ chamado.TelefoneSolicitante }}
                 </p>
+                <p ion-text>
+                  {{ chamado.RamalSolicitante }}
+                </p>
               </ion-col>
-              <ion-col col-2 class="item-card-contato">
-                <h1 ion-text *ngIf="!origemOffline" class="card-icone-h1 icone-contato-telefone">
+              <ion-col *ngIf="chamado.TelefoneSolicitante" col-2 class="item-card-contato">
+                <h1 ion-text class="card-icone-h1 icone-contato-telefone">
                   <a href="tel:{{ chamado.TelefoneSolicitante }}">
                     <ion-icon name="call" color="cushman-2" class="card-icone-texto"></ion-icon>
                   </a>

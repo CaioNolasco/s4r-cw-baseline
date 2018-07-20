@@ -22,7 +22,6 @@ import { UteisProvider } from './../../providers/uteis/uteis';
 })
 export class ChamadoHistoricoPage {
   //Propriedades
-  msgNenhumItem: string;
   portal: string;
   chamadoId: any;
   historicos: any;
@@ -62,7 +61,6 @@ export class ChamadoHistoricoPage {
         if (_configLoginProvider) {
           this.chamadoId = this.navParams.get("ChamadoID");
           this.portal = _configLoginProvider.portal;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
         else {

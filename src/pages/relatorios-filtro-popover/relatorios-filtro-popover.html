@@ -1,0 +1,131 @@
+<ion-list>
+  <ion-list-header color="cushman-2">
+    Filtro
+  </ion-list-header>
+  <div class="menu-popover">
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'diretoriaRegional' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Corporativo</ion-option>
+        <ion-option value="1">Postos de Atendimento</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'regiao' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Centro Oeste / Norte</ion-option>
+        <ion-option value="1">Nordeste (AL, BA, SE)</ion-option>
+        <ion-option value="2">Nordeste (CE, MA, PB, PE, PI, RN)</ion-option>
+        <ion-option value="3">SP Capital</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ "centroCusto" | translate }}
+      </ion-label>
+      <ion-input placeholder="{{ 'codigo' | translate }}"></ion-input>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'postoAtendimento' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">1101 - RJ_CENTRO RIO</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'tipoServico' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Analise de Ar</ion-option>
+        <ion-option value="1">Ar Condicionado</ion-option>
+        <ion-option value="2">Bebedouro</ion-option>
+        <ion-option value="3">Chaveiro</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'mantenedor' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Mantenedor 1</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        Status
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Aberto</ion-option>
+        <ion-option value="1">Em Atendimento</ion-option>
+        <ion-option value="2">Programado</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'tipoManutencao' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Corretivo</ion-option>
+        <ion-option value="1">Preventivo</ion-option>
+        <ion-option value="2">Consumível</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'equipamento' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Equipamento 1</ion-option>
+        <ion-option value="1">Equipamento 2</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ 'equipamento' | translate }}
+      </ion-label>
+      <ion-select multiple="true" cancelText="{{ 'cancelar' | translate }}">
+        <ion-option value="0">Equipamento 1</ion-option>
+        <ion-option value="1">Equipamento 2</ion-option>
+      </ion-select>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ "dataInicial" | translate }}
+      </ion-label>
+      <ion-datetime displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+    </ion-item>
+
+    <ion-item>
+      <ion-label stacked color="cushman-3">
+        {{ "dataFinal" | translate }}
+      </ion-label>
+      <ion-datetime displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
+    </ion-item>
+
+    <div class="item-altura-fab"></div>
+
+    <ion-fab bottom right>
+      <button ion-fab mini color="cushman-2" tappable>
+        <ion-icon name="arrow-forward"></ion-icon>
+      </button>
+    </ion-fab>
+  </div>
+
+
+</ion-list>

@@ -28,7 +28,6 @@ export class ChamadosEquipamentoPage {
   portal: string;
   nomePortal: string;
   idioma: string;
-  msgNenhumItem: string;
   equipamentoId: string;
   nomeEquipamento: string;
   chamados: any;
@@ -79,7 +78,6 @@ export class ChamadosEquipamentoPage {
           this.nomeEquipamento = this.navParams.get("NomeEquipamento");
           this.alterarChamado = this.navParams.get("AlterarChamado");
           this.excluirChamado = this.navParams.get("ExcluirChamado");
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
         }
         else {

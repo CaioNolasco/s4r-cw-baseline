@@ -1,15 +1,15 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
-import { ChamadosOfflinePage } from './chamados-offline';
+import { RelatoriosFiltroPopoverPage } from './relatorios-filtro-popover';
 import { TranslateModule } from '@ngx-translate/core';
 
 @NgModule({
   declarations: [
-    ChamadosOfflinePage,
+    RelatoriosFiltroPopoverPage,
   ],
   imports: [
-    IonicPageModule.forChild(ChamadosOfflinePage),
+    IonicPageModule.forChild(RelatoriosFiltroPopoverPage),
     TranslateModule 
   ],
 })
-export class ChamadosOfflinePageModule { }
+export class RelatoriosFiltroPopoverPageModule {}

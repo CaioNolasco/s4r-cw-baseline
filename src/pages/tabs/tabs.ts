@@ -33,6 +33,7 @@ export class TabsPage {
   exibirRelatorios: boolean = false;
   perfilSincronizacao: boolean = false;
   perfilConsumiveis: boolean = false;
+  consumivelAtivo: boolean = false;
 
   //Load
   constructor(public offlineProvider: OfflineProvider, public events: Events, public usuariosProvider: UsuariosProvider,
@@ -104,12 +105,14 @@ export class TabsPage {
 
             this.perfilSincronizacao = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
             this.perfilConsumiveis = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilOperador;
+          
           }
           else {
             this.perfilSincronizacao = false;
             this.perfilConsumiveis = false;
           }
 
+          this.carregarPortalConsumivelAtivo();
           this.carregarPermissoesChamado();   
         }, e => {
           console.log(e);
@@ -117,6 +120,23 @@ export class TabsPage {
     }
     catch (e) {
       console.log(e);
+    }
+  }
+
+  carregarPortalConsumivelAtivo() {
+    try {
+      this.usuariosProvider.retornarPortalConsumivelAtivo(this.portal).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.consumivelAtivo = _objetoRetorno.sucesso;
+        }, e => {
+          console.log(e);
+        });
+    }
+    catch (e) {
+      console.log(e);   
     }
   }
 }

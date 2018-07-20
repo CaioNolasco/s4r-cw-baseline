@@ -208,6 +208,10 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarPontosVenda/${portal}/${codigoPontoVenda}`);
   }
 
+  retornarTodosPontosVenda(portal: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarPontosVenda/${portal}`);
+  }
+
   retornarValoresPontoVenda(portal: string, pontoVenda: string) {
     return this.http.get(this.urlApiChamados + `/RetornarValoresPontoVenda/${portal}/${pontoVenda}`);
   }
@@ -247,5 +251,4 @@ export class ChamadosProvider {
   retornarConsumivel(portal: string, numero: string) {
     return this.http.get(this.urlApiChamados + `/RetornarConsumivel/${portal}/${numero}`);
   }
-
 }

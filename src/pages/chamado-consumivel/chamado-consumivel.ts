@@ -35,7 +35,6 @@ export class ChamadoConsumivelPage {
   username: string;
   portal: string;
   idioma: string;
-  msgNenhumItem: string;
   filtroEquipamento: string;
   filtroNomeEquipamento: string;
   equipamentoId: string;
@@ -105,7 +104,6 @@ export class ChamadoConsumivelPage {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
           this.idioma = _configLoginIdiomasProvider.valor;
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.chamadoId = this.navParams.get("ChamadoID");
           this.habilitarChamado = this.navParams.get("HabilitarChamado");
           this.exibirMsgConsumivel = false;

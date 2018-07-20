@@ -28,7 +28,6 @@ export class ChamadoDetalhesPage {
   portal: string;
   nomePortal: string;
   idioma: string;
-  msgNenhumItem: string;
   chamadoId: string;
   chamado: any;
   tipoServicoId: any;
@@ -98,7 +97,6 @@ export class ChamadoDetalhesPage {
           this.nomePortal = _configLoginProvider.nomePortal;
           this.idioma = _configLoginIdiomasProvider.valor;
           this.chamadoId = this.navParams.get("ChamadoID");
-          this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
           this.exibirMsg = false;
           this.habilitarChamado = false;
           this.tipoDados = "dadosBasicos";

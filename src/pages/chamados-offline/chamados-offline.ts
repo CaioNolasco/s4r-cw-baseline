@@ -29,7 +29,6 @@ export class ChamadosOfflinePage {
   portal: string;
   nomePortal: string;
   idioma: string;
-  msgNenhumItem: string;
   tipoChamadoConsumivel: number;
   chamados: any;
   chamado: any;
@@ -84,8 +83,7 @@ export class ChamadosOfflinePage {
             this.geolocalizacao = data;
           });
         }
-
-        this.msgNenhumItem = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem);
+        
         this.exibirMsg = false;
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());

@@ -31,7 +31,7 @@
 
   <ion-item *ngIf="tipoRotina == 'rotina' && exibirMsgRotina">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-    {{ msgNenhumItem }}
+    {{ 'msgNenhumItem' | translate }}
     <ion-icon (click)="atualizarClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
@@ -78,7 +78,7 @@
 
   <ion-item *ngIf="tipoRotina == 'fotos' && exibirMsgFotos">
     <ion-icon name="construct" color="cushman-1" item-start></ion-icon>
-    {{ msgNenhumItem }}
+    {{ 'msgNenhumItem' | translate }}
     <ion-icon (click)="atualizarFotosClick()" name="refresh-circle" color="cushman-2" item-end tappable></ion-icon>
   </ion-item>
 
