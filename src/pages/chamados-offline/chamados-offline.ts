@@ -215,7 +215,7 @@ export class ChamadosOfflinePage {
             this.offlineProvider.retornarRotinaOffline(this.portal, chamado.ChamadoID).then(data => {
               _rotina = data;
 
-              this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel);
+              this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel, this.constantesProvider.tipoRotinas);
             }).catch((e) => {
               _rotina = null;
               console.log(e);
@@ -245,7 +245,7 @@ export class ChamadosOfflinePage {
               this.offlineProvider.retornarConsumivelOffline(this.portal, chamado.ChamadoID).then(data => {
                 _consumivel = data;
 
-                this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel);
+                this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel, this.constantesProvider.tipoConsumiveis);
               }).catch((e) => {
                 _consumivel = null;
                 console.log(e);
@@ -272,7 +272,7 @@ export class ChamadosOfflinePage {
     }
   }
 
-  salvarSincronizarChamado(chamado: any, fotos: any, fotosRotina: any, rotina: any, fotosConsumivel: any, consumivel: any) {
+  salvarSincronizarChamado(chamado: any, fotos: any, fotosRotina: any, rotina: any, fotosConsumivel: any, consumivel: any, tipoAnexo: string) {
     try {
       this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
         this.chamado = data;
@@ -311,7 +311,7 @@ export class ChamadosOfflinePage {
           };
 
           this.chamadosProvider.salvarSincronizacao(this.username, this.portal, chamado.ChamadoID,
-            this.constantesProvider.tipoAnexos, this.constantesProvider.tipoConsumiveis, false, this.idioma, _parametros).subscribe(
+            this.constantesProvider.tipoAnexos, tipoAnexo, false, this.idioma, _parametros).subscribe(
               data => {
                 let _resposta = (data as any);
                 let _objetoRetorno = JSON.parse(_resposta._body);
