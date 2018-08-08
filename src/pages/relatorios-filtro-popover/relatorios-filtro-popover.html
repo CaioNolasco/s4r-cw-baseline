@@ -1,7 +1,23 @@
 <ion-list>
   <ion-list-header color="cushman-2">
-    Filtro
+    
+      <ion-grid class="grid-header-filtro">
+          <ion-row>
+              <ion-col col-10>
+                Filtro
+              </ion-col>
+              <ion-col col-2>
+                  <ion-icon name="checkmark-circle" color="cushman-4" class="icone-header-filtro"></ion-icon>
+              </ion-col>
+          </ion-row>
+      </ion-grid>
+   
+    <!-- <ion-buttons end>
+      
+    </ion-buttons> -->
   </ion-list-header>
+
+
   <div class="menu-popover">
     <ion-item>
       <ion-label stacked color="cushman-3">
@@ -118,13 +134,11 @@
       <ion-datetime displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
     </ion-item>
 
-    <!-- <div class="item-altura-fab"></div>
-
-    <ion-fab bottom right>
-      <button ion-fab mini color="cushman-2" tappable>
-        <ion-icon name="arrow-forward"></ion-icon>
+    <ion-item>
+      <button ion-fab mini color="cushman-2" class="btn-filtro" tappable>
+        <ion-icon name="checkmark"></ion-icon>
       </button>
-    </ion-fab> -->
+    </ion-item>
   </div>
 
 

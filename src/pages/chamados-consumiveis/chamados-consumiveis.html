@@ -21,6 +21,7 @@
 
   <ion-list *ngIf="chamados">
     <ion-item-sliding *ngFor="let chamado of chamados">
+      
       <button (click)="abrirDetalhesClick(chamado)" class="item-lista-chamado" ion-item tappable>
         <ion-grid>
           <ion-row>
@@ -28,8 +29,11 @@
               <div start class="item-lista-dados">
                 <h1 ion-text>
                   <b>{{ chamado.ChamadoID}}</b>
+                 
                 </h1>
                 <p ion-text>{{ chamado.Area }} / {{ chamado.Nome }} / {{ chamado.NomeCompleto }}</p>
+                
+                
               </div>
             </ion-col>
           </ion-row>
@@ -51,7 +55,7 @@
           </ion-row>
         </ion-grid>
       </button>
-
+      
       <ion-item-options side="left">
         <button (click)="offlineClick(chamado)" [disabled]="!alterarChamado || !chamado.HabilitarChamado" color="cushman-1" ion-button
           tappable>

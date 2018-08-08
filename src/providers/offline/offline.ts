@@ -543,7 +543,7 @@ export class OfflineProvider {
 
   salvarAnexosConsumivelOffline(db: SQLiteObject, portal: string, chamadoId: any) {
     let _anexos: any;
-
+    
     this.chamadosProvider.retornarFotosChamado(portal, chamadoId, this.constantesProvider.tipoConsumiveis, true).subscribe(
       data => {
         let _resposta = (data as any);
@@ -555,7 +555,7 @@ export class OfflineProvider {
           let _sql = `INSERT INTO AnexoConsumivel (AnexoID, ChamadoID, url, sequencia, Portal) 
           VALUES (?, ?, ?, ?, ?)`;
 
-          for (let _anexo of _anexos) {
+          for (let _anexo of _anexos) { 
             let _dados = [_anexo.AnexoID, chamadoId, _anexo.url, _anexo.sequencia, portal];
 
             db.executeSql(_sql, _dados).catch((e) => console.log(e));

@@ -4,8 +4,10 @@ import { Injectable } from '@angular/core';
 @Injectable()
 export class ConstantesProvider {
   //Url
-  urlApiBaseline: string = "http://cwfacilities6377.cloudapp.net:9999";
-  //urlApiBaseline: string = "http://192.168.0.20:49608/";
+  //urlApiBaseline: string = "http://cwfacilities6377.cloudapp.net:9999";
+  //urlApiBaseline: string = "http://192.168.0.21:49608/";
+  //urlApiBaseline: string = "http://localhost:49608/";
+  urlApiBaseline: string = "http://portalfacilities-apiteste.0800cw.com.br/";
 
   //Subtipos
   subtipoAcao: string = "Ações";
