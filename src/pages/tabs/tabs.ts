@@ -19,9 +19,9 @@ export class TabsPage {
 
   //Propriedades
   tab1Root = "HomePage";
-  tab2Root = "ChamadosConsumiveisPage";
-  tab3Root = "RelatoriosPage";
-  tab4Root = "ChamadosOfflinePage";
+  tab2Root = "RelatoriosPage";
+  tab3Root = "ChamadosOfflinePage";
+  tab4Root = "ChamadosConsumiveisPage";
   badgesOffline: string;
   username: string;
   portal: string;
