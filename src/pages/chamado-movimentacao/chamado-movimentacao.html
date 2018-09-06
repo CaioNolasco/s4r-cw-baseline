@@ -17,7 +17,7 @@
       <ion-col col>
         <ion-item class="item-movimentacao">
           <ion-label stacked color="cushman-3">{{ "dataAtendimento" | translate }}</ion-label>
-          <ion-datetime [(ngModel)]="dataAtendimento" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY"
+          <ion-datetime [(ngModel)]="dataAtendimento" (ionChange)="dataAtendimentoChange()" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY"
             cancelText="{{ 'cancelar' | translate }}" doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
         </ion-item>
       </ion-col>
@@ -53,7 +53,7 @@
       <ion-col col>
         <ion-item class="item-movimentacao">
           <ion-label stacked color="cushman-3">{{ "dataSolucao" | translate }}</ion-label>
-          <ion-datetime [(ngModel)]="dataSolucao" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}"
+          <ion-datetime [(ngModel)]="dataSolucao" (ionChange)="dataSolucaoChange()" [disabled]="!habilitarChamado || !alterarChamado" displayFormat="DD/MM/YYYY" cancelText="{{ 'cancelar' | translate }}"
             doneText="OK" placeholder="dd/mm/aaaa"></ion-datetime>
         </ion-item>
       </ion-col>

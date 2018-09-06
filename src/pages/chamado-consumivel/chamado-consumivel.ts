@@ -336,6 +336,11 @@ export class ChamadoConsumivelPage {
         let _valor = barcodeData.text;
 
         if (_valor) {
+          
+          if(!this.uteisProvider.validarUrl(_valor)){
+            _valor = this.constantesProvider.urlSiteCushman + _valor;
+          }
+
           this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", _valor);
           this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
           
@@ -402,7 +407,7 @@ export class ChamadoConsumivelPage {
   salvarFoto() {
     try {
       const _options: CameraOptions = {
-        quality: 5,
+        quality: 25,
         destinationType: this.camera.DestinationType.DATA_URL,
         encodingType: this.camera.EncodingType.JPEG,
         mediaType: this.camera.MediaType.PICTURE

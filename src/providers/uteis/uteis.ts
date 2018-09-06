@@ -23,9 +23,11 @@ export class UteisProvider {
   //Retornos
   retornarIonicDateTime(data: string): string {
     if (data && data != null) {
-      let _data: Date = new Date(data);
+      let _data: Date = new Date(data + '-00:00');
+
       let _ionicData = new Date(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds());
       //let _ionicData = new Date(Date.UTC(_data.getFullYear(), _data.getMonth(), _data.getDate(), _data.getHours(), _data.getMinutes(), _data.getSeconds(), _data.getMilliseconds()));
+      
       return _ionicData.toISOString();
     }
     return null;
@@ -43,8 +45,13 @@ export class UteisProvider {
 
   retornarHoraApi(data: string, offline?: boolean): string {
     if (data && data != 'null' && (data.indexOf("T") >= 0 || offline)) {
-      let _data: Date = new Date(data);
-      let _apiHora = `${this.retornarZerosData(_data.getUTCHours())}:${this.retornarZerosData(_data.getUTCMinutes())}:${this.retornarZerosData(_data.getUTCSeconds())}`;
+      //let _data: Date = new Date(data);
+
+      let _horas: string = data.split(":")[0];
+      let _minutos: string = data.split(":")[1];
+      let _segundos: string = "00";
+
+      let _apiHora = `${this.retornarZerosData(_horas)}:${this.retornarZerosData(_minutos)}:${this.retornarZerosData(_segundos)}`;
       return _apiHora;
     }
     return data;

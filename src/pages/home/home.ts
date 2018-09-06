@@ -49,8 +49,9 @@ export class HomePage {
   adicionarChamado: boolean = false;
   alterarChamado: boolean = false;
   excluirChamado: boolean = false;
+  qrCodeChamado: boolean = false;
   homeOffline: boolean = false;
-  perfilAdicionar: boolean = false; 
+  perfilAdicionar: boolean = false;
   perfilOffline: boolean = false;
   pagina = 1;
   tamanhoPagina = 20;
@@ -112,6 +113,7 @@ export class HomePage {
           this.adicionarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoCadastrar);
           this.alterarChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoAlterar);
           this.excluirChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoExcluir);
+          this.qrCodeChamado = this.usuariosProvider.validarPermissoes(this.permissoesChamado, this.constantesProvider.acaoQrCode);
         }, e => {
           console.log(e);
         });
@@ -133,7 +135,7 @@ export class HomePage {
           if (_dadosUsuario) {
             this.perfilAdicionar = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilMantenedor &&
               _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
-              this.perfilOffline = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
+            this.perfilOffline = _dadosUsuario.PerfilAcessoID != this.constantesProvider.perfilCliente;
           }
           else {
             this.perfilAdicionar = false;
@@ -264,19 +266,33 @@ export class HomePage {
         let _valor = barcodeData.text;
 
         if (_valor) {
+
+          if (!this.uteisProvider.validarUrl(_valor)) {
+            _valor = this.constantesProvider.urlSiteCushman + _valor;
+          }
+
           this.filtroEquipamento = this.uteisProvider.retornarQueryString("v", _valor);
           this.filtroNomeEquipamento = this.uteisProvider.retornarQueryString("v1", _valor);
           this.qrCodeUrl = _valor;
 
-          let _botoes: any = [{
-            text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNavegar),
-            handler: this.navegarClick
-          },
-          {
+          let _botoes: any = [];
+
+          if (this.qrCodeChamado) {
+            _botoes.push({
+              text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNovoChamado),
+              handler: this.novoChamadoQrCodeClick
+            })
+          }
+
+          _botoes.push({
             text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveFiltrar),
             handler: this.filtrarClick
-          },
-          { text: "Cancelar" }]
+            },
+            {
+              text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNavegar),
+              handler: this.navegarClick
+            },
+            { text: "Cancelar" });
 
           this.alertsProvider.exibirAlertaConfirmacaoHandler(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta),
             this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgEscolhaAcao), _botoes);
@@ -314,6 +330,22 @@ export class HomePage {
           NomeEquipamento: this.filtroNomeEquipamento,
           AlterarChamado: this.alterarChamado,
           ExcluirChamado: this.excluirChamado
+        });
+      }
+      else {
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  novoChamadoQrCode() {
+    try {
+      if (this.filtroEquipamento) {
+        this.navCtrl.push("ChamadoNovoPage", {
+          EquipamentoID: this.filtroEquipamento
         });
       }
       else {
@@ -460,6 +492,10 @@ export class HomePage {
     this.filtrarQrCode();
   }
 
+  novoChamadoQrCodeClick = () => {
+    this.novoChamadoQrCode();
+  }
+
   buscarChamados(evento: any) {
     this.renderer.invokeElementMethod(event.target, 'blur');
 
@@ -483,9 +519,9 @@ export class HomePage {
   }
 
   doInfinite(infiniteScroll) {
-      this.pagina++;
-      this.infiniteScroll = infiniteScroll;
+    this.pagina++;
+    this.infiniteScroll = infiniteScroll;
 
-      this.carregarChamados(true);
+    this.carregarChamados(true);
   }
 }

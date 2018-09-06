@@ -35,7 +35,8 @@
               <div class="texto-obrigatorio"> * </div>
               {{ "centroCusto" + valorTraducao | translate }}
             </ion-label>
-            <ion-input formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)" placeholder="{{ 'codigo' | translate }}"></ion-input>
+            <ion-input formControlName="centroCusto" (keyup.enter)="redimencionarPagina()" (blur)="centroCustoChange($event)" 
+            [disabled]="qrCodeCentroCusto" placeholder="{{ 'codigo' | translate }}"></ion-input>
           </ion-item>
 
           <ion-item *ngIf="exibirCentroCustoOpcoes" class="item-novo-chamado">
@@ -43,7 +44,7 @@
               <div class="texto-obrigatorio"> * </div>
               {{ "centroCusto" + valorTraducao | translate }}
             </ion-label>
-            <ion-select formControlName="centroCustoOpcoes" (ionChange)="centroCustoChange($event)" [disabled]="!opcoesCentroCusto"
+            <ion-select formControlName="centroCustoOpcoes" (ionChange)="centroCustoChange($event)" [disabled]="!opcoesCentroCusto || qrCodeCentroCusto"
               interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{centroCusto.CodigoPontoVenda}}" *ngFor="let centroCusto of opcoesCentroCusto">{{centroCusto.CodigoPontoVenda}}</ion-option>
             </ion-select>
@@ -57,7 +58,7 @@
               <div class="texto-obrigatorio"> * </div>
               {{ "postoAtendimento" + valorTraducao | translate }}
             </ion-label>
-            <ion-select formControlName="postosAtendimento" (ionChange)="postoAtendimentoChange($event)" [disabled]="!opcoesPontosVenda"
+            <ion-select formControlName="postosAtendimento" (ionChange)="postoAtendimentoChange($event)" [disabled]="!opcoesPontosVenda || qrCodePostosAtendimento"
               interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{pontoVenda.PontoVendaID}}" *ngFor="let pontoVenda of opcoesPontosVenda">{{pontoVenda.NomePontoVenda}}</ion-option>
             </ion-select>
@@ -193,7 +194,7 @@
               <div class="texto-obrigatorio"> * </div>
               {{ "tipoServico" | translate }}
             </ion-label>
-            <ion-select formControlName="tiposServico" (ionChange)="tiposServicoChange($event)" [disabled]="!opcoesTiposServico" interface="action-sheet"
+            <ion-select formControlName="tiposServico" (ionChange)="tiposServicoChange($event)" [disabled]="!opcoesTiposServico || qrCodeTiposServico" interface="action-sheet"
               cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{tipoServico.TipoServicoID}}" *ngFor="let tipoServico of opcoesTiposServico">{{tipoServico.NomeTipoServico}}</ion-option>
             </ion-select>

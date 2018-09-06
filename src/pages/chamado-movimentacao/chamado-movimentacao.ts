@@ -10,6 +10,8 @@ import { ConstantesProvider } from '../../providers/constantes/constantes';
 import { OfflineProvider } from '../../providers/offline/offline';
 import { UsuariosProvider } from '../../providers/usuarios/usuarios';
 
+import * as moment from 'moment';
+
 @IonicPage({ name: 'ChamadoMovimentacaoPage' })
 @Component({
   selector: 'page-chamado-movimentacao',
@@ -358,10 +360,40 @@ export class ChamadoMovimentacaoPage {
     }
   }
 
+  carregarHorarioAtendimento(){
+    try {
+      if(!this.inicioAtendimento){
+        this.inicioAtendimento = moment().format();
+      }
+
+      if(!this.finalAtendimento){
+        this.finalAtendimento = moment().format();
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarHorarioSolucao(){
+    try {
+      if(!this.inicioSolucao){
+        this.inicioSolucao = moment().format();
+      }
+
+      if(!this.finalSolucao){
+        this.finalSolucao = moment().format();
+      }
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
   atualizarMovimentacao() {
     try {
       this.alertsProvider.exibirCarregando('');
-
+      
       let _parametros = {
         ChamadoID: this.chamadoId,
         StatusChamadoID: this.status,
@@ -462,6 +494,14 @@ export class ChamadoMovimentacaoPage {
     if (!this.origemOffline) {
       this.carregarPrazoSlaStatus(status);
     }
+  }
+
+  dataAtendimentoChange(){
+    this.carregarHorarioAtendimento();
+  }
+
+  dataSolucaoChange(){
+    this.carregarHorarioSolucao();
   }
 
   redimencionarPagina() {

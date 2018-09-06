@@ -49,6 +49,7 @@ export class ChamadoNovoPage {
   index: any;
   respostaApi: any;
   chamadoId: any;
+  equipamentoId: any;
   base64Image: string;
   exibirMsg: boolean = false;
   vinculoMantenedor: boolean = false;
@@ -59,6 +60,9 @@ export class ChamadoNovoPage {
   exibirMantenedores: boolean = false;
   exibirCentroCustoOpcoes: boolean = false;
   exibirCodigoEstacao: boolean = false;
+  qrCodeCentroCusto: boolean = false;
+  qrCodePostosAtendimento: boolean = false;
+  qrCodeTiposServico: boolean = false;
   chamadoForm: FormGroup;
   centroCusto: AbstractControl;
   centroCustoOpcoes: AbstractControl;
@@ -104,7 +108,8 @@ export class ChamadoNovoPage {
           this.portal = _configLoginProvider.portal;
           this.username = _configLoginProvider.username;
           this.idioma = _configLoginIdiomasProvider.valor;
-
+          this.equipamentoId = this.navParams.get("EquipamentoID");
+          
           //Validações por Portal
            if(this.portal == this.constantesProvider.portalBancoPan || this.portal == this.constantesProvider.portalBankBoston ||
             this.portal == this.constantesProvider.portalNike ||  this.portal == this.constantesProvider.portalCushman || 
@@ -172,6 +177,11 @@ export class ChamadoNovoPage {
           this.tipoChamado = this.constantesProvider.tituloDadosBasicos;
           this.exibirMsg = false;
           this.carregarDadosUsuario();
+
+          if(this.equipamentoId){
+            this.carregarEquipamento();
+          }
+          
         }
         else {
           this.app.getRootNav().setRoot("LoginPage");
@@ -218,6 +228,51 @@ export class ChamadoNovoPage {
           }
           else {
             this.perfilOperador = false;
+          }
+        }, e => {
+          console.log(e);
+        });
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarEquipamento(){
+    try {
+      this.chamadosProvider.retornarEquipamento(this.portal, this.equipamentoId).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          let _dadosEquipamento = _objetoRetorno;
+
+          if (_dadosEquipamento) {
+            if(_dadosEquipamento.CentroCusto){
+              this.centroCusto.setValue(_dadosEquipamento.CentroCusto);
+              this.qrCodeCentroCusto = true;
+
+              this.carregarPontosVenda(_dadosEquipamento.CentroCusto);
+
+              if(_dadosEquipamento.PontoVendaID){
+                this.postosAtendimento.setValue(_dadosEquipamento.PontoVendaID);
+                this.qrCodePostosAtendimento = true;
+
+                this.carregarValoresPontoVenda(_dadosEquipamento.PontoVendaID);
+                this.carregarLocalizacoes(_dadosEquipamento.PontoVendaID);
+                this.carregarTiposServico();
+
+                if(_dadosEquipamento.TipoServicoID){
+                  this.tiposServico.setValue(_dadosEquipamento.TipoServicoID);
+                  this.qrCodeTiposServico = true;
+
+                  this.carregarSubtipos(_dadosEquipamento.TipoServicoID);
+                  this.carregarMantenedores(_dadosEquipamento.TipoServicoID);
+                  this.carregarCriticidades();
+                  this.carregarValoresSlaPrioridade(_dadosEquipamento.TipoServicoID);
+                }
+              }
+            }
           }
         }, e => {
           console.log(e);
@@ -750,7 +805,7 @@ export class ChamadoNovoPage {
   salvarFoto() {
     try {
       const _options: CameraOptions = {
-        quality: 5,
+        quality: 25,
         destinationType: this.camera.DestinationType.DATA_URL,
         encodingType: this.camera.EncodingType.JPEG,
         mediaType: this.camera.MediaType.PICTURE

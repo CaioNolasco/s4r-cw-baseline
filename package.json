@@ -60,6 +60,7 @@
     "ionic-gallery-modal": "^0.2.7",
     "ionic2-auto-complete": "^1.6.2-alpha",
     "ionicons": "3.0.0",
+    "moment": "^2.22.2",
     "ng2-charts": "^1.6.0",
     "phonegap-plugin-barcodescanner": "^7.1.0",
     "rxjs": "5.5.2",

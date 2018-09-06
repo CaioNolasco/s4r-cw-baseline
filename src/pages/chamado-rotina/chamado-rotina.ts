@@ -339,7 +339,7 @@ export class ChamadoRotinaPage {
   salvarFoto() {
     try {
       const _options: CameraOptions = {
-        quality: 5,
+        quality: 25,
         destinationType: this.camera.DestinationType.DATA_URL,
         encodingType: this.camera.EncodingType.JPEG,
         mediaType: this.camera.MediaType.PICTURE

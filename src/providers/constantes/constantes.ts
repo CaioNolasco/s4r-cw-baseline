@@ -8,6 +8,7 @@ export class ConstantesProvider {
   //urlApiBaseline: string = "http://192.168.0.21:49608/";
   //urlApiBaseline: string = "http://localhost:49608/";
   urlApiBaseline: string = "http://portalfacilities-apiteste.0800cw.com.br/";
+  urlSiteCushman = "http://www.cushmanwakefield.com.br/pt-br?";
 
   //Subtipos
   subtipoAcao: string = "Ações";
@@ -22,6 +23,7 @@ export class ConstantesProvider {
   acaoExcluir: string = "Excluir";
   acaoMovimentacao: string = "Movimentação";
   acaoSincronizacao: string = "Sincronização";
+  acaoQrCode: string = "QR Code";
 
   //Títulos
   tituloDadosBasicos: string = "Dados Básicos";
@@ -66,6 +68,7 @@ export class ConstantesProvider {
   chaveCancelar = "cancelar";
   chaveNavegar = "navegar";
   chaveFiltrar = "filtrar";
+  chaveNovoChamado = "novoChamado";
   chaveNumeroChamado = "numeroChamado";
   chaveMsgValorExistente = "msgValorExistente";
   chaveMsgSucesso = "msgSucesso";

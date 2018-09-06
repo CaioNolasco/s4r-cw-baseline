@@ -51,6 +51,7 @@ export class RelatoriosPage {
       this.carregarCorretivosMes();
       this.carregarCorretivosPendentes();
       this.carregarEvolucao();
+      this.relatoriosProvider.exibirTooltipFixo();
       //Menu
       this.menuController.enable(true, 'menu');
     }
@@ -117,9 +118,12 @@ export class RelatoriosPage {
                   labels: _corretivosMesLabels,
                   datasets: [{ data: _corretivosMesData, backgroundColor: this.constantesProvider.backgroundColors }]
                 },
+                
                 options: { showAllTooltips: true, responsive: true }
                 //options: { showAllTooltips: true, responsive: true, onClick: this.chartClick.bind(this) }
               });
+
+              
             }
 
             if (this.isRefreshing) {
