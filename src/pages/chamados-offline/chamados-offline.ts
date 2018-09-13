@@ -83,7 +83,7 @@ export class ChamadosOfflinePage {
             this.geolocalizacao = data;
           });
         }
-        
+
         this.exibirMsg = false;
 
         let _configLoginProvider = JSON.parse(this.configLoginProvider.retornarConfigLogin());
@@ -181,8 +181,28 @@ export class ChamadosOfflinePage {
       let _titulo = this.origemOffline ? `` : `${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID}`;
 
       let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
-      { text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar), 
-        handler: () => {this.sincronizarChamado(chamado)} }]
+      {
+        text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+        handler: () => { this.sincronizarChamado(chamado) }
+      }]
+
+      this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+    }
+  }
+
+  carregarSincronizarTodosChamado() {
+    try {
+      let _titulo = this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveAlerta);
+
+      let _botoes: any = [{ text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveCancelar) },
+      {
+        text: this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveConfirmar),
+        handler: () => { this.sincronizarTodosChamado() }
+      }]
 
       this.alertsProvider.exibirAlertaConfirmacaoHandler(_titulo, this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgConfirmacao), _botoes);
     }
@@ -230,7 +250,7 @@ export class ChamadosOfflinePage {
         });
       }
       else if (chamado.TipoChamado == this.constantesProvider.tipoChamadoConsumivel) {
-      
+
         this.offlineProvider.retornarConsumivelAtualizadoOffline(this.portal, chamado.ChamadoID).then(data => {
           _consumivelAtualizado = data;
 
@@ -272,7 +292,105 @@ export class ChamadosOfflinePage {
     }
   }
 
-  salvarSincronizarChamado(chamado: any, fotos: any, fotosRotina: any, rotina: any, fotosConsumivel: any, consumivel: any, tipoAnexo: string) {
+  sincronizarTodosChamado() {
+    try {
+      this.alertsProvider.exibirCarregando('');
+
+      if (this.chamados) {
+        let _contador: number = 0;
+        let _contadorChamados: number = this.chamados.length - 1;
+        for (let chamado of this.chamados) {
+          let _fotos;
+          let _fotosRotina;
+          let _rotina;
+          let _fotosConsumivel;
+          let _consumivel;
+          let _consumivelAtualizado: any = { Atualizado: true }
+
+          let _ultimoRegistro = false;
+
+          if (_contador == _contadorChamados) {
+            _ultimoRegistro = true;
+          }
+
+          if (chamado.TipoChamado == this.constantesProvider.tipoChamadoCorretivo || chamado.TipoChamado == this.constantesProvider.tipoChamadoPreventivo) {
+            //Fotos
+            this.offlineProvider.retornarFotosOffline(this.portal, chamado.ChamadoID, true).then(data => {
+              _fotos = data;
+
+              //Fotos Rotinas
+              this.offlineProvider.retornarFotosRotinaOffline(this.portal, chamado.ChamadoID, true).then(data => {
+                _fotosRotina = data;
+
+                //Rotinas
+                this.offlineProvider.retornarRotinaOffline(this.portal, chamado.ChamadoID).then(data => {
+                  _rotina = data;
+
+                  this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel, this.constantesProvider.tipoRotinas, true,  _contador++, _contadorChamados);
+                }).catch((e) => {
+                  _rotina = null;
+                  console.log(e);
+                });
+              }).catch((e) => {
+                _fotosRotina = null;
+                console.log(e);
+              });
+            }).catch((e) => {
+              _fotos = null;
+              console.log(e);
+            });
+          }
+          else if (chamado.TipoChamado == this.constantesProvider.tipoChamadoConsumivel) {
+
+            this.offlineProvider.retornarConsumivelAtualizadoOffline(this.portal, chamado.ChamadoID).then(data => {
+              _consumivelAtualizado = data;
+
+              _consumivelAtualizado.Atualizado = _consumivelAtualizado.Atualizado;
+
+              if (_consumivelAtualizado.Atualizado) {
+                //Fotos Consumível
+                this.offlineProvider.retornarFotosConsumivelOffline(this.portal, chamado.ChamadoID, true).then(data => {
+                  _fotosConsumivel = data;
+
+                  //Consumiveis
+                  this.offlineProvider.retornarConsumivelOffline(this.portal, chamado.ChamadoID).then(data => {
+                    _consumivel = data;
+
+                    this.salvarSincronizarChamado(chamado, _fotos, _fotosRotina, _rotina, _fotosConsumivel, _consumivel, this.constantesProvider.tipoConsumiveis, true, _contador++, _contadorChamados);
+                  }).catch((e) => {
+                    _consumivel = null;
+                    console.log(e);
+                  });
+                }).catch((e) => {
+                  _fotosConsumivel = null;
+                  console.log(e);
+                });
+              }
+              else {
+                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErroSincronizacaoConsumivel), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                this.alertsProvider.fecharCarregando();
+              }
+            }).catch((e) => {
+              _consumivelAtualizado = null;
+              console.log(e);
+            });
+          }
+        }
+      }
+      else {
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgNenhumItem), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[2]);
+        this.alertsProvider.fecharCarregando();
+      }
+    }
+    catch (e) {
+      console.log(e);
+      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+      this.alertsProvider.fecharCarregando();
+    }
+  }
+
+  salvarSincronizarChamado(chamado: any, fotos: any, fotosRotina: any, rotina: any, fotosConsumivel: any, consumivel: any, tipoAnexo: string,
+    sincronizarTodos: boolean = false, contador?: number, contadorChamados?: number) {
     try {
       this.offlineProvider.retornarDetalhesChamadoOffline(this.portal, chamado.ChamadoID).then(data => {
         this.chamado = data;
@@ -331,41 +449,83 @@ export class ChamadosOfflinePage {
                       this.chamados = null;
                     }
 
-                    this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+                    if (sincronizarTodos) {
+                      this.alertsProvider.exibirToastSemDuracao(`${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID} ${this.respostaApi.mensagem}`,
+                        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+                    }
+                    else {
+                      this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[1]);
+                    }
+
                     this.offlineProvider.excluirChamadoOffline(this.portal, chamado.ChamadoID);
                   }
                   else {
-                    this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                    if (sincronizarTodos) {
+                      this.alertsProvider.exibirToastSemDuracao(`${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID} ${this.respostaApi.mensagem}`,
+                        this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                    }
+                    else {
+                      this.alertsProvider.exibirToast(this.respostaApi.mensagem, this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                    }
+                  }
+                }
+                else {
+                  if (sincronizarTodos) {
+                    this.alertsProvider.exibirToastSemDuracao(`${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID} ${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro)}`,
+                      this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                  }
+                  else {
+                    this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                  }
+                }
+
+                if (!sincronizarTodos || contador == contadorChamados) {
+                  this.alertsProvider.fecharCarregando();
+                }
+              }, e => {
+                console.log(e);
+                if (sincronizarTodos) {
+                  this.alertsProvider.exibirToastSemDuracao(`${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveNumeroChamado)} ${chamado.ChamadoID} ${this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro)}`,
+                    this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+
+                  if (contador == contadorChamados) {
+                    this.alertsProvider.fecharCarregando();
                   }
                 }
                 else {
                   this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+                  this.alertsProvider.fecharCarregando();
                 }
-
-                this.alertsProvider.fecharCarregando();
-              }, e => {
-                console.log(e);
-                this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-                this.alertsProvider.fecharCarregando();
               });
         }
       }).catch((e) => {
         this.exibirMsg = true;
         this.chamado = null;
-        this.alertsProvider.fecharCarregando();
+        if (!sincronizarTodos || contador == contadorChamados) {
+          this.alertsProvider.fecharCarregando();
+        }
       });
     }
     catch (e) {
       console.log(e);
-      this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
-      this.alertsProvider.fecharCarregando();
+      if (sincronizarTodos) {
+        this.alertsProvider.exibirToastSemDuracao(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+
+        if (contador == contadorChamados) {
+          this.alertsProvider.fecharCarregando();
+        }
+      }
+      else {
+        this.alertsProvider.exibirToast(this.uteisProvider.retornarTextoTraduzido(this.constantesProvider.chaveMsgErro), this.alertsProvider.msgBotaoPadrao, this.alertsProvider.alertaClasses[0]);
+        this.alertsProvider.fecharCarregando();
+      }
     }
   }
 
   salvarEstruturaOffline() {
     try {
       this.alertsProvider.exibirCarregando('');
-      
+
       this.offlineProvider.excluirBancoSQLite();
 
       this.offlineProvider.removerConfigEstruturaSQLite();
@@ -407,6 +567,10 @@ export class ChamadosOfflinePage {
   sincronizarClick(chamado) {
     this.carregarSincronizarChamado(chamado);
     //this.sincronizarChamado(chamado);
+  }
+
+  sincronizarTodosClick() {
+    this.carregarSincronizarTodosChamado();
   }
 
   doRefresh(refresher) {

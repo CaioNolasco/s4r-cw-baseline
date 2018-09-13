@@ -9,7 +9,7 @@ import { TranslateModule } from '@ngx-translate/core';
   ],
   imports: [
     IonicPageModule.forChild(ChamadosOfflinePage),
-    TranslateModule 
+    TranslateModule
   ],
 })
 export class ChamadosOfflinePageModule { }

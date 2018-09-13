@@ -2,10 +2,13 @@
 
   <ion-navbar color="cushman-1">
     <ion-title>{{ nomePortal }} Offline</ion-title>
-    <ion-buttons end>
+    <ion-buttons *ngIf="!origemOffline && !syncOffline && chamados" end>
       <!-- <button (click)="estruturaClick()" ion-button icon-only tappable>
         <ion-icon ios="ios-download-outline" name="download"></ion-icon>
       </button> -->
+      <button (click)="sincronizarTodosClick()" ion-button icon-only tappable>
+        <ion-icon name="swap"></ion-icon>
+      </button>
     </ion-buttons>
   </ion-navbar>
 </ion-header>
@@ -74,4 +77,10 @@
       </ion-item-options>
     </ion-item-sliding>
   </ion-list>
+
+  <ion-fab  *ngIf="!origemOffline && !syncOffline && chamados" bottom right>
+    <button (click)="sincronizarTodosClick()" color="cushman-2" ion-fab tappable>
+      <ion-icon name="swap"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

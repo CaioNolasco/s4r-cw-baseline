@@ -314,7 +314,7 @@
             <ion-label stacked color="cushman-3">
               {{ "equipamento" | translate }}
             </ion-label>
-            <ion-select formControlName="equipamentos" [disabled]="!opcoesEquipamentos" interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
+            <ion-select formControlName="equipamentos" [disabled]="!opcoesEquipamentos || qrCodeEquipamentos" interface="action-sheet" cancelText="{{ 'cancelar' | translate }}">
               <ion-option value="{{equipamento.EquipamentoID}}" *ngFor="let equipamento of opcoesEquipamentos">{{equipamento.NomeEquipamento}}</ion-option>
             </ion-select>
           </ion-item>

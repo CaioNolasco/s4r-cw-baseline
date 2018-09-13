@@ -63,6 +63,7 @@ export class ChamadoNovoPage {
   qrCodeCentroCusto: boolean = false;
   qrCodePostosAtendimento: boolean = false;
   qrCodeTiposServico: boolean = false;
+  qrCodeEquipamentos: boolean = false;
   chamadoForm: FormGroup;
   centroCusto: AbstractControl;
   centroCustoOpcoes: AbstractControl;
@@ -246,8 +247,9 @@ export class ChamadoNovoPage {
           let _objetoRetorno = JSON.parse(_resposta._body);
 
           let _dadosEquipamento = _objetoRetorno;
-
+         
           if (_dadosEquipamento) {
+            
             if(_dadosEquipamento.CentroCusto){
               this.centroCusto.setValue(_dadosEquipamento.CentroCusto);
               this.qrCodeCentroCusto = true;
@@ -259,7 +261,6 @@ export class ChamadoNovoPage {
                 this.qrCodePostosAtendimento = true;
 
                 this.carregarValoresPontoVenda(_dadosEquipamento.PontoVendaID);
-                this.carregarLocalizacoes(_dadosEquipamento.PontoVendaID);
                 this.carregarTiposServico();
 
                 if(_dadosEquipamento.TipoServicoID){
@@ -273,6 +274,38 @@ export class ChamadoNovoPage {
                 }
               }
             }
+
+            this.carregarLocalizacoesEquipamento(_dadosEquipamento);
+            this.opcoesEquipamentos =  [_dadosEquipamento];
+            this.equipamentos.setValue(_dadosEquipamento.EquipamentoID);
+            this.qrCodeEquipamentos = true;
+          }
+        }, e => {
+          console.log(e);
+        });
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+  carregarLocalizacoesEquipamento(dadosEquipamento: any){
+    try {
+      this.opcoesLocalizacoes = null;
+      this.localizacoes.setValue('');
+
+      this.chamadosProvider.retornarLocalizacoesEquipamento(this.portal, dadosEquipamento.EquipamentoID).subscribe(
+        data => {
+          let _resposta = (data as any);
+          let _objetoRetorno = JSON.parse(_resposta._body);
+
+          this.opcoesLocalizacoes = _objetoRetorno;
+
+          console.log(this.opcoesLocalizacoes);
+
+          if (!this.opcoesLocalizacoes[0]) {
+           console.log(dadosEquipamento.PontoVendaID);
+            this.carregarLocalizacoes(dadosEquipamento.PontoVendaID);
           }
         }, e => {
           console.log(e);
@@ -458,9 +491,12 @@ export class ChamadoNovoPage {
   carregarLocalizacoes(postoAtendimento: string) {
     try {
       this.opcoesLocalizacoes = null;
-      this.opcoesEquipamentos = null;
       this.localizacoes.setValue('');
-      this.equipamentos.setValue('');
+     
+      if(!this.equipamentoId){
+        this.opcoesEquipamentos = null;
+        this.equipamentos.setValue('');
+      }
 
       this.chamadosProvider.retornarLocalizacoes(this.portal, postoAtendimento).subscribe(
         data => {
@@ -929,7 +965,9 @@ export class ChamadoNovoPage {
   }
 
   localizacoesChange(localizacao: any) {
-    this.carregarEquipamentos(localizacao);
+    if(!this.equipamentoId){
+      this.carregarEquipamentos(localizacao);
+    }
   }
 
   slaChange(sla: any) {

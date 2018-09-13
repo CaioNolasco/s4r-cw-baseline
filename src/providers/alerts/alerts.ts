@@ -7,7 +7,6 @@ export class AlertsProvider {
   //Propriedades
   alertaClasses: any = ["toast-danger", "toast-success", "toast-warning"];
   loader: any;
-
   msgBotaoPadrao: string = "OK";
   
   //Load
@@ -64,6 +63,17 @@ export class AlertsProvider {
       closeButtonText: botao,
       cssClass: cssClass,
       duration: 10000,
+      position: "top",
+    });
+    toast.present();
+  }
+
+  exibirToastSemDuracao(mensagem: string, botao: string, cssClass?: string) {
+    let toast = this.toastCtrl.create({
+      message: mensagem,
+      showCloseButton: true,
+      closeButtonText: botao,
+      cssClass: cssClass,
       position: "top",
     });
     toast.present();
