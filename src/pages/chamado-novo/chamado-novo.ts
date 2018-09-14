@@ -326,15 +326,18 @@ export class ChamadoNovoPage {
       this.opcoesCriticidades = null;
       this.opcoesMantenedores = null;
       this.opcoesLocalizacoes = null;
-      this.opcoesEquipamentos = null;
       this.postosAtendimento.setValue('');
       this.tiposServico.setValue('');
       this.causas.setValue('');
       this.sla.setValue('');
       this.mantenedores.setValue('');
       this.localizacoes.setValue('');
-      this.equipamentos.setValue('');
       this.vinculoMantenedor = false;
+
+      if(!this.equipamentoId){
+        this.opcoesEquipamentos = null;
+        this.equipamentos.setValue('');
+      }
 
       this.chamadosProvider.retornarPontosVenda(this.portal, centroCusto).subscribe(
         data => {
@@ -519,6 +522,7 @@ export class ChamadoNovoPage {
 
   carregarEquipamentos(localizacao: string) {
     try {
+      
       this.opcoesEquipamentos = null;
       this.equipamentos.setValue('');
 
