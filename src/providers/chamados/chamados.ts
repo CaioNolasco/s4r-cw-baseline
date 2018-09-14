@@ -232,8 +232,8 @@ export class ChamadosProvider {
     return this.http.get(this.urlApiChamados + `/RetornarEquipamentos/${portal}/${localizacao}`);
   }
 
-  retornarLocalizacoesEquipamento(portal: string, equipamento: string) {
-    return this.http.get(this.urlApiChamados + `/RetornarLocalizacoesEquipamento/${portal}/${equipamento}`);
+  retornarLocalizacoesEquipamento(portal: string, equipamento: string, pontoVenda: string) {
+    return this.http.get(this.urlApiChamados + `/RetornarLocalizacoesEquipamento/${portal}/${equipamento}/${pontoVenda}`);
   }
 
   retornarValoresSla(portal: string, tipoServico: string, prioridadePontoVenda: string, criticidade: string, idioma: string) {
