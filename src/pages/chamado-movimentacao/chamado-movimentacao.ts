@@ -393,7 +393,7 @@ export class ChamadoMovimentacaoPage {
   atualizarMovimentacao() {
     try {
       this.alertsProvider.exibirCarregando('');
-      
+
       let _parametros = {
         ChamadoID: this.chamadoId,
         StatusChamadoID: this.status,
@@ -412,14 +412,14 @@ export class ChamadoMovimentacaoPage {
           ChamadoID: this.chamadoId,
           StatusChamadoID: this.status,
           Tipo: this.constantesProvider.acaoMovimentacao,
-          UUID: this.device.uuid,
-          Plataforma: this.device.platform,
-          Modelo: this.device.model,
-          Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
-          Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
+           UUID: this.device.uuid,
+           Plataforma: this.device.platform,
+           Modelo: this.device.model,
+          Latitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.latitude : null,
+          Longitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.longitude : null
         }
       };
-
+      
       if (!this.origemOffline) {
         this.atualizarMovimentacaoOnline(_parametros);
       }

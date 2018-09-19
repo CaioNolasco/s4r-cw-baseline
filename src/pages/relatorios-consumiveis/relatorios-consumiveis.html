@@ -6,7 +6,7 @@
           </button>
         </ion-buttons>
     <ion-title>
-        Relatório Barras
+        Relatório Consumíveis
     </ion-title>
     <ion-buttons end>
       <button (click)="popoverClick($event)" ion-button icon-only tappable>
@@ -17,6 +17,11 @@
 </ion-header>
 
 
-<ion-content>
-
+<ion-content padding>
+  <div>
+    <h6>Consumível</h6>
+    <div style="display: block">
+      <canvas #consumiveis baseChart height="450"></canvas>
+    </div>
+  </div>
 </ion-content>

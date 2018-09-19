@@ -423,8 +423,8 @@ export class ChamadosOfflinePage {
               UUID: this.device.uuid,
               Plataforma: this.device.platform,
               Modelo: this.device.model,
-              Latitude: this.geolocalizacao ? this.geolocalizacao.coords.latitude : null,
-              Longitude: this.geolocalizacao ? this.geolocalizacao.coords.longitude : null
+              Latitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.latitude : null,
+              Longitude: this.geolocalizacao && this.geolocalizacao.coords ? this.geolocalizacao.coords.longitude : null
             }
           };
 
